@@ -1,5 +1,6 @@
 package cart.gui;
 
+import mime.tool.Utils;
 import cart.maximizer.OneDCartifier;
 
 public class CartiGUITools
@@ -13,16 +14,13 @@ public class CartiGUITools
 			for (int cartIx = 0; cartIx < cartStarts.length; cartIx++)
 			{
 				int cartStart = cartStarts[cartIx];
-				for (int i = 0; i < k; i++)
-				{
-					carts[dimIx][cartIx][i] = cartStart + i;
-				}
+				carts[dimIx][cartIx] = Utils.range(cartStart, cartStart + k);
 			}
 		}
 		return carts;
 	}
 
-	static int[][][] createConfMat(final int[][][] carts)
+	public static int[][][] createConfMat(final int[][][] carts)
 	{
 		int[][][] cumMat = new int[carts.length][][];
 

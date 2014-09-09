@@ -18,6 +18,7 @@ import javax.swing.JViewport;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import mime.tool.Utils;
 import cart.gui.CartPane.Layer;
 import cart.maximizer.CartiFiner;
 import cart.maximizer.OneDCartifier;
@@ -241,9 +242,9 @@ public class CartiManuGUI
 				// }
 
 				int[][] lm = new int[yend - ystart][end - start];
-				for (int i = 0; i < lm.length; i++)
+				for (int i : Utils.range(0, lm.length))
 				{
-					for (int j = 0; j < lm[0].length; j++)
+					for (int j : Utils.range(0, lm[0].length))
 					{
 						lm[i][j] = 1;
 					}
