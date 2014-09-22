@@ -1,10 +1,9 @@
 package cart.gui2;
 
-public class CartiMain 
-{
+
+public class CartiMain {
 	
-	public static void main(String[] args) 
-	{
+	public static void main(String[] args) {
 		CartiModel cartiModel = new CartiModel();	
 		CartiView cartiView = new CartiView();
 		CartiController cartiController = new CartiController(cartiModel, cartiView);
