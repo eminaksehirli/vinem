@@ -201,41 +201,60 @@ public class CartiCombineGUI
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				selecteds = new HashSet<>();
-				updateSelectedStats();
-				updateFigure();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run()
+					{
+						selecteds = new HashSet<>();
+						updateSelectedStats();
+						updateFigure();
+					}
+				});
 			}
 		});
 
 		frame.dimButton.addItemListener(new ItemListener() {
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(final ItemEvent e)
 			{
-				if (e.getStateChange() == ItemEvent.SELECTED)
-				{
-					enableAdvanced();
-				} else
-				{
-					disableAdvanced();
-				}
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run()
+					{
+						if (e.getStateChange() == ItemEvent.SELECTED)
+						{
+							enableAdvanced();
+						} else
+						{
+							disableAdvanced();
+						}
+					}
+				});
 			}
 		});
 
 		frame.filterButton.addItemListener(new ItemListener() {
 			@Override
-			public void itemStateChanged(ItemEvent e)
+			public void itemStateChanged(final ItemEvent e)
 			{
-				if (e.getStateChange() == ItemEvent.SELECTED)
-				{
-					filterByCluster = true;
-					updateFigure();
-				} else
-				{
-					filterByCluster = false;
-					cartPane = null; // Reset the cart pane to prevent size discrepancy
-					frame.remove(sPane);
-					updateFigure();
-				}
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run()
+					{
+						if (e.getStateChange() == ItemEvent.SELECTED)
+						{
+							filterByCluster = true;
+							updateFigure();
+						} else
+						{
+							filterByCluster = false;
+							cartPane = null; // Reset the cart pane to prevent size
+																// discrepancy
+							frame.remove(sPane);
+							updateFigure();
+						}
+					}
+				});
 			}
 		});
 
@@ -243,7 +262,13 @@ public class CartiCombineGUI
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				clusterTheSelected();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run()
+					{
+						clusterTheSelected();
+					}
+				});
 			}
 		});
 
@@ -251,7 +276,13 @@ public class CartiCombineGUI
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				clearClusters();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run()
+					{
+						clearClusters();
+					}
+				});
 			}
 		});
 
@@ -259,7 +290,13 @@ public class CartiCombineGUI
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				manuallySelected();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run()
+					{
+						manuallySelected();
+					}
+				});
 			}
 		};
 		frame.manualSel.addActionListener(manuallySelected);
@@ -269,7 +306,13 @@ public class CartiCombineGUI
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				runMineByItems();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run()
+					{
+						runMineByItems();
+					}
+				});
 			}
 		});
 
@@ -277,7 +320,13 @@ public class CartiCombineGUI
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				runMineByDims();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run()
+					{
+						runMineByDims();
+					}
+				});
 			}
 		});
 
@@ -285,7 +334,13 @@ public class CartiCombineGUI
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				runMineSelected();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run()
+					{
+						runMineSelected();
+					}
+				});
 			}
 		});
 

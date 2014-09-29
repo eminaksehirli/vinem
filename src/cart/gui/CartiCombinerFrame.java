@@ -156,7 +156,7 @@ public class CartiCombinerFrame extends JFrame
 		mine2Button = new JButton("MineBy Dims");
 		clearClustersButton = new JButton("Clear Clusters");
 		selMineButton = new JButton("Mine Selected");
-		minlenField = new JTextField();
+		minlenField = new JTextField(5);
 		buttonPane.add(dimButton);
 		buttonPane.add(filterButton);
 		buttonPane.add(clusterButton);
@@ -218,6 +218,8 @@ public class CartiCombinerFrame extends JFrame
 			dimSupPane = new JPanel(new GridLayout(dimSupports.length, 2));
 
 			infoObjects = new JTextArea(4, 2);
+			infoObjects.setLineWrap(true);
+			infoObjects.setWrapStyleWord(true);
 
 			infoPane.add(sizePane);
 			infoPane.add(dimSupPane);
