@@ -19,6 +19,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -47,31 +48,34 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 
-
-
 public class CartiView {
+	
+	final static String CLUSTER = "CartiView.Cluster";
+	final static String MINE = "CartiView.Mine";
 
 	private JFrame theFrame;
 	private CartiController controller;
 	
-	//private JList<String> dimList;
-	//private JTextField dimDropArea;
-	private JSlider orderSlider_1;
-	// private JSlider orderSlider_2;
+	private JSlider orderSlider;
 	private JSlider kSlider;
+	private JButton cluster;
+	private JButton mine;
 	private CartiPanel cartiPanel;
 	private SelOptions selectionOptions;
 	private FilterOptions filteringOptions;
 	private Stats selectedsStats;
 	private JDialog selectedsStatsDialog;
+	private ClusterInfo clusterInfo;
+	private JDialog clusterInfoDialog;
 	
-	private boolean shouldListen; // makes it so the selOptions ListSelectionListener only listens when necessary
-								  // this should fix a bug where the listener would keep calling the controller whilst
-								  // we were updating the lists
+	private boolean selOptionsListenerShouldListen; // prevents the selection options list listener from listening while updating
+	private boolean clusterInfoListenerShouldListen; // prevents cluster info table listener from listening while updating
 	
 	public CartiView() {
 		theFrame = new JFrame("Carti");
@@ -83,7 +87,7 @@ public class CartiView {
 		this.controller = controller;
 	}
 	
-	public void init(List<Integer> orderedObjs, List<String> allDims, int maxK, int[][] matrixToShow) {
+	public void init(List<Integer> orderedObjs, Set<Integer> dims, int maxK, int[][] matrixToShow) {
 		// visualPanel contains the visual representation
 		JPanel visualPanel = createVerticalBoxPanel(700,700);
 		// controlsPanel contains the buttons/sliders/...
@@ -98,41 +102,44 @@ public class CartiView {
 		visualPanel.add(sPane);
 		
 		// CONTROLS GO HERE
+		// listener for all the buttons
+		ActionListener buttonsListener = createButtonsListener();
+		
 		// add the selection options panel
 		selectionOptions = new SelOptions();
-		selectionOptions.init(orderedObjs, createSelOptionsButtonListener(), createSelOptionsListListener());
+		selectionOptions.init(orderedObjs, buttonsListener, createSelOptionsListListener());
 			
 		controlsPanel.add(selectionOptions.getPanel());
 		controlsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		
 		// add the filtering options panel
 		filteringOptions = new FilterOptions();
-		filteringOptions.init(createFilterOptionsListener());
+		filteringOptions.init(buttonsListener);
 			
 		controlsPanel.add(filteringOptions.getPanel());
-		controlsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		controlsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		
-		// add list of dimensions
-		//dimList = createDimList(allDims, createDimListTransferHandler());
-        //JScrollPane listView = new JScrollPane(dimList);
-        //listView.setMaximumSize(new Dimension(200, 200));
-        //listView.setBorder(BorderFactory.createTitledBorder("Dimensions"));
-		//controlsPanel.add(listView);
-		//controlsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-	
-		// add dimension drop area
-		//JLabel dimDropAreaLabel = new JLabel("Dimension drop area");
-		//dimDropAreaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-     	// controlsPanel.add(dimDropAreaLabel);
-		//dimDropArea = createDimDropArea(createDimDropAreaListener("0"), createDimDropAreaTransferHandler());
-		//controlsPanel.add(dimDropArea);
-		//controlsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		// add button for clustering
+		cluster = new JButton("Cluster selected");
+		cluster.setActionCommand(CLUSTER);
+		cluster.setAlignmentX(Component.CENTER_ALIGNMENT);
+		cluster.addActionListener(buttonsListener);
+		controlsPanel.add(cluster);
+		controlsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		
+		// add button for mining
+		mine = new JButton("Mine");
+		mine.setActionCommand(MINE);
+		mine.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mine.addActionListener(buttonsListener);
+		controlsPanel.add(mine);
+		controlsPanel.add(Box.createRigidArea(new Dimension(0, 10))); 
 		
         // add slider for k
      	JLabel kSliderLabel = new JLabel("k");
      	kSliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
      	controlsPanel.add(kSliderLabel);
-        kSlider = createSlider(1,maxK, createKSliderListener(1));
+        kSlider = createSlider(1,maxK);
         controlsPanel.add(kSlider);
         controlsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         
@@ -140,48 +147,79 @@ public class CartiView {
      	JLabel order_1SliderLabel = new JLabel("order_1");
      	order_1SliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
      	controlsPanel.add(order_1SliderLabel);
-        orderSlider_1 = createSlider(0, allDims.size()-1, createOrderSliderListener(0));
-        controlsPanel.add(orderSlider_1);
+        orderSlider = createSlider(0, dims.size()-1);
+        controlsPanel.add(orderSlider);
         controlsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
-        // add slider for order_2
-        //JLabel order_2SliderLabel = new JLabel("order_2");
-     	//order_2SliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-     	//controlsPanel.add(order_2SliderLabel);
-        // orderSlider_2 = createSlider(0, allDims.size()-1, createOrderSliderListener(0));
-        // controlsPanel.add(orderSlider_2);
-		
         
         // add visual and controls panel to the frame
         theFrame.add(visualPanel, BorderLayout.CENTER);
         theFrame.add(controlsPanel, BorderLayout.LINE_END);
         
-        // initialise selecteds stats
+        // initialise selecteds stats dialog
         selectedsStats = new Stats();
-        selectedsStats.init(new HashSet<Integer>(), new int[0]);
+        selectedsStats.init(dims);
         selectedsStatsDialog = new JDialog(theFrame, "Selecteds stats");
         selectedsStatsDialog.add(selectedsStats.getStatsPanel());
         
-        // make the listSelectionListener is listening
-        shouldListen = true;
+		// initialise cluster info dialog
+        clusterInfo = new ClusterInfo();
+        clusterInfo.init(buttonsListener, createClusterTableModelListener());
+        clusterInfoDialog = new JDialog(theFrame, "Clusters info");
+        clusterInfoDialog.add(clusterInfo.getInfoPanel());
+        
+        // make sure the listSelectionListener is listening
+        selOptionsListenerShouldListen = true;
+        clusterInfoListenerShouldListen = true;
 	}
 	
-	private ActionListener createSelOptionsButtonListener() {
+	// listens to all the buttons
+	private ActionListener createButtonsListener() {
 		ActionListener listener = new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				controller.manSelectedsClear();
+				if (e.getActionCommand() == SelOptions.CLEAR) {
+					controller.manSelectedsClear();
+				} else if (e.getActionCommand() == FilterOptions.CLEAR) {
+					controller.manFilteredsClear();
+				} else if (e.getActionCommand() == FilterOptions.UNDO) {
+					controller.undoFiltering();
+				} else if (e.getActionCommand() == FilterOptions.FILTER) {
+					controller.filterSelecteds();
+				} else if (e.getActionCommand() == CartiView.MINE) {
+					controller.mine();
+				} else if (e.getActionCommand() == CartiView.CLUSTER) {
+					controller.clusterSelected();
+				} 
+				
+				// only get here if one of the ClusterInfo buttons was pressed
+				Set<Integer> clusterIds = clusterInfo.getSelectedRowsClusterIds();
+				
+				// if the user has not selected a cluster
+				if (clusterIds.isEmpty()) {
+					return;
+				}
+				
+				if (e.getActionCommand() == ClusterInfo.ADD) {
+					controller.addSelectedToClusters(clusterIds);
+				} else if (e.getActionCommand() == ClusterInfo.REMOVE) {
+					controller.removeSelectedFromClusters(clusterIds);
+				} else if (e.getActionCommand() == ClusterInfo.DELETE) {
+					controller.deleteClusters(clusterIds);
+				} else if (e.getActionCommand() == ClusterInfo.SELECT) {
+					controller.selectClusters(clusterIds);
+				}
 			}
 		};
 		
 		return listener;
 	}
 	
+	// listens for changes in selection in the SelOptions list
 	private ListSelectionListener createSelOptionsListListener() {
 		ListSelectionListener listener = new ListSelectionListener () {
 
 			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting() == false && (shouldListen == true)) {
+				if (e.getValueIsAdjusting() == false && (selOptionsListenerShouldListen)) {
 					controller.manSelectedsChange(selectionOptions.getSelecteds());
 				}
 			}
@@ -190,23 +228,7 @@ public class CartiView {
 		return listener;
 	}
 	
-	private ActionListener createFilterOptionsListener() {
-		ActionListener listener = new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				if (e.getActionCommand() == FilterOptions.CLEAR) {
-					controller.manFilteredsClear();
-				} else if (e.getActionCommand() == FilterOptions.UNDO) {
-					controller.undoFiltering();
-				} else if (e.getActionCommand() == FilterOptions.FILTER) {
-					controller.filterSelecteds();
-				}
-			}
-		};
-		
-		return listener;
-	}
-	
+	// listens for mouse clicks in the cartiPanel
 	private MouseListener createCartiPanelListener() {
 		MouseListener listener = new MouseListener() {
 			
@@ -256,166 +278,43 @@ public class CartiView {
 		return listener;
 	}
 	
-	/*
-	private JList<String> createDimList(List<String> allDims, TransferHandler handler) {
-		DefaultListModel<String> listModel = new DefaultListModel<String>();	
-		for (int i = 0; i < allDims.size(); i++) {
-			listModel.addElement(allDims.get(i));
-		}   
-		
-        JList<String> list = new JList<String>(listModel);
-        list.setVisibleRowCount(-1);
-        list.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list.setDragEnabled(true);
-        list.setTransferHandler(handler);
-        
-        return list;
-	}
-	
-	private TransferHandler createDimListTransferHandler() {
-		TransferHandler handler = new TransferHandler() {
- 
-            public boolean canImport(TransferHandler.TransferSupport info) {
-            	// we don't want to import to this list
-                return false;
-            }
-             
-            public int getSourceActions(JComponent c) {
-                return COPY;
-            }
-             
-            protected Transferable createTransferable(JComponent c) {
-                JList list = (JList)c;
-                Object[] values = list.getSelectedValues();
-         
-                StringBuffer buff = new StringBuffer();
- 
-                for (int i = 0; i < values.length; i++) {
-                    Object val = values[i];
-                    buff.append(val == null ? "" : val.toString());
-                    if (i != values.length - 1) {
-                        buff.append("\n");
-                    }
-                }
-                return new StringSelection(buff.toString());
-            }
-        };
-		
-		return handler;
-	}
+	// listens for changes in the ClusterInfo table (whether a cluster is visible/not visible)
+	private TableModelListener createClusterTableModelListener() {
+		TableModelListener listener = new TableModelListener() {
 
-	private JTextField createDimDropArea(DocumentListener listener, TransferHandler handler) {
-		JTextField area = new JTextField(100);
-		area.setText("0");
-        area.setEditable(false);
-        area.setMaximumSize(new Dimension(100,30));
-        area.setHorizontalAlignment(JTextField.CENTER);
-        area.setTransferHandler(handler);
-        area.getDocument().addDocumentListener(listener); 
-        
-        return area;
-	} 
-	
-	private DocumentListener createDimDropAreaListener(final String initValue) {
-		DocumentListener listener = new DocumentListener() {
-    	
-			private String previousVal = initValue;
-			
-	    	public void insertUpdate(DocumentEvent e) {
-	    		String newVal = "";
-	    		try {
-					newVal = e.getDocument().getText(0, e.getDocument().getLength());
-				} catch (BadLocationException e1) {
-					e1.printStackTrace();
+			public void tableChanged(TableModelEvent e) {
+				if (clusterInfoListenerShouldListen) {
+					int row = e.getFirstRow();
+					ClusterInfo.ClusterTable table = (ClusterInfo.ClusterTable)e.getSource();
+					boolean isVisible = (boolean)table.getValueAt(row, 0);
+					int clusterId = (int)table.getValueAt(row,1);
+					
+					if (isVisible) {
+						controller.showCluster(clusterId);
+					} else {
+						controller.hideCluster(clusterId);
+					}
 				}
-	    		
-	    		// notify controller the dimensions to show has changed
-	    		if (!previousVal.equals(newVal)) {
-	    			previousVal = newVal;
-	    			controller.dimsToShowChanged();
-	    		}
 			}
-	
-	    	// do nothing for these
-			public void changedUpdate(DocumentEvent e) { }
-			public void removeUpdate(DocumentEvent e) { }
 		};
-    	
+		
 		return listener;
 	}
 	
-	private TransferHandler createDimDropAreaTransferHandler() {
-		TransferHandler handler = new TransferHandler() {
-    	 
-	        public boolean canImport(TransferHandler.TransferSupport info) {
-	            // we only import Strings
-	            if (!info.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-	                return false;
-	            }
-	            
-	            // Get the String that is being dropped.
-	            String data;
-	            try {
-	                data = (String)info.getTransferable().getTransferData(DataFlavor.stringFlavor);
-	            }
-	            catch (Exception e) { return false; }
-	            
-	            // we only import Strings which are in the dimList
-	            for (int i = 0; i < dimList.getModel().getSize(); i++) {
-	            	if (data.equals(dimList.getModel().getElementAt(i))) {
-	            		return true;
-	            	}
-	            }
-	            
-	            // the String was not in the dimList
-	            return false;
-	        }
-	    
-	        public boolean importData(TransferHandler.TransferSupport info) {
-	            if (!info.isDrop()) {
-	                return false;
-	            }
-	             
-	            // Check for String flavor
-	            if (!info.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-	                return false;
-	            }
-	
-	            // Get the string that is being dropped.
-	            String data;
-	            try {
-	                data = (String)info.getTransferable().getTransferData(DataFlavor.stringFlavor);
-	            }
-	            catch (Exception e) { return false; }
-	            
-	            // TODO make the content of the textfield reflect what we want
-	            JTextField dim = (JTextField)info.getComponent();
-	            String previous = dim.getText();
-	            dim.setText(data);
-	                         
-	            return true;
-			}
-		         
-			public int getSourceActions(JComponent c) {
-				return NONE;
-			}
-    	};
-    
-		return handler;
-	} */
-	
-	private JSlider createSlider(int min, int max, ChangeListener listener) {
+	// creates a slider with given minimum/maximum values
+	private JSlider createSlider(int min, int max) {
 		JSlider slider = new JSlider(min, max);
 		slider.setValue(min);
 		//slider.setMajorTickSpacing(((max / 10) / 10) * 10);
 		slider.setMajorTickSpacing(max/5);
 		slider.setPaintLabels(true);
 		slider.setPaintTicks(true);
-		slider.addChangeListener(listener);
+		slider.addChangeListener(createSliderListener(min));
 		return slider;
 	}
 	
-	private ChangeListener createKSliderListener(final int initValue) {
+	// listens for changes in the sliders and notifies the controller if a value has changed
+	private ChangeListener createSliderListener(final int initValue) {
 		ChangeListener listener = new ChangeListener() {
 			
 			private int previousVal = initValue;
@@ -426,26 +325,12 @@ public class CartiView {
 				// notify controller when slider has stopped moving on a different value than before
 				if ((!slider.getValueIsAdjusting()) && (slider.getValue() != previousVal)) {
 					previousVal = slider.getValue();
-					controller.kSliderChanged();
-				}
-			}
-		};
-				
-		return listener;
-	}
-	
-	private ChangeListener createOrderSliderListener(final int initValue) {
-		ChangeListener listener = new ChangeListener() {
-			
-			private int previousVal = initValue;
-			
-			public void stateChanged(ChangeEvent e) {
-				JSlider slider = (JSlider)e.getSource();
-				
-				// notify controller when slider has stopped moving on a different value than before
-				if ((!slider.getValueIsAdjusting()) && (slider.getValue() != previousVal)) {
-					previousVal = slider.getValue();
-					controller.orderSliderChanged();
+					
+					if (slider == kSlider) {
+						controller.kSliderChanged();
+					} else if (slider == orderSlider) {
+						controller.orderSliderChanged();
+					}
 				}
 			}
 		};
@@ -475,47 +360,61 @@ public class CartiView {
     	theFrame.repaint();
     }
     
-    // this just clears the set of selected locations, it does not actually decolour them in the figure
+    // this just clears the saved locations, it does not actually decolour them in the figure
     // this is used to counter a bug when calling updateFigure after a filtering
-    public void clearFigureSelectedLocs() {
-    	cartiPanel.clearSelectedLocs();
+    public void clearFigureSavedLocs() {
+    	cartiPanel.clearSavedLocs();
     }
     
-    public void updateFigureSelected(List<Integer> orderedObjs, Set<Integer> selecteds) {
-    	cartiPanel.updateSelected(orderedObjs, selecteds);
+    public void updateFigureSelected(Set<Integer> selectedLocs) {
+    	cartiPanel.updateSelected(selectedLocs);
+    	theFrame.validate();
+    	theFrame.repaint();
+    }
+    
+    public void updateFigureClustered(Set<Integer> clusteredLocs) {
+    	cartiPanel.updateClustered(clusteredLocs);
     	theFrame.validate();
     	theFrame.repaint();
     }
     
     public void updateSelOptions(List<Integer> orderedObjs, Set<Integer> selecteds) {
-    	shouldListen = false;
+    	selOptionsListenerShouldListen = false;
     	selectionOptions.updateSelected(orderedObjs, selecteds);
-    	shouldListen = true;
+    	selOptionsListenerShouldListen = true;
     }
     
-    public void updateSelStats(Set<Integer> selecteds, int[] dimSupports) {
+    public void updateSelStats(Set<Integer> selecteds, int[] dimSupports, double[] standardDevs, int[] measures, int[] medAbsDevs) {
     	if (selecteds.size() == 0) {
-    		hideSelectedsStatsDialog();
+    		selectedsStatsDialog.setVisible(false);
     	} else {
-    		selectedsStats.updateStats(selecteds, dimSupports);
-    		showSelectedsStatsDialog();
+    		selectedsStats.updateStats(selecteds, dimSupports, standardDevs, measures, medAbsDevs);
+    		selectedsStatsDialog.pack();
+    		selectedsStatsDialog.setVisible(true);
     	}
+    }
+    
+    public void updateClusterInfo(Map<Integer, Cluster> clustersMap, Set<Integer> clustersToShow) {
+    	clusterInfoListenerShouldListen = false;
+    	if (clustersMap.size() == 0) {
+    		clusterInfoDialog.setVisible(false);
+    	} else {
+    		clusterInfo.updateClusterInfo(clustersMap, clustersToShow);
+    		clusterInfoDialog.pack();
+    		clusterInfoDialog.setVisible(true);
+    	}
+    	clusterInfoListenerShouldListen = true;
     }
     
     public JFrame getFrame() {
     	return theFrame;
     }
     
-	public int getOrderSlider_1() {
-		return orderSlider_1.getValue();
+	public int getOrderSliderVal() {
+		return orderSlider.getValue();
 	}
 	
-	/*
-	public int getOrderSlider_2() {
-		return orderSlider_2.getValue();
-	} */
-	
-	public int getK() {
+	public int getKSliderVal() {
 		return kSlider.getValue();
 	}
 	
@@ -531,22 +430,4 @@ public class CartiView {
 		return selectionOptions.selModeIsOr();
 	}
 	
-	
-	/*
-	// TODO parse dimDropArea and return the correct list
-	public List<Integer> getDimsToShow() {
-		List<Integer> list = new ArrayList<Integer>();
-		list.add(Integer.parseInt(dimDropArea.getText()));
-		
-		return list;
-	} */
-	
-	private void showSelectedsStatsDialog() {
-		selectedsStatsDialog.pack();
-		selectedsStatsDialog.setVisible(true);
-	}
-	
-	private void hideSelectedsStatsDialog() {
-		selectedsStatsDialog.setVisible(false);
-	}
 }

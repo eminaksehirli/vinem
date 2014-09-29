@@ -24,6 +24,8 @@ import javax.swing.event.ListSelectionListener;
 
 public class SelOptions {
 	
+	final static String CLEAR = "SelOptions.Clear";
+	
 	private JPanel optionsPanel;
 	private JList<Integer> list;
 	private DefaultListModel<Integer> listModel;
@@ -52,6 +54,7 @@ public class SelOptions {
 		
 		// add remove/clear/add buttons
 		clear = new JButton("Clear Selection");
+		clear.setActionCommand(CLEAR);
 		clear.addActionListener(buttonListener);
 		clear.setAlignmentX(Component.CENTER_ALIGNMENT);
 		optionsPanel.add(clear);
@@ -100,12 +103,7 @@ public class SelOptions {
 	
 	// returns a set containing the object ids which were selected by the user (by clicking on them in the list)
 	public Set<Integer> getSelecteds() {
-		Set<Integer> objIds = new HashSet<Integer>();
-		
-		// Get all the selected ids
-		for (int id : list.getSelectedValuesList()) {
-	    	objIds.add(id);
-		}
+		Set<Integer> objIds = new HashSet<Integer>(list.getSelectedValuesList());
 	    
 	    return objIds;
 	}
