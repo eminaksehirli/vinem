@@ -1,20 +1,15 @@
 package cart.gui2;
 
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.JPanel;
 
-public class CartiPanel extends JPanel
-{
+public class CartiPanel extends JPanel {
 	private static final long serialVersionUID = 6585392843171261529L;
 	private int cellHeight;
 	private int cellWidth;
@@ -41,43 +36,45 @@ public class CartiPanel extends JPanel
 		colourLocs(clusteredLocs, 120, 0, 0);
 		invalidate();
 	}
-	
-	// removes colour from locations no longer selected, adds colour to newly selected locations
+
+	// removes colour from locations no longer selected, adds colour to newly
+	// selected locations
 	public void updateSelected(Set<Integer> newLocs) {
 		// locations to decolour = copy(selectedLocs) - newLocs
 		Set<Integer> locsToDeColour = new HashSet<Integer>(selectedLocs); // copy
 		locsToDeColour.removeAll(newLocs); // - newLocs
 		deColourLocs(locsToDeColour, 0, 120, 0);
-		
+
 		// locations to colour = newLocs - selectedLocs
 		newLocs.removeAll(selectedLocs); // - selectedLocs
 		colourLocs(newLocs, 0, 120, 0);
-		
+
 		// selectedLocs = selectedLocs - locsToDecolour + newLocs
 		selectedLocs.removeAll(locsToDeColour);
 		selectedLocs.addAll(newLocs);
-		
+
 		invalidate();
 	}
-	
-	// removes colour from locations no longer clustered, adds colour to newly clustered locations
+
+	// removes colour from locations no longer clustered, adds colour to newly
+	// clustered locations
 	public void updateClustered(Set<Integer> newLocs) {
 		// locations to decolour = copy(clusteredLocs) - newLocs
 		Set<Integer> locsToDeColour = new HashSet<Integer>(clusteredLocs); // copy
 		locsToDeColour.removeAll(newLocs); // - newLocs
 		deColourLocs(locsToDeColour, 120, 0, 0);
-		
+
 		// locations to colour = newLocs - clusteredLocs
 		newLocs.removeAll(clusteredLocs); // - clusteredLocs
 		colourLocs(newLocs, 120, 0, 0);
-		
+
 		// clusteredLocs = clusteredLocs - locsToDecolour + newLocs
 		clusteredLocs.removeAll(locsToDeColour);
 		clusteredLocs.addAll(newLocs);
-		
+
 		invalidate();
 	}
-	
+
 	public void clearSavedLocs() {
 		selectedLocs.clear();
 		clusteredLocs.clear();
@@ -112,19 +109,19 @@ public class CartiPanel extends JPanel
 			}
 			y += cellHeight;
 		}
-		
+
 		// add horizontal indication lines
-		for (int i = 0; i < matrix[0].length; i += 100)
-		{
+		for (int i = 0; i < matrix[0].length; i += 100) {
 			g.setColor(Color.BLACK);
-			g.drawLine(i * cellWidth, matrix.length * cellHeight, i * cellWidth, (matrix.length * cellHeight) +10);
+			g.drawLine(i * cellWidth, matrix.length * cellHeight,
+					i * cellWidth, (matrix.length * cellHeight) + 10);
 		}
 
-		//add vertical indication lines 
-		for (int i = 0; i < matrix.length; i += 100)
-		{
+		// add vertical indication lines
+		for (int i = 0; i < matrix.length; i += 100) {
 			g.setColor(Color.BLACK);
-			g.drawLine(matrix[0].length * cellWidth, i * cellHeight, (matrix[0].length * cellWidth) + 10, i * cellHeight);
+			g.drawLine(matrix[0].length * cellWidth, i * cellHeight,
+					(matrix[0].length * cellWidth) + 10, i * cellHeight);
 		}
 	}
 
@@ -136,27 +133,23 @@ public class CartiPanel extends JPanel
 			image[0][0][2] = 0;
 			return;
 		}
-		
-		if (image == null)
-		{
+
+		if (image == null) {
 			image = new int[matrix.length][matrix[0].length][3];
 		} else if (image.length != matrix.length
-				|| image[0].length != matrix[0].length)
-		{
+				|| image[0].length != matrix[0].length) {
 			image = new int[matrix.length][matrix[0].length][3];
 		}
 
-		for (int i = 0; i < matrix.length; i++)
-		{
-			for (int j = 0; j < matrix[i].length; j++)
-			{
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[i].length; j++) {
 				image[i][j][0] = matrix[i][j] * 80;
 				image[i][j][1] = matrix[i][j] * 80;
 				image[i][j][2] = matrix[i][j] * 80;
 			}
 		}
 	}
-	
+
 	// colour locations
 	private void colourLocs(Set<Integer> locs, int red, int green, int blue) {
 		for (int col : locs) {
@@ -165,9 +158,9 @@ public class CartiPanel extends JPanel
 				image[row][col][1] += green;
 				image[row][col][2] += blue;
 			}
-		}	
+		}
 	}
-	
+
 	// decolour locations
 	private void deColourLocs(Set<Integer> locs, int red, int green, int blue) {
 		for (int col : locs) {
@@ -176,17 +169,16 @@ public class CartiPanel extends JPanel
 				image[row][col][1] -= green;
 				image[row][col][2] -= blue;
 			}
-		}			
+		}
 	}
-	
-	private void setCellSize()
-	{
+
+	private void setCellSize() {
 		if (matrix.length == 0) {
 			cellWidth = 600;
 			cellHeight = 600;
 			return;
 		}
-		
+
 		int width = this.getWidth();
 		int height = this.getHeight();
 
@@ -194,13 +186,12 @@ public class CartiPanel extends JPanel
 		cellHeight = Math.max(1, height / matrix.length);
 	}
 
-	public int[] getCells(int x1, int x2)
-	{
+	public int[] getCells(int x1, int x2) {
 		int start = x1 / cellWidth;
 		int end = x2 / cellWidth + 1;
 		return new int[] { start, end };
 	}
-	
+
 	public int getCellCount() {
 		return matrix.length;
 	}
