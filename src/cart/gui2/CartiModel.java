@@ -37,8 +37,8 @@ public class CartiModel {
 	private Set<Integer> selecteds;
 	private Map<Integer, Cluster> clustersMap;
 	private Set<Integer> clustersToShow;
-	private Map<Integer, Integer>[] objId2LocMaps;
-	private Map<Integer, Integer>[] loc2ObjIdMaps;
+	private int[][] objId2LocMaps;
+	private int[][] loc2ObjIdMaps;
 	private Stack<Memento> savedStates;
 
 	public void init(final String filePath, int k, int orderDim) {
@@ -73,9 +73,32 @@ public class CartiModel {
 		updateCartLists();
 	}
 
+	// updates the id2loc and loc2id maps when filtereds has changed
+	private void updateMaps() {
+		initMaps();
+
+		for (int dimId = 0; dimId < numDims; dimId++) {
+			int[] loc2id = new int[loc2ObjIdMaps[dimId].length
+					- filtereds.size()];
+
+			int putLoc = 0;
+			for (int loc = 0; loc < loc2ObjIdMaps[dimId].length; loc++) {
+				if (!filtereds.contains(loc2ObjIdMaps[dimId][loc])) {
+					loc2id[putLoc] = loc2ObjIdMaps[dimId][loc];
+					objId2LocMaps[dimId][loc2ObjIdMaps[dimId][loc]] = putLoc;
+					putLoc++;
+				} else {
+					objId2LocMaps[dimId][loc2ObjIdMaps[dimId][loc]] = -1;
+				}
+			}
+
+			loc2ObjIdMaps[dimId] = loc2id;
+		}
+	}
+
 	// cartlists[dimId][objId] is a list containing the objIds in the cart of
 	// the given object in the given dimension
-	// filtered objects are not added to the carts!
+	// filtered objects are not added to the carts
 	private void updateCartLists() {
 		cartiDb = new CartifyDbInMemory(filePath, k);
 		cartiDb.cartify();
@@ -104,37 +127,30 @@ public class CartiModel {
 	}
 
 	private void initMaps() {
-		objId2LocMaps = new Map[numDims];
-		loc2ObjIdMaps = new Map[numDims];
+		objId2LocMaps = new int[numDims][];
+		loc2ObjIdMaps = new int[numDims][];
 
 		for (int dimId = 0; dimId < numDims; dimId++) {
-			int[] objId2LocMap = MaximalMinerCombiner.getId2Ord(getOrd2Id(
+			objId2LocMaps[dimId] = MaximalMinerCombiner.getId2Ord(getOrd2Id(
 					origData, dimId));
 
-			objId2LocMaps[dimId] = new HashMap<Integer, Integer>(
-					objId2LocMap.length);
-			loc2ObjIdMaps[dimId] = new HashMap<Integer, Integer>(
-					objId2LocMap.length);
-			for (int i = 0; i < objId2LocMap.length; i++) {
-				objId2LocMaps[dimId].put(i, objId2LocMap[i]);
-				loc2ObjIdMaps[dimId].put(objId2LocMap[i], i);
+			loc2ObjIdMaps[dimId] = new int[objId2LocMaps[dimId].length];
+			for (int i = 0; i < objId2LocMaps[dimId].length; i++) {
+				loc2ObjIdMaps[dimId][objId2LocMaps[dimId][i]] = i;
 			}
 		}
 	}
 
 	public int[][] getMatrixToShow() {
-		Map<Integer, Integer> id2LocMap = getObjId2LocMap(orderDim);
-		Map<Integer, Integer> loc2IdMap = getLoc2ObjIdMap(orderDim);
-
-		int[][] matrixToShow = new int[loc2IdMap.size()][loc2IdMap.size()];
+		int[][] matrixToShow = new int[loc2ObjIdMaps[orderDim].length][loc2ObjIdMaps[orderDim].length];
 
 		// loop over each row
-		for (int loc = 0; loc < loc2IdMap.size(); loc++) {
+		for (int loc = 0; loc < loc2ObjIdMaps[orderDim].length; loc++) {
 			// the cart containing ids to show on this row
-			List<Integer> cart = cartLists[orderDim][loc2IdMap.get(loc)];
+			List<Integer> cart = cartLists[orderDim][loc2ObjIdMaps[orderDim][loc]];
 
 			for (int id : cart) {
-				matrixToShow[loc][id2LocMap.get(id)] = 1;
+				matrixToShow[loc][objId2LocMaps[orderDim][id]] = 1;
 			}
 		}
 
@@ -149,56 +165,13 @@ public class CartiModel {
 		return dims;
 	}
 
-	// returns the objectId 2 location map for a given dimension
-	private Map<Integer, Integer> getObjId2LocMap(int dim) {
-		if (filtereds.size() == 0) {
-			return objId2LocMaps[dim];
-		}
-
-		// account for filtereds
-		Map<Integer, Integer> loc2IdMap = getLoc2ObjIdMap(dim);
-		Map<Integer, Integer> id2LocMap = new HashMap<Integer, Integer>(
-				objId2LocMaps[dim].size() - filtereds.size());
-
-		for (int loc : loc2IdMap.keySet()) {
-			id2LocMap.put(loc2IdMap.get(loc), loc);
-		}
-
-		return id2LocMap;
-	}
-
-	// TODO(?) store filteredMaps and only recalculate when filtereds change
-	// returns the location 2 objectId map for a given dimension
-	private Map<Integer, Integer> getLoc2ObjIdMap(int dim) {
-		if (filtereds.size() == 0) {
-			return loc2ObjIdMaps[dim];
-		}
-
-		// account for filtereds
-		int putLoc = 0;
-		Map<Integer, Integer> loc2IdMap = new HashMap<Integer, Integer>(
-				loc2ObjIdMaps[dim].size() - filtereds.size());
-
-		for (int loc = 0; loc < loc2ObjIdMaps[dim].size(); loc++) {
-			int id = loc2ObjIdMaps[dim].get(loc);
-
-			if (!filtereds.contains(id)) {
-				loc2IdMap.put(putLoc, id);
-				putLoc++;
-			}
-		}
-
-		return loc2IdMap;
-	}
-
 	// returns a list of all object Ids except those which are filtered, ordered
 	// for a given dimension
 	public List<Integer> getOrderedObjList() {
 		List<Integer> orderedObjs = new ArrayList<Integer>();
 
-		Map<Integer, Integer> loc2ObjIdMap = getLoc2ObjIdMap(orderDim);
-		for (int i = 0; i < loc2ObjIdMap.size(); i++) {
-			orderedObjs.add(loc2ObjIdMap.get(i));
+		for (int i = 0; i < loc2ObjIdMaps[orderDim].length; i++) {
+			orderedObjs.add(loc2ObjIdMaps[orderDim][i]);
 		}
 
 		return orderedObjs;
@@ -330,13 +303,11 @@ public class CartiModel {
 		int[] medianDists = new int[dims.size()];
 
 		for (int dimIx = 0; dimIx < dims.size(); dimIx++) {
-			Map<Integer, Integer> id2LocMap = getObjId2LocMap(dimIx);
-
 			// calculate median location
 			int[] locs = new int[objIds.size()];
 			int i = 0;
 			for (int id : objIds) {
-				locs[i] = id2LocMap.get(id);
+				locs[i] = objId2LocMaps[dimIx][id];
 				i++;
 			}
 			Arrays.sort(locs);
@@ -375,10 +346,9 @@ public class CartiModel {
 
 	public Set<Integer> getSelectedLocs() {
 		Set<Integer> locs = new HashSet<Integer>();
-		Map<Integer, Integer> id2Loc = getObjId2LocMap(orderDim);
 
 		for (int id : selecteds) {
-			locs.add(id2Loc.get(id));
+			locs.add(objId2LocMaps[orderDim][id]);
 		}
 
 		return locs;
@@ -388,9 +358,8 @@ public class CartiModel {
 			boolean intersect, boolean add) {
 		Set<Integer> selectedIds = new HashSet<Integer>();
 
-		Map<Integer, Integer> loc2IdMap = getLoc2ObjIdMap(orderDim);
 		for (int loc : selectedLocs) {
-			selectedIds.add(loc2IdMap.get(loc));
+			selectedIds.add(loc2ObjIdMaps[orderDim][loc]);
 		}
 
 		// depending on selection mode, set/intersect/add to the selecteds
@@ -427,6 +396,7 @@ public class CartiModel {
 	public void filterSelecteds() {
 		this.savedStates.push(new Memento(selecteds, filtereds));
 		this.filtereds.addAll(selecteds);
+		updateMaps();
 		updateCartLists();
 
 		// remove filtered objects from clusters
@@ -442,6 +412,7 @@ public class CartiModel {
 		Memento state = savedStates.pop();
 		this.selecteds = state.getSelecteds();
 		this.filtereds = state.getFiltereds();
+		updateMaps();
 		updateCartLists();
 	}
 
@@ -452,6 +423,7 @@ public class CartiModel {
 	public void addFiltereds(Set<Integer> toFilter) {
 		this.savedStates.push(new Memento(selecteds, filtereds));
 		this.filtereds.addAll(toFilter);
+		updateMaps();
 		updateCartLists();
 
 		// remove filtered objects from clusters
@@ -466,12 +438,14 @@ public class CartiModel {
 	public void removeFiltereds(Set<Integer> toRemove) {
 		this.savedStates.push(new Memento(selecteds, filtereds));
 		this.filtereds.removeAll(toRemove);
+		updateMaps();
 		updateCartLists();
 	}
 
 	public void clearFiltereds() {
 		this.savedStates.push(new Memento(selecteds, filtereds));
 		this.filtereds.clear();
+		updateMaps();
 		updateCartLists();
 	}
 
@@ -481,11 +455,10 @@ public class CartiModel {
 
 	public Set<Integer> getClustersToShowLocs() {
 		Set<Integer> locs = new HashSet<Integer>();
-		Map<Integer, Integer> id2Loc = getObjId2LocMap(orderDim);
 
 		for (int clusterId : clustersToShow) {
 			for (int objId : clustersMap.get(clusterId).getObjects()) {
-				locs.add(id2Loc.get(objId));
+				locs.add(objId2LocMaps[orderDim][objId]);
 			}
 		}
 
