@@ -102,32 +102,39 @@ public class Stats {
         	columnNames.add("Dimension");
         } 
  
-        public int getColumnCount() {
+        @Override
+		public int getColumnCount() {
             return data.size();
         }
  
-        public int getRowCount() {
+        @Override
+		public int getRowCount() {
             return data.get(0).length;
         }
  
-        public String getColumnName(int col) {
+        @Override
+		public String getColumnName(int col) {
             return columnNames.get(col);
         }
  
-        public Object getValueAt(int row, int col) {
+        @Override
+		public Object getValueAt(int row, int col) {
         	Object[] objects = data.get(col);
             return objects[row];
         }
  
-        public Class getColumnClass(int c) {
+        @Override
+		public Class getColumnClass(int c) {
             return getValueAt(0, c).getClass();
         }
  
-        public boolean isCellEditable(int row, int col) {
+        @Override
+		public boolean isCellEditable(int row, int col) {
             return false;
         }
  
-        public void setValueAt(Object value, int row, int col) {
+        @Override
+		public void setValueAt(Object value, int row, int col) {
         	Object[] objects = data.get(col);
         	objects[row] = value;
             fireTableCellUpdated(row, col);

@@ -345,6 +345,7 @@ public class CartiController {
 	private ActionListener createButtonsListener() {
 		ActionListener listener = new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand() == SelOptions.CLEAR) {
 					manSelectedsClear();
@@ -388,6 +389,7 @@ public class CartiController {
 	private ListSelectionListener createSelOptionsListListener() {
 		ListSelectionListener listener = new ListSelectionListener() {
 
+			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting() == false
 						&& (cartiView.selOptionsListenerShouldListen())) {
@@ -406,6 +408,7 @@ public class CartiController {
 
 			private int startX;
 
+			@Override
 			public void mousePressed(MouseEvent e) {
 				// only left click
 				if (e.getButton() != MouseEvent.BUTTON1) {
@@ -415,6 +418,7 @@ public class CartiController {
 				startX = e.getX();
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				// only left click
 				if (e.getButton() != MouseEvent.BUTTON1) {
@@ -443,12 +447,15 @@ public class CartiController {
 			}
 
 			// do nothing for these
+			@Override
 			public void mouseEntered(MouseEvent e) {
 			}
 
+			@Override
 			public void mouseExited(MouseEvent e) {
 			}
 
+			@Override
 			public void mouseClicked(MouseEvent e) {
 			}
 		};
@@ -461,6 +468,7 @@ public class CartiController {
 	private TableModelListener createClusterTableModelListener() {
 		TableModelListener listener = new TableModelListener() {
 
+			@Override
 			public void tableChanged(TableModelEvent e) {
 				if (cartiView.clusterInfoListenerShouldListen()) {
 					int row = e.getFirstRow();
@@ -487,6 +495,7 @@ public class CartiController {
 
 			private int previousVal = -1;
 
+			@Override
 			public void stateChanged(ChangeEvent e) {
 				JSlider slider = (JSlider) e.getSource();
 
