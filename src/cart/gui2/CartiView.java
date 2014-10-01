@@ -40,6 +40,7 @@ public class CartiView {
 	private CartiPanel cartiPanel;
 	private SelOptions selectionOptions;
 	private FilterOptions filteringOptions;
+	private DistOptions distanceOptions;
 	private Stats selectedsStats;
 	private JDialog selectedsStatsDialog;
 	private ClusterInfo clusterInfo;
@@ -65,7 +66,9 @@ public class CartiView {
 		// visualPanel contains the visual representation
 		JPanel visualPanel = createVerticalBoxPanel(700, 700);
 		// controlsPanel contains the buttons/sliders/...
-		JPanel controlsPanel = createVerticalBoxPanel(300, 700);
+		JPanel controlsPanel = createHorizontalBoxPanel(600, 700);
+		JPanel controlsPanelLeft = createVerticalBoxPanel(300, 700);
+		JPanel controlsPanelRight = createVerticalBoxPanel(300, 700);
 
 		// VISUAL GOES HERE
 		// add cartiPanel
@@ -75,31 +78,33 @@ public class CartiView {
 		visualPanel.add(sPane);
 
 		// CONTROLS GO HERE
+		// CONTROLS PANEL LEFT
 		// add the selection options panel
 		selectionOptions = new SelOptions();
 		selectionOptions.init(orderedObjs);
 
-		controlsPanel.add(selectionOptions.getPanel());
-		controlsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		controlsPanelLeft.add(selectionOptions.getPanel());
+		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add the filtering options panel
 		filteringOptions = new FilterOptions();
 		filteringOptions.init();
 
-		controlsPanel.add(filteringOptions.getPanel());
-		controlsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		controlsPanelLeft.add(filteringOptions.getPanel());
+		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add button for clustering
 		clusterButton = new JButton("Cluster selected");
 		clusterButton.setActionCommand(CLUSTER);
 		clusterButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		controlsPanel.add(clusterButton);
-		controlsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		controlsPanelLeft.add(clusterButton);
+		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// mining panel
-		JPanel minePanel = createHorizontalBoxPanel(150, 30);
+		JPanel minePanel = createHorizontalBoxPanel(150, 50);
 		minePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		minePanel.setBorder(BorderFactory.createTitledBorder("Mining"));
 
 		// add button for mining
 		mineButton = new JButton("Mine");
@@ -115,29 +120,45 @@ public class CartiView {
 		minLenField.setMaximumSize(new Dimension(50, 25));
 		minePanel.add(minLenField);
 
-		controlsPanel.add(minePanel);
-		controlsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		controlsPanelLeft.add(minePanel);
+		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add slider for k
 		JLabel kSliderLabel = new JLabel("k");
 		kSliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		controlsPanel.add(kSliderLabel);
+		controlsPanelLeft.add(kSliderLabel);
 		kSlider = createSlider(1, maxK);
-		controlsPanel.add(kSlider);
-		controlsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		controlsPanelLeft.add(kSlider);
+		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 20)));
 
 		// add slider for order_1
 		JLabel order_1SliderLabel = new JLabel("order_1");
 		order_1SliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		controlsPanel.add(order_1SliderLabel);
+		controlsPanelLeft.add(order_1SliderLabel);
 		orderSlider = createSlider(0, dims.size() - 1);
-		controlsPanel.add(orderSlider);
-		controlsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		controlsPanelLeft.add(orderSlider);
+		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 20)));
+
+		// CONTROLS PANEL RIGHT
+		// add the distance measure options panel
+		distanceOptions = new DistOptions();
+		distanceOptions.init(dims);
+
+		controlsPanelRight.add(distanceOptions.getPanel());
+		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 20)));
+
+		// add left and right controls panels to main controls panel
+		controlsPanel.add(controlsPanelLeft);
+		controlsPanelLeft.setAlignmentY(Component.TOP_ALIGNMENT);
+
+		controlsPanel.add(controlsPanelRight);
+		controlsPanelRight.setAlignmentY(Component.TOP_ALIGNMENT);
 
 		// add visual and controls panel to the frame
 		theFrame.add(visualPanel, BorderLayout.CENTER);
 		theFrame.add(controlsPanel, BorderLayout.LINE_END);
 
+		// DIALOGS
 		// initialise selecteds stats dialog
 		selectedsStats = new Stats();
 		selectedsStats.init(dims);
@@ -161,6 +182,7 @@ public class CartiView {
 		selectionOptions.addButtonsListener(buttonsListener);
 		filteringOptions.addButtonsListener(buttonsListener);
 		clusterInfo.addButtonsListener(buttonsListener);
+		distanceOptions.addButtonsListener(buttonsListener);
 	}
 
 	public void addSelOptionsListListener(
@@ -180,6 +202,10 @@ public class CartiView {
 	public void addSliderListener(ChangeListener sliderListener) {
 		kSlider.addChangeListener(sliderListener);
 		orderSlider.addChangeListener(sliderListener);
+	}
+
+	public void addDistOptionsBoxListener(ActionListener distOptionsBoxListener) {
+		distanceOptions.addBoxListener(distOptionsBoxListener);
 	}
 
 	// creates a slider with given minimum/maximum values
@@ -266,6 +292,10 @@ public class CartiView {
 		clusterInfoListenerShouldListen = true;
 	}
 
+	public void addDistMeasure(boolean isEucl, boolean isCos, Set<Integer> dims) {
+		distanceOptions.addDistMeasure(isEucl, isCos, dims);
+	}
+
 	public JFrame getFrame() {
 		return theFrame;
 	}
@@ -326,5 +356,9 @@ public class CartiView {
 
 	public JSlider getOrderSlider() {
 		return orderSlider;
+	}
+
+	public DistOptions getDistanceOptions() {
+		return distanceOptions;
 	}
 }

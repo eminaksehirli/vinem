@@ -31,7 +31,7 @@ public class SelOptions {
 
 	public void init(List<Integer> orderedObjs) {
 		// the main panel
-		optionsPanel = CartiView.createVerticalBoxPanel(300, 350);
+		optionsPanel = CartiView.createVerticalBoxPanel(300, 300);
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("Selection"));
 
 		// list of selected/unselected objects
@@ -41,12 +41,12 @@ public class SelOptions {
 		}
 		list = new JList<Integer>(listModel);
 		JScrollPane listPane = new JScrollPane(list);
-		listPane.setPreferredSize(new Dimension(200, 250));
-		listPane.setMaximumSize(new Dimension(200, 250));
+		listPane.setPreferredSize(new Dimension(200, 200));
+		listPane.setMaximumSize(new Dimension(200, 200));
 		listPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		optionsPanel.add(listPane);
 
-		// add remove/clear/add buttons
+		// add clear button
 		clear = new JButton("Clear Selection");
 		clear.setActionCommand(CLEAR);
 		clear.setAlignmentX(Component.CENTER_ALIGNMENT);

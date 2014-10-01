@@ -50,6 +50,7 @@ public class CartiController {
 		cartiView
 				.addClusterTableModelListener(createClusterTableModelListener());
 		cartiView.addSliderListener(createSliderListener());
+		cartiView.addDistOptionsBoxListener(createDistOptionsBoxListener());
 
 		maximer = new ItemsetMaximalMinerSupLen(filePath);
 
@@ -214,7 +215,15 @@ public class CartiController {
 		cartiView.updateClusterInfo(clustersMap, clustersToShow);
 	}
 
-	public void addSelectedToClusters(Set<Integer> clusterIds) {
+	public void addSelectedToClusters() {
+		Set<Integer> clusterIds = cartiView.getClusterInfo()
+				.getSelectedRowsClusterIds();
+
+		// if the user has not selected a cluster
+		if (clusterIds.isEmpty()) {
+			return;
+		}
+
 		for (int id : clusterIds) {
 			cartiModel.addSelectedsToCluster(id);
 		}
@@ -235,7 +244,15 @@ public class CartiController {
 		}
 	}
 
-	public void removeSelectedFromClusters(Set<Integer> clusterIds) {
+	public void removeSelectedFromClusters() {
+		Set<Integer> clusterIds = cartiView.getClusterInfo()
+				.getSelectedRowsClusterIds();
+
+		// if the user has not selected a cluster
+		if (clusterIds.isEmpty()) {
+			return;
+		}
+
 		for (int id : clusterIds) {
 			cartiModel.removeSelectedsFromCluster(id);
 		}
@@ -256,7 +273,15 @@ public class CartiController {
 		}
 	}
 
-	public void deleteClusters(Set<Integer> clusterIds) {
+	public void deleteClusters() {
+		Set<Integer> clusterIds = cartiView.getClusterInfo()
+				.getSelectedRowsClusterIds();
+
+		// if the user has not selected a cluster
+		if (clusterIds.isEmpty()) {
+			return;
+		}
+
 		boolean wasVisible = false;
 		for (int id : clusterIds) {
 			if (cartiModel.clusterIsVisible(id)) {
@@ -278,7 +303,15 @@ public class CartiController {
 		}
 	}
 
-	public void selectClusters(Set<Integer> clusterIds) {
+	public void selectClusters() {
+		Set<Integer> clusterIds = cartiView.getClusterInfo()
+				.getSelectedRowsClusterIds();
+
+		// if the user has not selected a cluster
+		if (clusterIds.isEmpty()) {
+			return;
+		}
+
 		cartiModel.selectClusters(clusterIds);
 
 		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
@@ -339,6 +372,32 @@ public class CartiController {
 		cartiView.updateClusterInfo(clustersMap, clustersToShow);
 	}
 
+	// TODO
+	public void addDistMeasure() {
+		boolean isEucl = cartiView.getDistanceOptions().distModeIsEuclidian();
+		boolean isCos = cartiView.getDistanceOptions().distModeIsCosine();
+		Set<Integer> dims = cartiView.getDistanceOptions().getSelectedDims();
+
+		String output = "Adding ";
+		if (isEucl) {
+			output += "euclidian";
+		} else if (isCos) {
+			output += "cosine";
+		}
+
+		output += " distance measure for dims: " + dims;
+
+		System.out.println(output);
+
+		cartiView.addDistMeasure(isEucl, isCos, dims);
+	}
+
+	// TODO
+	public void selectDistMeasure() {
+		System.out.println("Selected dist measure: "
+				+ cartiView.getDistanceOptions().getSelectedMeasure());
+	}
+
 	// LISTENERS
 
 	// listens to all the buttons
@@ -355,29 +414,20 @@ public class CartiController {
 					undoFiltering();
 				} else if (e.getActionCommand() == FilterOptions.FILTER) {
 					filterSelecteds();
+				} else if (e.getActionCommand() == DistOptions.ADD) {
+					addDistMeasure();
 				} else if (e.getActionCommand() == CartiView.MINE) {
 					mine();
 				} else if (e.getActionCommand() == CartiView.CLUSTER) {
 					clusterSelected();
-				}
-
-				// only get here if one of the ClusterInfo buttons was pressed
-				Set<Integer> clusterIds = cartiView.getClusterInfo()
-						.getSelectedRowsClusterIds();
-
-				// if the user has not selected a cluster
-				if (clusterIds.isEmpty()) {
-					return;
-				}
-
-				if (e.getActionCommand() == ClusterInfo.ADD) {
-					addSelectedToClusters(clusterIds);
+				} else if (e.getActionCommand() == ClusterInfo.ADD) {
+					addSelectedToClusters();
 				} else if (e.getActionCommand() == ClusterInfo.REMOVE) {
-					removeSelectedFromClusters(clusterIds);
+					removeSelectedFromClusters();
 				} else if (e.getActionCommand() == ClusterInfo.DELETE) {
-					deleteClusters(clusterIds);
+					deleteClusters();
 				} else if (e.getActionCommand() == ClusterInfo.SELECT) {
-					selectClusters(clusterIds);
+					selectClusters();
 				}
 			}
 		};
@@ -510,6 +560,19 @@ public class CartiController {
 						orderSliderChanged();
 					}
 				}
+			}
+		};
+
+		return listener;
+	}
+
+	// listens to DistOptions combo box selection
+	private ActionListener createDistOptionsBoxListener() {
+		ActionListener listener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectDistMeasure();
 			}
 		};
 
