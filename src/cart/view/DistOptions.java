@@ -1,4 +1,4 @@
-package cart.gui2;
+package cart.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -20,7 +20,7 @@ import javax.swing.JScrollPane;
 
 public class DistOptions {
 
-	final static String ADD = "DistOptions.Add";
+	public final static String ADD = "DistOptions.Add";
 
 	private JPanel distPanel;
 	private JButton add;

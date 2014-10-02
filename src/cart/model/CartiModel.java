@@ -1,4 +1,4 @@
-package cart.gui2;
+package cart.model;
 
 import static cart.maximizer.MaximalMinerCombiner.getOrd2Id;
 
@@ -19,6 +19,7 @@ import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
 import cart.cartifier.CartifyDbInMemory;
 import cart.cartifier.Pair;
+import cart.gui2.Cluster;
 import cart.maximizer.MaximalMinerCombiner;
 import cart.maximizer.OneDCartifier;
 

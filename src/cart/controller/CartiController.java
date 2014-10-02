@@ -1,4 +1,4 @@
-package cart.gui2;
+package cart.controller;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -20,8 +20,15 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import cart.gui2.Cluster;
 import cart.maximizer.Freq;
 import cart.maximizer.ItemsetMaximalMinerSupLen;
+import cart.model.CartiModel;
+import cart.view.CartiView;
+import cart.view.ClusterInfo;
+import cart.view.DistOptions;
+import cart.view.FilterOptions;
+import cart.view.SelOptions;
 
 public class CartiController {
 	private CartiModel cartiModel;

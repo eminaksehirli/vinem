@@ -1,4 +1,4 @@
-package cart.gui2;
+package cart.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -18,12 +18,14 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import cart.gui2.Cluster;
+
 public class ClusterInfo {
 
-	final static String ADD = "ClusterInfo.Add";
-	final static String REMOVE = "ClusterInfo.Remove";
-	final static String DELETE = "ClusterInfo.Delete";
-	final static String SELECT = "ClusterInfo.Select";
+	public final static String ADD = "ClusterInfo.Add";
+	public final static String REMOVE = "ClusterInfo.Remove";
+	public final static String DELETE = "ClusterInfo.Delete";
+	public final static String SELECT = "ClusterInfo.Select";
 
 	private JPanel infoPanel;
 	private JTable table;

@@ -1,4 +1,4 @@
-package cart.gui2;
+package cart.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -19,7 +19,7 @@ import javax.swing.event.ListSelectionListener;
 
 public class SelOptions {
 
-	final static String CLEAR = "SelOptions.Clear";
+	public final static String CLEAR = "SelOptions.Clear";
 
 	private JPanel optionsPanel;
 	private JList<Integer> list;

@@ -1,4 +1,4 @@
-package cart.gui2;
+package cart.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -11,9 +11,9 @@ import javax.swing.JPanel;
 
 public class FilterOptions {
 
-	final static String UNDO = "FilterOptions.Undo";
-	final static String FILTER = "FilterOptions.Filter";
-	final static String CLEAR = "FilterOptions.Clear";
+	public final static String UNDO = "FilterOptions.Undo";
+	public final static String FILTER = "FilterOptions.Filter";
+	public final static String CLEAR = "FilterOptions.Clear";
 
 	private JPanel optionsPanel;
 	private JButton undo;

@@ -1,5 +1,9 @@
 package cart.gui2;
 
+import cart.controller.CartiController;
+import cart.model.CartiModel;
+import cart.view.CartiView;
+
 public class CartiMain {
 
 	public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package cart.gui2;
+package cart.view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -25,10 +25,12 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 
+import cart.gui2.Cluster;
+
 public class CartiView {
 
-	final static String CLUSTER = "CartiView.Cluster";
-	final static String MINE = "CartiView.Mine";
+	public final static String CLUSTER = "CartiView.Cluster";
+	public final static String MINE = "CartiView.Mine";
 
 	private JFrame theFrame;
 

@@ -1,4 +1,4 @@
-package cart.gui2;
+package cart.view;
 
 import java.awt.FlowLayout;
 import java.util.ArrayList;
