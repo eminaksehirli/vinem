@@ -64,7 +64,7 @@ public class CartiView {
 	}
 
 	public void init(List<Integer> orderedObjs, Set<Integer> dims, int maxK,
-			int[][] matrixToShow) {
+			int[][] matrixToShow, List<String> distMeasures) {
 		// visualPanel contains the visual representation
 		JPanel visualPanel = createVerticalBoxPanel(700, 700);
 		// controlsPanel contains the buttons/sliders/...
@@ -144,7 +144,7 @@ public class CartiView {
 		// CONTROLS PANEL RIGHT
 		// add the distance measure options panel
 		distanceOptions = new DistOptions();
-		distanceOptions.init(dims);
+		distanceOptions.init(dims, distMeasures);
 
 		controlsPanelRight.add(distanceOptions.getPanel());
 		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -294,8 +294,8 @@ public class CartiView {
 		clusterInfoListenerShouldListen = true;
 	}
 
-	public void addDistMeasure(boolean isEucl, boolean isCos, Set<Integer> dims) {
-		distanceOptions.addDistMeasure(isEucl, isCos, dims);
+	public void addDistMeasure(String distMeasure) {
+		distanceOptions.addDistMeasure(distMeasure);
 	}
 
 	public JFrame getFrame() {

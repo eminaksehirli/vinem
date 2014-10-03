@@ -17,9 +17,10 @@ import java.util.Stack;
 
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
-import cart.cartifier.CartifyDbInMemory;
 import cart.cartifier.Pair;
 import cart.gui2.Cluster;
+import cart.gui2.DistMeasure;
+import cart.gui2.OneDimDistMeasure;
 import cart.maximizer.MaximalMinerCombiner;
 import cart.maximizer.OneDCartifier;
 
@@ -32,7 +33,7 @@ public class CartiModel {
 	private int clusterIdCount;
 	private Set<Integer> dims;
 	private Pair[][] origData;
-	private CartifyDbInMemory cartiDb;
+	private MyCartifyDbInMemory cartiDb;
 	private List<Integer>[][] cartLists;
 	private Set<Integer> filtereds;
 	private Set<Integer> selecteds;
@@ -41,6 +42,8 @@ public class CartiModel {
 	private int[][] objId2LocMaps;
 	private int[][] loc2ObjIdMaps;
 	private Stack<Memento> savedStates;
+	private List<DistMeasure> distMeasures;
+	private int selectedDistMeasureId;
 
 	public void init(final String filePath, int k, int orderDim) {
 		this.filePath = filePath;
@@ -52,6 +55,8 @@ public class CartiModel {
 		this.savedStates = new Stack<Memento>();
 		this.clustersMap = new HashMap<Integer, Cluster>();
 		this.clustersToShow = new HashSet<Integer>();
+		this.distMeasures = new ArrayList<DistMeasure>();
+		this.selectedDistMeasureId = 0;
 
 		ArrayList<double[]> data;
 		try {
@@ -67,6 +72,9 @@ public class CartiModel {
 		dims = new HashSet<Integer>(numDims);
 		for (int i = 0; i < numDims; i++) {
 			dims.add(i);
+			Set<Integer> dimToAdd = new HashSet<Integer>();
+			dimToAdd.add(i);
+			distMeasures.add(new OneDimDistMeasure(dimToAdd));
 		}
 		dims = Collections.unmodifiableSet(dims);
 
@@ -101,26 +109,26 @@ public class CartiModel {
 	// the given object in the given dimension
 	// filtered objects are not added to the carts
 	private void updateCartLists() {
-		cartiDb = new CartifyDbInMemory(filePath, k);
+		cartiDb = new MyCartifyDbInMemory(filePath, k, distMeasures);
 		cartiDb.cartify();
 
 		// create new cart lists
-		cartLists = new List[numDims][numObjects];
-		for (int dimId = 0; dimId < numDims; dimId++) {
+		cartLists = new List[distMeasures.size()][numObjects];
+		for (int distMeasureId = 0; distMeasureId < distMeasures.size(); distMeasureId++) {
 			for (int objId = 0; objId < numObjects; objId++) {
-				cartLists[dimId][objId] = new ArrayList<Integer>();
+				cartLists[distMeasureId][objId] = new ArrayList<Integer>();
 			}
 		}
 
 		// fill the cart lists
 		PlainItemDB[] pDbs = cartiDb.getProjDbs();
-		for (int dimId = 0; dimId < pDbs.length; dimId++) {
-			PlainItemDB pDb = pDbs[dimId];
+		for (int distMeasureId = 0; distMeasureId < pDbs.length; distMeasureId++) {
+			PlainItemDB pDb = pDbs[distMeasureId];
 			for (PlainItem item : pDb) {
 				for (int objId = item.getTIDs().nextSetBit(0); objId >= 0; objId = item
 						.getTIDs().nextSetBit(objId + 1)) {
 					if (!filtereds.contains(item.getId())) {
-						cartLists[dimId][objId].add(item.getId());
+						cartLists[distMeasureId][objId].add(item.getId());
 					}
 				}
 			}
@@ -143,12 +151,13 @@ public class CartiModel {
 	}
 
 	public int[][] getMatrixToShow() {
-		int[][] matrixToShow = new int[loc2ObjIdMaps[orderDim].length][loc2ObjIdMaps[orderDim].length];
+		int[][] matrixToShow = new int[numObjects - filtereds.size()][numObjects
+				- filtereds.size()];
 
 		// loop over each row
-		for (int loc = 0; loc < loc2ObjIdMaps[orderDim].length; loc++) {
+		for (int loc = 0; loc < matrixToShow.length; loc++) {
 			// the cart containing ids to show on this row
-			List<Integer> cart = cartLists[orderDim][loc2ObjIdMaps[orderDim][loc]];
+			List<Integer> cart = cartLists[selectedDistMeasureId][loc2ObjIdMaps[orderDim][loc]];
 
 			for (int id : cart) {
 				matrixToShow[loc][objId2LocMaps[orderDim][id]] = 1;
@@ -176,6 +185,10 @@ public class CartiModel {
 		}
 
 		return orderedObjs;
+	}
+
+	public List<DistMeasure> getDistMeasures() {
+		return distMeasures;
 	}
 
 	// returns the support in each dimension of a given set of object Ids
@@ -535,6 +548,16 @@ public class CartiModel {
 
 	public void setOrderDim(int orderDim) {
 		this.orderDim = orderDim;
+	}
+
+	public void setSelectedDistMeasureId(int selectedDistMeasureId) {
+		this.selectedDistMeasureId = selectedDistMeasureId;
+	}
+
+	// TODO don't need to recalculate carts from other dist measures
+	public void addDistMeasure(DistMeasure distMeasure) {
+		distMeasures.add(distMeasure);
+		updateCartLists();
 	}
 
 	private static class Memento {

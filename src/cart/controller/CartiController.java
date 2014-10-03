@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,9 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import cart.gui2.Cluster;
+import cart.gui2.CosineDistMeasure;
+import cart.gui2.DistMeasure;
+import cart.gui2.EuclidianDistMeasure;
 import cart.maximizer.Freq;
 import cart.maximizer.ItemsetMaximalMinerSupLen;
 import cart.model.CartiModel;
@@ -49,8 +53,15 @@ public class CartiController {
 		Set<Integer> dims = cartiModel.getDims();
 		int[][] matrixToShow = cartiModel.getMatrixToShow();
 		List<Integer> orderedObjs = cartiModel.getOrderedObjList();
+		List<DistMeasure> distMeasures = cartiModel.getDistMeasures();
+		List<String> distMeasuresStringList = new ArrayList<String>();
 
-		cartiView.init(orderedObjs, dims, maxK, matrixToShow);
+		for (DistMeasure distMeasure : distMeasures) {
+			distMeasuresStringList.add(distMeasure.toString());
+		}
+
+		cartiView.init(orderedObjs, dims, maxK, matrixToShow,
+				distMeasuresStringList);
 		cartiView.addButtonsListener(createButtonsListener());
 		cartiView.addSelOptionsListListener(createSelOptionsListListener());
 		cartiView.addCartiPanelListener(createCartiPanelListener());
@@ -379,30 +390,34 @@ public class CartiController {
 		cartiView.updateClusterInfo(clustersMap, clustersToShow);
 	}
 
-	// TODO
 	public void addDistMeasure() {
 		boolean isEucl = cartiView.getDistanceOptions().distModeIsEuclidian();
 		boolean isCos = cartiView.getDistanceOptions().distModeIsCosine();
 		Set<Integer> dims = cartiView.getDistanceOptions().getSelectedDims();
 
-		String output = "Adding ";
+		DistMeasure distMeasure;
 		if (isEucl) {
-			output += "euclidian";
+			distMeasure = new EuclidianDistMeasure(dims);
 		} else if (isCos) {
-			output += "cosine";
+			distMeasure = new CosineDistMeasure(dims);
+		} else {
+			distMeasure = null;
 		}
 
-		output += " distance measure for dims: " + dims;
+		cartiModel.addDistMeasure(distMeasure);
 
-		System.out.println(output);
-
-		cartiView.addDistMeasure(isEucl, isCos, dims);
+		cartiView.addDistMeasure(distMeasure.toString());
 	}
 
-	// TODO
 	public void selectDistMeasure() {
-		System.out.println("Selected dist measure: "
-				+ cartiView.getDistanceOptions().getSelectedMeasure());
+		int selectedDistMeasureId = cartiView.getDistanceOptions()
+				.getSelectedMeasureId();
+
+		cartiModel.setSelectedDistMeasureId(selectedDistMeasureId);
+
+		int[][] matrixToShow = cartiModel.getMatrixToShow();
+		
+		cartiView.updateFigure(matrixToShow);
 	}
 
 	// LISTENERS

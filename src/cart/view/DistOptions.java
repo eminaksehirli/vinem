@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -30,7 +31,7 @@ public class DistOptions {
 	private JComboBox<String> cBox;
 	private DefaultComboBoxModel<String> cBoxModel;
 
-	public void init(Set<Integer> dimList) {
+	public void init(Set<Integer> dimList, List<String> distMeasures) {
 		// the main panel
 		distPanel = CartiView.createVerticalBoxPanel(300, 400);
 		distPanel.setBorder(BorderFactory
@@ -73,6 +74,9 @@ public class DistOptions {
 
 		// add measure combo box
 		cBoxModel = new DefaultComboBoxModel<String>();
+		for (String distMeasure : distMeasures) {
+			cBoxModel.addElement(distMeasure);
+		}
 		cBox = new JComboBox<String>(cBoxModel);
 		cBox.setAlignmentX(Component.CENTER_ALIGNMENT);
 		cBox.setPreferredSize(new Dimension(300, 40));
@@ -93,17 +97,8 @@ public class DistOptions {
 		return distPanel;
 	}
 
-	public void addDistMeasure(boolean isEucl, boolean isCos, Set<Integer> dims) {
-		String toAdd = "";
-		if (isEucl) {
-			toAdd += "Euclidian";
-		} else if (isCos) {
-			toAdd += "Cosine";
-		}
-
-		toAdd += ": " + dims;
-
-		cBoxModel.addElement(toAdd);
+	public void addDistMeasure(String distMeasure) {
+		cBoxModel.addElement(distMeasure);
 	}
 
 	// returns a set containing the dimensions which were selected by the user
@@ -122,7 +117,7 @@ public class DistOptions {
 		return distCos.isSelected();
 	}
 
-	public String getSelectedMeasure() {
-		return (String) cBox.getSelectedItem();
+	public int getSelectedMeasureId() {
+		return cBox.getSelectedIndex();
 	}
 }
