@@ -13,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,6 +36,7 @@ public class CartiView {
 	private JFrame theFrame;
 
 	private JSlider orderSlider;
+	private JCheckBox syncOrderSlider;
 	private JSlider kSlider;
 	private JButton clusterButton;
 	private JButton mineButton;
@@ -55,6 +57,11 @@ public class CartiView {
 	private boolean clusterInfoListenerShouldListen; // prevents cluster info
 														// table listener from
 														// listening while
+														// updating
+
+	private boolean distOptionsListenerShouldListen; // prevents the distance
+														// options box listener
+														// from listening while
 														// updating
 
 	public CartiView() {
@@ -139,7 +146,13 @@ public class CartiView {
 		controlsPanelLeft.add(order_1SliderLabel);
 		orderSlider = createSlider(0, dims.size() - 1);
 		controlsPanelLeft.add(orderSlider);
-		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 20)));
+		// controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 5)));
+
+		// add checkbox for syncing order_1 with distanceOptions
+		syncOrderSlider = new JCheckBox("sync with distance measures", true);
+		syncOrderSlider.setAlignmentX(Component.CENTER_ALIGNMENT);
+		controlsPanelLeft.add(syncOrderSlider);
+		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// CONTROLS PANEL RIGHT
 		// add the distance measure options panel
@@ -173,9 +186,10 @@ public class CartiView {
 		clusterInfoDialog = new JDialog(theFrame, "Clusters info");
 		clusterInfoDialog.add(clusterInfo.getInfoPanel());
 
-		// make sure the listSelectionListener is listening
+		// make sure all listeners are listening
 		selOptionsListenerShouldListen = true;
 		clusterInfoListenerShouldListen = true;
+		distOptionsListenerShouldListen = true;
 	}
 
 	public void addButtonsListener(ActionListener buttonsListener) {
@@ -293,6 +307,16 @@ public class CartiView {
 		}
 		clusterInfoListenerShouldListen = true;
 	}
+	
+	public void updateOrderSlider(int order) {
+		orderSlider.setValue(order);
+	}
+
+	public void updateSelectedDistMeasureId(int id) {
+		distOptionsListenerShouldListen = false;
+		distanceOptions.setSelectedMeasureId(id);
+		distOptionsListenerShouldListen = true;
+	}
 
 	public void addDistMeasure(String distMeasure) {
 		distanceOptions.addDistMeasure(distMeasure);
@@ -360,7 +384,15 @@ public class CartiView {
 		return orderSlider;
 	}
 
+	public boolean shouldSyncOrderSlider() {
+		return syncOrderSlider.isSelected();
+	}
+
 	public DistOptions getDistanceOptions() {
 		return distanceOptions;
+	}
+	
+	public boolean distOptionsListenerShouldListen() {
+		return distOptionsListenerShouldListen;
 	}
 }

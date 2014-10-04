@@ -80,6 +80,13 @@ public class CartiController {
 	public void orderSliderChanged() {
 		cartiModel.setOrderDim(cartiView.getOrderSliderVal());
 
+		if (cartiView.shouldSyncOrderSlider()) {
+			// need to update the selected distance measure id
+			cartiModel.setSelectedDistMeasureId(cartiView.getOrderSliderVal());
+			cartiView
+					.updateSelectedDistMeasureId(cartiView.getOrderSliderVal());
+		}
+
 		int[][] matrixToShow = cartiModel.getMatrixToShow();
 		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
 		Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
@@ -412,12 +419,21 @@ public class CartiController {
 	public void selectDistMeasure() {
 		int selectedDistMeasureId = cartiView.getDistanceOptions()
 				.getSelectedMeasureId();
+		int numDims = cartiModel.getNumDims();
 
-		cartiModel.setSelectedDistMeasureId(selectedDistMeasureId);
+		if (cartiView.shouldSyncOrderSlider()
+				&& (selectedDistMeasureId < numDims)) {
+			// need to change orderSlider, which will do all the necessary
+			// updates
+			cartiView.updateOrderSlider(selectedDistMeasureId);
+		} else {
+			// need to update here
+			cartiModel.setSelectedDistMeasureId(selectedDistMeasureId);
 
-		int[][] matrixToShow = cartiModel.getMatrixToShow();
-		
-		cartiView.updateFigure(matrixToShow);
+			int[][] matrixToShow = cartiModel.getMatrixToShow();
+
+			cartiView.updateFigure(matrixToShow);
+		}
 	}
 
 	// LISTENERS
@@ -565,17 +581,12 @@ public class CartiController {
 	private ChangeListener createSliderListener() {
 		ChangeListener listener = new ChangeListener() {
 
-			private int previousVal = -1;
-
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				JSlider slider = (JSlider) e.getSource();
 
 				// slider has stopped moving on a different value than before
-				if ((!slider.getValueIsAdjusting())
-						&& (slider.getValue() != previousVal)) {
-					previousVal = slider.getValue();
-
+				if (!slider.getValueIsAdjusting()) {
 					if (slider == cartiView.getKSlider()) {
 						kSliderChanged();
 					} else if (slider == cartiView.getOrderSlider()) {
@@ -594,7 +605,9 @@ public class CartiController {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectDistMeasure();
+				if (cartiView.distOptionsListenerShouldListen()) {
+					selectDistMeasure();
+				}
 			}
 		};
 

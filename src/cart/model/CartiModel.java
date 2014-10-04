@@ -170,6 +170,10 @@ public class CartiModel {
 	public int getNumObjects() {
 		return numObjects;
 	}
+	
+	public int getNumDims() {
+		return numDims;
+	}
 
 	public Set<Integer> getDims() {
 		return dims;
