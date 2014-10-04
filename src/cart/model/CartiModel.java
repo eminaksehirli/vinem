@@ -34,7 +34,7 @@ public class CartiModel {
 	private Set<Integer> dims;
 	private Pair[][] origData;
 	private MyCartifyDbInMemory cartiDb;
-	private List<Integer>[][] cartLists;
+	private List<List<Integer>[]> cartLists;
 	private Set<Integer> filtereds;
 	private Set<Integer> selecteds;
 	private Map<Integer, Cluster> clustersMap;
@@ -105,19 +105,21 @@ public class CartiModel {
 		}
 	}
 
-	// cartlists[dimId][objId] is a list containing the objIds in the cart of
-	// the given object in the given dimension
+	// cartlists.get(distMeasureId)[objId] is a list containing the objIds in
+	// the cart of the given objId for the given distMeasureId
 	// filtered objects are not added to the carts
 	private void updateCartLists() {
 		cartiDb = new MyCartifyDbInMemory(filePath, k, distMeasures);
 		cartiDb.cartify();
 
 		// create new cart lists
-		cartLists = new List[distMeasures.size()][numObjects];
-		for (int distMeasureId = 0; distMeasureId < distMeasures.size(); distMeasureId++) {
+		cartLists = new ArrayList<List<Integer>[]>();
+		while (cartLists.size() < distMeasures.size()) {
+			List<Integer>[] carts = new List[numObjects];
 			for (int objId = 0; objId < numObjects; objId++) {
-				cartLists[distMeasureId][objId] = new ArrayList<Integer>();
+				carts[objId] = new ArrayList<Integer>();
 			}
+			cartLists.add(carts);
 		}
 
 		// fill the cart lists
@@ -128,8 +130,40 @@ public class CartiModel {
 				for (int objId = item.getTIDs().nextSetBit(0); objId >= 0; objId = item
 						.getTIDs().nextSetBit(objId + 1)) {
 					if (!filtereds.contains(item.getId())) {
-						cartLists[distMeasureId][objId].add(item.getId());
+						cartLists.get(distMeasureId)[objId].add(item.getId());
 					}
+				}
+			}
+		}
+	}
+
+	// adds a distance measure to the cart lists
+	private void addMeasureToCartLists() {
+		// create the cart lists for the new measure
+		List<Integer>[] carts = new List[numObjects];
+		for (int objId = 0; objId < numObjects; objId++) {
+			carts[objId] = new ArrayList<Integer>();
+		}
+		cartLists.add(carts);
+
+		// create a temporary MyCartifyDbInMemory to find the carts for the new
+		// measure
+		int newMeasureId = distMeasures.size() - 1;
+		List<DistMeasure> tempDistMeasures = new ArrayList<DistMeasure>();
+		tempDistMeasures.add(distMeasures.get(newMeasureId));
+
+		MyCartifyDbInMemory tempCartiDb = new MyCartifyDbInMemory(filePath, k,
+				tempDistMeasures);
+		tempCartiDb.cartify();
+
+		// fill the cart lists for the new measure
+		PlainItemDB[] pDbs = tempCartiDb.getProjDbs();
+		PlainItemDB pDb = pDbs[0];
+		for (PlainItem item : pDb) {
+			for (int objId = item.getTIDs().nextSetBit(0); objId >= 0; objId = item
+					.getTIDs().nextSetBit(objId + 1)) {
+				if (!filtereds.contains(item.getId())) {
+					cartLists.get(newMeasureId)[objId].add(item.getId());
 				}
 			}
 		}
@@ -157,7 +191,7 @@ public class CartiModel {
 		// loop over each row
 		for (int loc = 0; loc < matrixToShow.length; loc++) {
 			// the cart containing ids to show on this row
-			List<Integer> cart = cartLists[selectedDistMeasureId][loc2ObjIdMaps[orderDim][loc]];
+			List<Integer> cart = cartLists.get(selectedDistMeasureId)[loc2ObjIdMaps[orderDim][loc]];
 
 			for (int id : cart) {
 				matrixToShow[loc][objId2LocMaps[orderDim][id]] = 1;
@@ -170,7 +204,7 @@ public class CartiModel {
 	public int getNumObjects() {
 		return numObjects;
 	}
-	
+
 	public int getNumDims() {
 		return numDims;
 	}
@@ -558,10 +592,9 @@ public class CartiModel {
 		this.selectedDistMeasureId = selectedDistMeasureId;
 	}
 
-	// TODO don't need to recalculate carts from other dist measures
 	public void addDistMeasure(DistMeasure distMeasure) {
 		distMeasures.add(distMeasure);
-		updateCartLists();
+		addMeasureToCartLists();
 	}
 
 	private static class Memento {
