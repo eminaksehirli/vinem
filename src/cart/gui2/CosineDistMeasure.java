@@ -10,7 +10,6 @@ public class CosineDistMeasure extends DistMeasure {
 
 	@Override
 	public double calculateDistance(double[] object1, double[] object2) {
-		// TODO correct implementation?
 		double distance;
 		double similarity;
 
@@ -24,7 +23,10 @@ public class CosineDistMeasure extends DistMeasure {
 			sumAxB += object1[d] * object2[d];
 		}
 
-		// TODO divide by 0?
+		// avoid divide by 0
+		sumAxA += 0.00001;
+		sumBxB += 0.00001;
+		
 		similarity = sumAxB / (Math.sqrt(sumAxA) * Math.sqrt(sumBxB));
 
 		distance = (2 * (Math.acos(similarity) / Math.PI));
