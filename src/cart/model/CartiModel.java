@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
@@ -69,7 +70,7 @@ public class CartiModel {
 		numObjects = data.size();
 		numDims = OneDCartifier.transpose(data).length;
 
-		dims = new HashSet<Integer>(numDims);
+		dims = new TreeSet<Integer>();
 		for (int i = 0; i < numDims; i++) {
 			dims.add(i);
 			Set<Integer> dimToAdd = new HashSet<Integer>();
