@@ -5,11 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +32,7 @@ public class MyCartifyDbInMemory {
 			MyCartifierInMemory cartifier = new MyCartifierInMemory(
 					originalDatabase);
 			cartifier.cartifyNumeric(distMeasure, k);
-			projectedDbs[distMeasureIx] = cartifier.itemDb;
+			projectedDbs.set(distMeasureIx, cartifier.itemDb);
 		}
 	}
 
@@ -45,7 +42,7 @@ public class MyCartifyDbInMemory {
 	private List<double[]> originalDatabase;
 	private String originalDatabaseFilename;
 
-	private PlainItemDB[] projectedDbs;
+	private List<PlainItemDB> projectedDbs;
 	public PlainItemDB completeDb;
 
 	private PrintWriter log;
@@ -68,49 +65,27 @@ public class MyCartifyDbInMemory {
 		}
 	}
 
-	public PlainItemDB cartify() {
+	public void cartify() {
 		try {
 			createCarts();
-
-			return mergeToAFinalTDb(k);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private PlainItemDB mergeToAFinalTDb(int k) {
-		log("Merging to final db....");
-		completeDb = new PlainItemDB();
+	public void addDistMeasure(DistMeasure measure) {
+		distMeasures.add(measure);
+		projectedDbs.add(null); // space to be set
 
-		Set<PlainItem> allTheItems = new HashSet<PlainItem>();
-		int[] bitSetSizes = new int[originalDatabase.size()];
-		for (PlainItemDB projectedDb : projectedDbs) {
-			for (PlainItem item : projectedDb) {
-				allTheItems.add(item);
-				bitSetSizes[item.getId()] += item.getTIDs().size() >> 6;
-			}
+		ExecutorService executor = Executors.newFixedThreadPool(4);
+		executor.execute(new RunnableImplementation(distMeasures.size() - 1));
+		try {
+			executor.shutdown();
+			executor.awaitTermination(1000, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			executor.shutdownNow();
 		}
-
-		BitSet allTransactions = new BitSet();
-		for (PlainItem item : allTheItems) {
-			long[] tidsArr = new long[bitSetSizes[item.getId()]];
-			int ofset = 0;
-			for (PlainItemDB projectedDb : projectedDbs) {
-				long[] arr = projectedDb.get(item.getId()).getTIDs()
-						.toLongArray();
-				for (int i = 0; i < arr.length; i++) {
-					tidsArr[ofset + i] = arr[i];
-				}
-				ofset += arr.length;
-			}
-			PlainItem bigItem = completeDb.get(item.getId(),
-					BitSet.valueOf(tidsArr));
-			allTransactions.or(bigItem.getTIDs());
-		}
-
-		// completeDb.transactionCounter = allTransactions.cardinality();
-		log("Final db is created.");
-		return completeDb;
 	}
 
 	private void log(final String msg) {
@@ -139,7 +114,12 @@ public class MyCartifyDbInMemory {
 	}
 
 	private void createCarts() {
-		projectedDbs = new PlainItemDB[distMeasures.size()];
+		projectedDbs = new ArrayList<PlainItemDB>(distMeasures.size());
+		// make space for the projectedDbs to be set
+		while (projectedDbs.size() < distMeasures.size()) {
+			projectedDbs.add(null);
+		}
+
 		ExecutorService executor = Executors.newFixedThreadPool(4);
 
 		for (int i = 0; i < distMeasures.size(); i++) {
@@ -155,7 +135,7 @@ public class MyCartifyDbInMemory {
 		}
 	}
 
-	public PlainItemDB[] getProjDbs() {
+	public List<PlainItemDB> getProjDbs() {
 		return projectedDbs;
 	}
 
