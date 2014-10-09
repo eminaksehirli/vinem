@@ -145,6 +145,7 @@ public class CartiView {
 		order_1SliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		controlsPanelLeft.add(order_1SliderLabel);
 		orderSlider = createSlider(0, dims.size() - 1);
+		orderSlider.setMinorTickSpacing(1);
 		controlsPanelLeft.add(orderSlider);
 		// controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 5)));
 
@@ -307,7 +308,7 @@ public class CartiView {
 		}
 		clusterInfoListenerShouldListen = true;
 	}
-	
+
 	public void updateOrderSlider(int order) {
 		orderSlider.setValue(order);
 	}
@@ -391,7 +392,7 @@ public class CartiView {
 	public DistOptions getDistanceOptions() {
 		return distanceOptions;
 	}
-	
+
 	public boolean distOptionsListenerShouldListen() {
 		return distOptionsListenerShouldListen;
 	}

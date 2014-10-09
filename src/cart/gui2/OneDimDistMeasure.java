@@ -3,11 +3,12 @@ package cart.gui2;
 import java.util.Set;
 
 public class OneDimDistMeasure extends DistMeasure {
-	
+
 	public OneDimDistMeasure(Set<Integer> dims) {
 		super(dims);
 		if (dims.size() != 1) {
-			System.err.println("Creating 1 dimensional dist measure with less/more than 1 dim");
+			System.err
+					.println("Creating 1 dimensional dist measure with less/more than 1 dim");
 		}
 	}
 

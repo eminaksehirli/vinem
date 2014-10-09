@@ -120,7 +120,7 @@ public class DistOptions {
 	public int getSelectedMeasureId() {
 		return cBox.getSelectedIndex();
 	}
-	
+
 	public void setSelectedMeasureId(int id) {
 		cBox.setSelectedIndex(id);
 	}
