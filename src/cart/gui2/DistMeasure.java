@@ -14,4 +14,8 @@ public abstract class DistMeasure {
 
 	@Override
 	public abstract String toString();
+
+	public Set<Integer> getDims() {
+		return dims;
+	}
 }

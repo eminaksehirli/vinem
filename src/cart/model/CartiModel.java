@@ -185,6 +185,14 @@ public class CartiModel {
 		return distMeasures;
 	}
 
+	public DistMeasure getSelectedDistMeasure() {
+		return distMeasures.get(selectedDistMeasureId);
+	}
+
+	public PlainItemDB getSelectedProjDb() {
+		return cartiDb.getProjDbs().get(selectedDistMeasureId);
+	}
+
 	// returns the support in each dimension of a given set of object Ids
 	public int[] getSupports(Set<Integer> objIds) {
 		for (int id : objIds) {
@@ -405,7 +413,6 @@ public class CartiModel {
 		this.savedStates.push(new Memento(selecteds, filtereds));
 		this.filtereds.addAll(selecteds);
 		updateMaps();
-		updateCartiDb();
 
 		// remove filtered objects from clusters
 		for (int clusterId : clustersMap.keySet()) {
@@ -421,7 +428,6 @@ public class CartiModel {
 		this.selecteds = state.getSelecteds();
 		this.filtereds = state.getFiltereds();
 		updateMaps();
-		updateCartiDb();
 	}
 
 	public boolean canUndoFiltering() {
@@ -432,7 +438,6 @@ public class CartiModel {
 		this.savedStates.push(new Memento(selecteds, filtereds));
 		this.filtereds.addAll(toFilter);
 		updateMaps();
-		updateCartiDb();
 
 		// remove filtered objects from clusters
 		for (int clusterId : clustersMap.keySet()) {
@@ -447,14 +452,12 @@ public class CartiModel {
 		this.savedStates.push(new Memento(selecteds, filtereds));
 		this.filtereds.removeAll(toRemove);
 		updateMaps();
-		updateCartiDb();
 	}
 
 	public void clearFiltereds() {
 		this.savedStates.push(new Memento(selecteds, filtereds));
 		this.filtereds.clear();
 		updateMaps();
-		updateCartiDb();
 	}
 
 	public Map<Integer, Cluster> getClustersMap() {

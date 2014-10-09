@@ -21,6 +21,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import mime.plain.PlainItem;
+import mime.plain.PlainItemDB;
+import mime.plain.PlainItemSet;
 import cart.gui2.Cluster;
 import cart.gui2.CosineDistMeasure;
 import cart.gui2.DistMeasure;
@@ -28,6 +31,7 @@ import cart.gui2.EuclidianDistMeasure;
 import cart.maximizer.Freq;
 import cart.maximizer.ItemsetMaximalMinerSupLen;
 import cart.model.CartiModel;
+import cart.model.RandomMaximalMiner;
 import cart.view.CartiView;
 import cart.view.ClusterInfo;
 import cart.view.DistOptions;
@@ -369,7 +373,7 @@ public class CartiController {
 		cartiView.updateFigureClustered(clusteredLocs);
 	}
 
-	public void mine() {
+	public void mineIMM() {
 		int minLen = cartiView.getMinLenVal();
 
 		if (minLen < 0) {
@@ -377,6 +381,7 @@ public class CartiController {
 			return;
 		}
 
+		// do mining
 		List<Freq> result = maximer.mineFor(cartiModel.getK(), minLen);
 
 		if (result.size() == 0) {
@@ -384,6 +389,7 @@ public class CartiController {
 					.println("No results for mining, try different k or minLen");
 		}
 
+		// turn result into clusters and add to model
 		for (Freq freq : result) {
 			Cluster cluster = new Cluster(new HashSet<Integer>(freq.freqSet),
 					new HashSet<Integer>(freq.freqDims));
@@ -391,6 +397,40 @@ public class CartiController {
 			cartiModel.addCluster(cluster);
 		}
 
+		// update view
+		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
+		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+
+		cartiView.updateClusterInfo(clustersMap, clustersToShow);
+	}
+
+	public void mineRandomMM() {
+		// TODO get from view
+		int minSup = 50;
+		int numOfItemSets = 25;
+
+		PlainItemDB items = cartiModel.getSelectedProjDb();
+
+		// do mining
+		List<PlainItemSet> result = RandomMaximalMiner.runParallel(items,
+				minSup, numOfItemSets);
+
+		// dims for which the cluster was made
+		DistMeasure measure = cartiModel.getSelectedDistMeasure();
+		Set<Integer> dims = measure.getDims();
+
+		// turn result into clusters and add to model
+		for (PlainItemSet itemSet : result) {
+			Set<Integer> objects = new HashSet<Integer>();
+			for (PlainItem item : itemSet) {
+				objects.add(item.getId());
+			}
+
+			Cluster cluster = new Cluster(objects, dims);
+			cartiModel.addCluster(cluster);
+		}
+
+		// update view
 		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
 		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
 
@@ -455,7 +495,7 @@ public class CartiController {
 				} else if (e.getActionCommand() == DistOptions.ADD) {
 					addDistMeasure();
 				} else if (e.getActionCommand() == CartiView.MINE) {
-					mine();
+					mineIMM();
 				} else if (e.getActionCommand() == CartiView.CLUSTER) {
 					clusterSelected();
 				} else if (e.getActionCommand() == ClusterInfo.ADD) {
