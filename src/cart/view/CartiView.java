@@ -17,10 +17,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
@@ -31,7 +31,6 @@ import cart.gui2.Cluster;
 public class CartiView {
 
 	public final static String CLUSTER = "CartiView.Cluster";
-	public final static String MINE = "CartiView.Mine";
 
 	private JFrame theFrame;
 
@@ -39,11 +38,10 @@ public class CartiView {
 	private JCheckBox syncOrderSlider;
 	private JSlider kSlider;
 	private JButton clusterButton;
-	private JButton mineButton;
-	private JTextField minLenField;
 	private CartiPanel cartiPanel;
 	private SelOptions selectionOptions;
 	private FilterOptions filteringOptions;
+	private MineOptions miningOptions;
 	private DistOptions distanceOptions;
 	private Stats selectedsStats;
 	private JDialog selectedsStatsDialog;
@@ -110,28 +108,6 @@ public class CartiView {
 		controlsPanelLeft.add(clusterButton);
 		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 
-		// mining panel
-		JPanel minePanel = createHorizontalBoxPanel(150, 50);
-		minePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		minePanel.setBorder(BorderFactory.createTitledBorder("Mining"));
-
-		// add button for mining
-		mineButton = new JButton("Mine");
-		mineButton.setActionCommand(MINE);
-
-		minePanel.add(mineButton);
-		minePanel.add(Box.createRigidArea(new Dimension(10, 0)));
-
-		// add minLen textfield
-		JLabel minLenLabel = new JLabel("minLen: ");
-		minePanel.add(minLenLabel);
-		minLenField = new JTextField(20);
-		minLenField.setMaximumSize(new Dimension(50, 25));
-		minePanel.add(minLenField);
-
-		controlsPanelLeft.add(minePanel);
-		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
-
 		// add slider for k
 		JLabel kSliderLabel = new JLabel("k");
 		kSliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -147,7 +123,6 @@ public class CartiView {
 		orderSlider = createSlider(0, dims.size() - 1);
 		orderSlider.setMinorTickSpacing(1);
 		controlsPanelLeft.add(orderSlider);
-		// controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// add checkbox for syncing order_1 with distanceOptions
 		syncOrderSlider = new JCheckBox("sync with distance measures", true);
@@ -161,7 +136,14 @@ public class CartiView {
 		distanceOptions.init(dims, distMeasures);
 
 		controlsPanelRight.add(distanceOptions.getPanel());
-		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 20)));
+		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		// add the mining options panel
+		miningOptions = new MineOptions();
+		miningOptions.init();
+
+		controlsPanelRight.add(miningOptions.getPanel());
+		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add left and right controls panels to main controls panel
 		controlsPanel.add(controlsPanelLeft);
@@ -195,11 +177,11 @@ public class CartiView {
 
 	public void addButtonsListener(ActionListener buttonsListener) {
 		clusterButton.addActionListener(buttonsListener);
-		mineButton.addActionListener(buttonsListener);
 		selectionOptions.addButtonsListener(buttonsListener);
 		filteringOptions.addButtonsListener(buttonsListener);
 		clusterInfo.addButtonsListener(buttonsListener);
 		distanceOptions.addButtonsListener(buttonsListener);
+		miningOptions.addButtonsListener(buttonsListener);
 	}
 
 	public void addSelOptionsListListener(
@@ -323,6 +305,11 @@ public class CartiView {
 		distanceOptions.addDistMeasure(distMeasure);
 	}
 
+	public void showInfoMessage(String message, String title) {
+		JOptionPane.showMessageDialog(theFrame, message, title,
+				JOptionPane.INFORMATION_MESSAGE);
+	}
+
 	public JFrame getFrame() {
 		return theFrame;
 	}
@@ -333,28 +320,6 @@ public class CartiView {
 
 	public int getKSliderVal() {
 		return kSlider.getValue();
-	}
-
-	public boolean selModeIsSelect() {
-		return selectionOptions.selModeIsSelect();
-	}
-
-	public boolean selModeIsAnd() {
-		return selectionOptions.selModeIsAnd();
-	}
-
-	public boolean selModeIsOr() {
-		return selectionOptions.selModeIsOr();
-	}
-
-	// returns value of the minLen text field, returns -1 if the text field does
-	// not contain a valid integer
-	public int getMinLenVal() {
-		try {
-			return Integer.parseInt(minLenField.getText());
-		} catch (NumberFormatException e) {
-			return -1;
-		}
 	}
 
 	public ClusterInfo getClusterInfo() {
@@ -391,6 +356,10 @@ public class CartiView {
 
 	public DistOptions getDistanceOptions() {
 		return distanceOptions;
+	}
+
+	public MineOptions getMiningOptions() {
+		return miningOptions;
 	}
 
 	public boolean distOptionsListenerShouldListen() {

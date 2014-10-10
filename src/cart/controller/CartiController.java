@@ -36,6 +36,7 @@ import cart.view.CartiView;
 import cart.view.ClusterInfo;
 import cart.view.DistOptions;
 import cart.view.FilterOptions;
+import cart.view.MineOptions;
 import cart.view.SelOptions;
 
 public class CartiController {
@@ -151,9 +152,9 @@ public class CartiController {
 	}
 
 	public void figureSelectedsChange(Set<Integer> locsToSelect) {
-		boolean select = cartiView.selModeIsSelect();
-		boolean and = cartiView.selModeIsAnd();
-		boolean or = cartiView.selModeIsOr();
+		boolean select = cartiView.getSelectionOptions().selModeIsSelect();
+		boolean and = cartiView.getSelectionOptions().selModeIsAnd();
+		boolean or = cartiView.getSelectionOptions().selModeIsOr();
 		cartiModel.selectLocs(locsToSelect, select, and, or);
 
 		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
@@ -374,10 +375,9 @@ public class CartiController {
 	}
 
 	public void mineIMM() {
-		int minLen = cartiView.getMinLenVal();
+		int minLen = cartiView.getMiningOptions().getMinLenVal();
 
-		if (minLen < 0) {
-			System.err.println("invalid minLen value");
+		if (minLen == -1) {
 			return;
 		}
 
@@ -385,8 +385,10 @@ public class CartiController {
 		List<Freq> result = maximer.mineFor(cartiModel.getK(), minLen);
 
 		if (result.size() == 0) {
-			System.out
-					.println("No results for mining, try different k or minLen");
+			cartiView.showInfoMessage(
+					"0 clusters found, try different k or minLen.",
+					"Mining result");
+			return;
 		}
 
 		// turn result into clusters and add to model
@@ -402,18 +404,30 @@ public class CartiController {
 		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
 
 		cartiView.updateClusterInfo(clustersMap, clustersToShow);
+		cartiView.showInfoMessage(result.size() + " cluster(s) found.",
+				"Mining result");
 	}
 
-	public void mineRandomMM() {
-		// TODO get from view
-		int minSup = 50;
-		int numOfItemSets = 25;
+	public void mineRMM() {
+		int minSup = cartiView.getMiningOptions().getMinSupVal();
+		int numOfItemSets = cartiView.getMiningOptions().getNumOfItemSetsVal();
+
+		if ((minSup == -1) || (numOfItemSets == -1)) {
+			return;
+		}
 
 		PlainItemDB items = cartiModel.getSelectedProjDb();
 
 		// do mining
 		List<PlainItemSet> result = RandomMaximalMiner.runParallel(items,
 				minSup, numOfItemSets);
+
+		if (result.size() == 0) {
+			cartiView.showInfoMessage(
+					"0 clusters found, try different k or minSup.",
+					"Mining result");
+			return;
+		}
 
 		// dims for which the cluster was made
 		DistMeasure measure = cartiModel.getSelectedDistMeasure();
@@ -435,6 +449,8 @@ public class CartiController {
 		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
 
 		cartiView.updateClusterInfo(clustersMap, clustersToShow);
+		cartiView.showInfoMessage(result.size() + " cluster(s) found.",
+				"Mining result");
 	}
 
 	public void addDistMeasure() {
@@ -494,8 +510,10 @@ public class CartiController {
 					filterSelecteds();
 				} else if (e.getActionCommand() == DistOptions.ADD) {
 					addDistMeasure();
-				} else if (e.getActionCommand() == CartiView.MINE) {
+				} else if (e.getActionCommand() == MineOptions.MINEIMM) {
 					mineIMM();
+				} else if (e.getActionCommand() == MineOptions.MINERMM) {
+					mineRMM();
 				} else if (e.getActionCommand() == CartiView.CLUSTER) {
 					clusterSelected();
 				} else if (e.getActionCommand() == ClusterInfo.ADD) {

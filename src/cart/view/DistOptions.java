@@ -33,7 +33,7 @@ public class DistOptions {
 
 	public void init(Set<Integer> dimList, List<String> distMeasures) {
 		// the main panel
-		distPanel = CartiView.createVerticalBoxPanel(300, 400);
+		distPanel = CartiView.createVerticalBoxPanel(300, 240);
 		distPanel.setBorder(BorderFactory
 				.createTitledBorder("Distance measures"));
 
@@ -79,8 +79,8 @@ public class DistOptions {
 		}
 		cBox = new JComboBox<String>(cBoxModel);
 		cBox.setAlignmentX(Component.CENTER_ALIGNMENT);
-		cBox.setPreferredSize(new Dimension(300, 40));
-		cBox.setMaximumSize(new Dimension(300, 40));
+		cBox.setPreferredSize(new Dimension(300, 30));
+		cBox.setMaximumSize(new Dimension(300, 30));
 
 		distPanel.add(cBox);
 	}
