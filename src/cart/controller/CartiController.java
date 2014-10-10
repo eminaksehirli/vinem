@@ -492,6 +492,24 @@ public class CartiController {
 		}
 	}
 
+	public void getNoiseInSelDistMeas() {
+		// TODO get from view
+		int minSup = 10;
+
+		Set<Integer> noiseObjs = cartiModel.getNoiseObjsInSelDistMeas(minSup);
+
+		// TODO give noise to view
+	}
+
+	public void getNoiseInAllDistMeas() {
+		// TODO get from view
+		int minSup = 10;
+
+		Set<Integer> noiseObjs = cartiModel.getNoiseObjsInAllDistMeas(minSup);
+
+		// TODO give noise to view
+	}
+
 	// LISTENERS
 
 	// listens to all the buttons

@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import mime.plain.PlainItem;
@@ -53,7 +53,7 @@ public class CartiModel {
 		this.filtereds = new HashSet<Integer>();
 		this.selecteds = new HashSet<Integer>();
 		this.savedStates = new Stack<Memento>();
-		this.clustersMap = new HashMap<Integer, Cluster>();
+		this.clustersMap = new TreeMap<Integer, Cluster>();
 		this.clustersToShow = new HashSet<Integer>();
 		this.distMeasures = new ArrayList<DistMeasure>();
 		this.selectedDistMeasureId = 0;
@@ -191,6 +191,50 @@ public class CartiModel {
 
 	public PlainItemDB getSelectedProjDb() {
 		return cartiDb.getProjDbs().get(selectedDistMeasureId);
+	}
+
+	// gets the object ids of each object with a support < minSup in the
+	// selected distMeasure
+	public Set<Integer> getNoiseObjsInSelDistMeas(int minSup) {
+		Set<Integer> noiseObjects = new HashSet<Integer>();
+
+		List<PlainItemDB> pDbs = cartiDb.getProjDbs();
+		PlainItemDB pDb = pDbs.get(selectedDistMeasureId);
+
+		// loop over each item
+		for (PlainItem item : pDb) {
+			if ((!filtereds.contains(item.getId()))
+					&& (item.getTIDs().cardinality() < minSup)) {
+				noiseObjects.add(item.getId());
+			}
+		}
+
+		return noiseObjects;
+	}
+
+	// gets the object ids of each object with a support < minSup in every
+	// distMeasure
+	public Set<Integer> getNoiseObjsInAllDistMeas(int minSup) {
+		Set<Integer> noiseObjects = new HashSet<Integer>();
+
+		// add each object to noiseObjects to remove them later
+		List<PlainItemDB> pDbs = cartiDb.getProjDbs();
+		for (PlainItem item : pDbs.get(0)) {
+			if (!filtereds.contains(item.getId())) {
+				noiseObjects.add(item.getId());
+			}
+		}
+
+		// remove objects where support >= minSup
+		for (PlainItemDB pDb : pDbs) {
+			for (PlainItem item : pDb) {
+				if (item.getTIDs().cardinality() >= minSup) {
+					noiseObjects.remove(item.getId());
+				}
+			}
+		}
+
+		return noiseObjects;
 	}
 
 	// returns the support in each dimension of a given set of object Ids
