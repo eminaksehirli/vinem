@@ -43,6 +43,7 @@ public class CartiView {
 	private FilterOptions filteringOptions;
 	private MineOptions miningOptions;
 	private DistOptions distanceOptions;
+	private NoiseOptions noiseOptions;
 	private Stats selectedsStats;
 	private JDialog selectedsStatsDialog;
 	private ClusterInfo clusterInfo;
@@ -145,12 +146,19 @@ public class CartiView {
 		controlsPanelRight.add(miningOptions.getPanel());
 		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 10)));
 
-		// add left and right controls panels to main controls panel
-		controlsPanel.add(controlsPanelLeft);
-		controlsPanelLeft.setAlignmentY(Component.TOP_ALIGNMENT);
+		// add the noise options panel
+		noiseOptions = new NoiseOptions();
+		noiseOptions.init();
 
-		controlsPanel.add(controlsPanelRight);
+		controlsPanelRight.add(noiseOptions.getPanel());
+		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		// add left and right controls panels to main controls panel
+		controlsPanelLeft.setAlignmentY(Component.TOP_ALIGNMENT);
+		controlsPanel.add(controlsPanelLeft);
+
 		controlsPanelRight.setAlignmentY(Component.TOP_ALIGNMENT);
+		controlsPanel.add(controlsPanelRight);
 
 		// add visual and controls panel to the frame
 		theFrame.add(visualPanel, BorderLayout.CENTER);
@@ -182,6 +190,7 @@ public class CartiView {
 		clusterInfo.addButtonsListener(buttonsListener);
 		distanceOptions.addButtonsListener(buttonsListener);
 		miningOptions.addButtonsListener(buttonsListener);
+		noiseOptions.addButtonsListener(buttonsListener);
 	}
 
 	public void addSelOptionsListListener(
@@ -360,6 +369,10 @@ public class CartiView {
 
 	public MineOptions getMiningOptions() {
 		return miningOptions;
+	}
+
+	public NoiseOptions getNoiseOptions() {
+		return noiseOptions;
 	}
 
 	public boolean distOptionsListenerShouldListen() {

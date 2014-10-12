@@ -37,6 +37,7 @@ import cart.view.ClusterInfo;
 import cart.view.DistOptions;
 import cart.view.FilterOptions;
 import cart.view.MineOptions;
+import cart.view.NoiseOptions;
 import cart.view.SelOptions;
 
 public class CartiController {
@@ -493,21 +494,65 @@ public class CartiController {
 	}
 
 	public void getNoiseInSelDistMeas() {
-		// TODO get from view
-		int minSup = 10;
+		int minSup = cartiView.getNoiseOptions().getMinSupVal();
 
+		if (minSup == -1) {
+			return;
+		}
+
+		// calculate noise objects
 		Set<Integer> noiseObjs = cartiModel.getNoiseObjsInSelDistMeas(minSup);
 
-		// TODO give noise to view
+		if (noiseObjs.size() == 0) {
+			cartiView.showInfoMessage(
+					"0 noise objects found for given minSup.", "Noise result");
+			return;
+		}
+
+		// turn noise objects into a cluster
+		Set<Integer> dims = new HashSet<Integer>();
+		Cluster cluster = new Cluster(noiseObjs, dims);
+		cartiModel.addCluster(cluster);
+
+		// update view
+		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
+		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+
+		cartiView.updateClusterInfo(clustersMap, clustersToShow);
+		cartiView.showInfoMessage(noiseObjs.size()
+				+ " noise objects found, adding them as a cluster.",
+				"Noise result");
 	}
 
 	public void getNoiseInAllDistMeas() {
-		// TODO get from view
-		int minSup = 10;
+		int minSup = cartiView.getNoiseOptions().getMinSupVal();
 
+		if (minSup == -1) {
+			return;
+		}
+
+		// calculate noise objects
 		Set<Integer> noiseObjs = cartiModel.getNoiseObjsInAllDistMeas(minSup);
 
-		// TODO give noise to view
+		if (noiseObjs.size() == 0) {
+			cartiView.showInfoMessage(
+					"0 noise objects found for given minSup.", "Noise result");
+			return;
+		}
+
+		// turn noise objects into a cluster
+		Set<Integer> dims = new HashSet<Integer>();
+		Cluster cluster = new Cluster(noiseObjs, dims);
+		cartiModel.addCluster(cluster);
+
+		// update view
+		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
+		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+
+		cartiView.updateClusterInfo(clustersMap, clustersToShow);
+		cartiView.showInfoMessage(noiseObjs.size()
+				+ " noise objects found, adding them as a cluster.",
+				"Noise result");
 	}
 
 	// LISTENERS
@@ -532,6 +577,10 @@ public class CartiController {
 					mineIMM();
 				} else if (e.getActionCommand() == MineOptions.MINERMM) {
 					mineRMM();
+				} else if (e.getActionCommand() == NoiseOptions.SELMEAS) {
+					getNoiseInSelDistMeas();
+				} else if (e.getActionCommand() == NoiseOptions.ALLMEAS) {
+					getNoiseInAllDistMeas();
 				} else if (e.getActionCommand() == CartiView.CLUSTER) {
 					clusterSelected();
 				} else if (e.getActionCommand() == ClusterInfo.ADD) {
