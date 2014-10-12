@@ -165,6 +165,7 @@ public class MineOptions {
 			JOptionPane.showMessageDialog(new JFrame(),
 					"minSup  must be an integer larger than 0.", "error",
 					JOptionPane.ERROR_MESSAGE);
+			return -1;
 		}
 
 		return minSup;
@@ -184,6 +185,7 @@ public class MineOptions {
 			JOptionPane.showMessageDialog(new JFrame(),
 					"numOfItemSets must be an integer larger than 0.", "error",
 					JOptionPane.ERROR_MESSAGE);
+			return -1;
 		}
 
 		return numOfItemSets;
