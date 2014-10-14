@@ -3,7 +3,9 @@ package cart.view;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.Map;
@@ -218,12 +220,18 @@ public class CartiView {
 
 	// creates a slider with given minimum/maximum values
 	private JSlider createSlider(int min, int max) {
-		JSlider slider = new JSlider(min, max);
+		JSlider slider = new JSlider(min, max) {
+			@Override
+			public Point getToolTipLocation(MouseEvent event) {
+				return new Point(event.getX() + 15, event.getY());
+			}
+		};
 		slider.setValue(min);
 		// slider.setMajorTickSpacing(((max / 10) / 10) * 10);
 		slider.setMajorTickSpacing(max / 5);
 		slider.setPaintLabels(true);
 		slider.setPaintTicks(true);
+		slider.setToolTipText(Integer.toString(slider.getValue()));
 		return slider;
 	}
 

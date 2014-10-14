@@ -714,6 +714,7 @@ public class CartiController {
 
 				// slider has stopped moving on a different value than before
 				if (!slider.getValueIsAdjusting()) {
+					slider.setToolTipText(Integer.toString(slider.getValue()));
 					if (slider == cartiView.getKSlider()) {
 						kSliderChanged();
 					} else if (slider == cartiView.getOrderSlider()) {
