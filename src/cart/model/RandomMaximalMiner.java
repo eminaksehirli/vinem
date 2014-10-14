@@ -61,7 +61,6 @@ import com.google.common.collect.Lists;
 public class RandomMaximalMiner {
 	private static final int DefaultSeedSize = 100;
 	// private static final int N_THREADS = 4;
-	public static final SupportMeasure DefaultMeasure = new SupportMeasure();
 
 	public static class EqualMeasure implements ItemSetMeasure {
 		@Override
@@ -82,8 +81,8 @@ public class RandomMaximalMiner {
 
 	private final List<PlainItem> allItems;
 	private int minSize;
-	private ItemSetMeasure approximationMeasure = DefaultMeasure;
-	private ItemSetMeasure pruningMeasure = DefaultMeasure;
+	private ItemSetMeasure approximationMeasure;
+	private ItemSetMeasure pruningMeasure;
 
 	public static Random random = new Random();
 	private PlainItemSet theItemset;
@@ -95,19 +94,12 @@ public class RandomMaximalMiner {
 	public static List<PlainItemSet> runParallel(
 			Iterable<? extends PlainItem> items, final int minSup,
 			int numOfItemSets) {
-		return runParallel(items, minSup, numOfItemSets, DefaultMeasure);
+		return runParallel(items, minSup, numOfItemSets, DefaultSeedSize);
 	}
 
 	public static List<PlainItemSet> runParallel(
 			Iterable<? extends PlainItem> items, final int minSup,
-			int numOfItemSets, final ItemSetMeasure measure) {
-		return runParallel(items, minSup, numOfItemSets, measure,
-				DefaultSeedSize);
-	}
-
-	public static List<PlainItemSet> runParallel(
-			Iterable<? extends PlainItem> items, final int minSup,
-			int numOfItemSets, final ItemSetMeasure measure, final int seedSize) {
+			int numOfItemSets, final int seedSize) {
 
 		AllItems = Lists.newArrayList(items);
 
@@ -125,6 +117,7 @@ public class RandomMaximalMiner {
 				@Override
 				public List<PlainItemSet> call() throws Exception {
 					RandomMaximalMiner miner = new RandomMaximalMiner();
+					SupportMeasure measure = new SupportMeasure();
 					miner.setApproximationMeasure(measure);
 					miner.setPruningMeasure(measure);
 					miner.setMinSize(seedSize);
