@@ -454,7 +454,7 @@ public class CartiModel {
 
 	// add selecteds to filtereds
 	public void filterSelecteds() {
-		this.savedStates.push(new Memento(selecteds, filtereds));
+		this.savedStates.push(new Memento(selecteds, filtereds, clustersMap));
 		this.filtereds.addAll(selecteds);
 		updateMaps();
 
@@ -471,6 +471,7 @@ public class CartiModel {
 		Memento state = savedStates.pop();
 		this.selecteds = state.getSelecteds();
 		this.filtereds = state.getFiltereds();
+		this.clustersMap = state.getClustersMap();
 		updateMaps();
 	}
 
@@ -478,28 +479,8 @@ public class CartiModel {
 		return (savedStates.size() > 0);
 	}
 
-	public void addFiltereds(Set<Integer> toFilter) {
-		this.savedStates.push(new Memento(selecteds, filtereds));
-		this.filtereds.addAll(toFilter);
-		updateMaps();
-
-		// remove filtered objects from clusters
-		for (int clusterId : clustersMap.keySet()) {
-			removeSelectedsFromCluster(clusterId);
-		}
-
-		// remove filtered objects from selected
-		clearSelecteds();
-	}
-
-	public void removeFiltereds(Set<Integer> toRemove) {
-		this.savedStates.push(new Memento(selecteds, filtereds));
-		this.filtereds.removeAll(toRemove);
-		updateMaps();
-	}
-
 	public void clearFiltereds() {
-		this.savedStates.push(new Memento(selecteds, filtereds));
+		this.savedStates.push(new Memento(selecteds, filtereds, clustersMap));
 		this.filtereds.clear();
 		updateMaps();
 	}
@@ -603,11 +584,20 @@ public class CartiModel {
 	private static class Memento {
 		private final Set<Integer> selecteds;
 		private final Set<Integer> filtereds;
+		private final Map<Integer, Cluster> clustersMap;
 
 		public Memento(Set<Integer> selectedsToSave,
-				Set<Integer> filteredsToSave) {
+				Set<Integer> filteredsToSave,
+				Map<Integer, Cluster> clustersMapToSave) {
+
 			selecteds = new HashSet<Integer>(selectedsToSave);
 			filtereds = new HashSet<Integer>(filteredsToSave);
+
+			clustersMap = new TreeMap<Integer, Cluster>();
+			for (int clusterId : clustersMapToSave.keySet()) {
+				Cluster cluster = new Cluster(clustersMapToSave.get(clusterId));
+				clustersMap.put(clusterId, cluster);
+			}
 		}
 
 		public Set<Integer> getSelecteds() {
@@ -616,6 +606,10 @@ public class CartiModel {
 
 		public Set<Integer> getFiltereds() {
 			return filtereds;
+		}
+
+		public Map<Integer, Cluster> getClustersMap() {
+			return clustersMap;
 		}
 	}
 }

@@ -13,6 +13,11 @@ public class Cluster {
 		this.dims = new HashSet<Integer>(dims);
 	}
 
+	public Cluster(Cluster cluster) {
+		this.objects = new HashSet<Integer>(cluster.getObjects());
+		this.dims = new HashSet<Integer>(cluster.getDims());
+	}
+
 	public void addObjects(Set<Integer> toAdd) {
 		objects.addAll(toAdd);
 	}

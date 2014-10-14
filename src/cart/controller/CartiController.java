@@ -228,6 +228,8 @@ public class CartiController {
 			double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
 			int[] measures = cartiModel.getMeasures(selecteds);
 			int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
+			Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
+			Set<Integer> clustersToShow = cartiModel.getClustersToShow();
 
 			cartiView.clearFigureSavedLocs();
 			cartiView.updateFigure(matrixToShow);
@@ -236,6 +238,7 @@ public class CartiController {
 			cartiView.updateSelOptions(orderedObjs, selecteds);
 			cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
 					measures, medAbsDevs);
+			cartiView.updateClusterInfo(clustersMap, clustersToShow);
 		}
 	}
 
