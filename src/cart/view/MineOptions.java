@@ -190,4 +190,9 @@ public class MineOptions {
 
 		return numOfItemSets;
 	}
+	
+	// sets the value of the minSup field
+	public void setMinSupVal(int minSup) {
+		minSupField.setText(Integer.toString(minSup));
+	}
 }

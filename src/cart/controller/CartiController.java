@@ -106,7 +106,8 @@ public class CartiController {
 	}
 
 	public void kSliderChanged() {
-		cartiModel.setK(cartiView.getKSliderVal());
+		int k = cartiView.getKSliderVal();
+		cartiModel.setK(k);
 
 		int[][] matrixToShow = cartiModel.getMatrixToShow();
 		Set<Integer> selecteds = cartiModel.getSelecteds();
@@ -118,6 +119,7 @@ public class CartiController {
 		cartiView.updateFigure(matrixToShow);
 		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
 				measures, medAbsDevs);
+		cartiView.getMiningOptions().setMinSupVal((int) (k * 0.75));
 	}
 
 	public void manSelectedsClear() {
