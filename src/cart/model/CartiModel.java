@@ -189,8 +189,25 @@ public class CartiModel {
 		return distMeasures.get(selectedDistMeasureId);
 	}
 
+	// returns the projection db for the selected dist measure
 	public PlainItemDB getSelectedProjDb() {
 		return cartiDb.getProjDbs().get(selectedDistMeasureId);
+	}
+
+	// returns the projection db, containing only the carts of selected objects,
+	// for the selected dist measure
+	public PlainItemDB getSelectedProjDbOnlySelected() {
+		PlainItemDB db = cartiDb.getProjDbs().get(selectedDistMeasureId);
+
+		PlainItemDB onlySelected = new PlainItemDB();
+
+		for (PlainItem item : db) {
+			if (selecteds.contains(item.getId())) {
+				onlySelected.get(item.getId(), item.getTIDs());
+			}
+		}
+
+		return onlySelected;
 	}
 
 	// gets the object ids of each object with a support < minSup in the

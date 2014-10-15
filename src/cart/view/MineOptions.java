@@ -21,6 +21,7 @@ public class MineOptions {
 
 	public final static String MINEIMM = "MineOptions.MineIMM";
 	public final static String MINERMM = "MineOptions.MineRMM";
+	public final static String MINERMMSEL = "MineOptions.MineRMMSEL";
 
 	final static String IMMCARD = "ItemSetMaximalMiner";
 	final static String RMMCARD = "RandomMaximalMiner";
@@ -29,6 +30,7 @@ public class MineOptions {
 	private JPanel cards;
 	private JButton mineIMMButton;
 	private JButton mineRMMButton;
+	private JButton mineRMMSelButton;
 	private JTextField minLenField;
 	private JTextField minSupField;
 	private JTextField numOfItemSetsField;
@@ -81,12 +83,19 @@ public class MineOptions {
 		JPanel cardRMM = CartiView.createVerticalBoxPanel(300, 150);
 		cardRMM.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		// add button for mining to card
+		// add buttons for mining to card
 		mineRMMButton = new JButton("Mine");
 		mineRMMButton.setActionCommand(MINERMM);
 		mineRMMButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		cardRMM.add(mineRMMButton);
+		cardRMM.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		mineRMMSelButton = new JButton("Mine selected");
+		mineRMMSelButton.setActionCommand(MINERMMSEL);
+		mineRMMSelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		cardRMM.add(mineRMMSelButton);
 		cardRMM.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add minSup to card
@@ -125,6 +134,7 @@ public class MineOptions {
 	public void addButtonsListener(ActionListener buttonsListener) {
 		mineIMMButton.addActionListener(buttonsListener);
 		mineRMMButton.addActionListener(buttonsListener);
+		mineRMMSelButton.addActionListener(buttonsListener);
 	}
 
 	public JPanel getPanel() {

@@ -414,7 +414,7 @@ public class CartiController {
 				"Mining result");
 	}
 
-	public void mineRMM() {
+	public void mineRMM(boolean onlySelected) {
 		int minSup = cartiView.getMiningOptions().getMinSupVal();
 		int numOfItemSets = cartiView.getMiningOptions().getNumOfItemSetsVal();
 
@@ -422,7 +422,13 @@ public class CartiController {
 			return;
 		}
 
-		PlainItemDB items = cartiModel.getSelectedProjDb();
+		// get the items
+		PlainItemDB items;
+		if (onlySelected) {
+			items = cartiModel.getSelectedProjDbOnlySelected();
+		} else {
+			items = cartiModel.getSelectedProjDb();
+		}
 
 		// do mining
 		List<PlainItemSet> result = RandomMaximalMiner.runParallel(items,
@@ -581,7 +587,9 @@ public class CartiController {
 				} else if (e.getActionCommand() == MineOptions.MINEIMM) {
 					mineIMM();
 				} else if (e.getActionCommand() == MineOptions.MINERMM) {
-					mineRMM();
+					mineRMM(false);
+				} else if (e.getActionCommand() == MineOptions.MINERMMSEL) {
+					mineRMM(true);
 				} else if (e.getActionCommand() == NoiseOptions.SELMEAS) {
 					getNoiseInSelDistMeas();
 				} else if (e.getActionCommand() == NoiseOptions.ALLMEAS) {
