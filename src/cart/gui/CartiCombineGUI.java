@@ -50,7 +50,7 @@ import cart.cartifier.Pair;
 import cart.gui.CartPane.Layer;
 import cart.maximizer.DimBasedMaximalMiner;
 import cart.maximizer.Freq;
-import cart.maximizer.ItemsetMaximalMinerSupLen;
+import cart.maximizer.ItemsetMaximalMiner;
 import cart.maximizer.MaximalMinerCombiner;
 import cart.maximizer.MaximalMinerCombiner.FreqCollector;
 import cart.maximizer.OneDCartifier;
@@ -77,7 +77,7 @@ public class CartiCombineGUI
 	private boolean filterByCluster;
 	private JScrollPane sPane;
 	private DimBasedMaximalMiner dimer;
-	private ItemsetMaximalMinerSupLen maximer;
+	private ItemsetMaximalMiner maximer;
 	private TableModel clusterTableModel;
 	private int[] selectedClusterRows;
 	private CartifyDbInMemory cartiDb;
@@ -136,7 +136,7 @@ public class CartiCombineGUI
 
 		// miner = new CartiMiner();
 		// liner = new CartiLinerLight();
-		maximer = new ItemsetMaximalMinerSupLen(pathname);
+		maximer = new ItemsetMaximalMiner(pathname);
 		dimer = new DimBasedMaximalMiner(pathname);
 		numOfObjects = data.size();
 
