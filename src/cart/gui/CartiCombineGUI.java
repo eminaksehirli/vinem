@@ -369,7 +369,7 @@ public class CartiCombineGUI
 			@Override
 			public void foundFreq(Freq freq)
 			{
-				addAsCluster(freq.freqDims, new HashSet<>(freq.freqSet));
+				addAsCluster(freq.freqDims, arr2Set(freq.freqSet));
 			}
 		};
 		Thread t = new Thread(new Runnable() {
@@ -394,19 +394,27 @@ public class CartiCombineGUI
 
 		for (Freq freq : freqs)
 		{
-			addAsCluster(freq.freqDims, new HashSet<>(freq.freqSet));
+			addAsCluster(freq.freqDims, arr2Set(freq.freqSet));
 		}
 	}
 
 	private void runMineSelected()
 	{
 		Set<Integer> aMined = new HashSet<>(selecteds);
+		int[] arr = new int[aMined.size()];
+
+		int counter = 0;
+		for (int i : aMined)
+		{
+			arr[counter++] = i;
+		}
+
 		Integer startDimIx = frame.orderSlider_1.getValue();
-		List<Freq> freqs = maximer.mineFor(aMined, k, startDimIx);
+		List<Freq> freqs = maximer.mineFor(arr, k, startDimIx);
 
 		for (Freq freq : freqs)
 		{
-			addAsCluster(freq.freqDims, new HashSet<>(freq.freqSet));
+			addAsCluster(freq.freqDims, arr2Set(freq.freqSet));
 		}
 	}
 
@@ -791,6 +799,16 @@ public class CartiCombineGUI
 			clustersToMark.add(cl);
 		}
 		updateFigure();
+	}
+
+	private static Set<Integer> arr2Set(final int[] arr)
+	{
+		Set<Integer> s = new HashSet<>(arr.length);
+		for (int i : arr)
+		{
+			s.add(i);
+		}
+		return s;
 	}
 
 	public static void writeImage(BufferedImage img, final String file)

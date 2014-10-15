@@ -29,7 +29,7 @@ import cart.gui2.CosineDistMeasure;
 import cart.gui2.DistMeasure;
 import cart.gui2.EuclidianDistMeasure;
 import cart.maximizer.Freq;
-import cart.maximizer.ItemsetMaximalMinerSupLen;
+import cart.maximizer.ItemsetMaximalMiner;
 import cart.model.CartiModel;
 import cart.model.RandomMaximalMiner;
 import cart.view.CartiView;
@@ -43,7 +43,7 @@ import cart.view.SelOptions;
 public class CartiController {
 	private CartiModel cartiModel;
 	private CartiView cartiView;
-	private ItemsetMaximalMinerSupLen maximer;
+	private ItemsetMaximalMiner maximer;
 
 	public CartiController(CartiModel cartiModel, CartiView cartiView) {
 		this.cartiModel = cartiModel;
@@ -76,7 +76,7 @@ public class CartiController {
 		cartiView.addSliderListener(createSliderListener());
 		cartiView.addDistOptionsBoxListener(createDistOptionsBoxListener());
 
-		maximer = new ItemsetMaximalMinerSupLen(filePath);
+		maximer = new ItemsetMaximalMiner(filePath);
 
 		cartiView.getFrame().pack();
 		cartiView.getFrame().setVisible(true);
@@ -399,7 +399,7 @@ public class CartiController {
 
 		// turn result into clusters and add to model
 		for (Freq freq : result) {
-			Cluster cluster = new Cluster(new HashSet<Integer>(freq.freqSet),
+			Cluster cluster = new Cluster(arr2Set(freq.freqSet),
 					new HashSet<Integer>(freq.freqDims));
 
 			cartiModel.addCluster(cluster);
@@ -751,5 +751,13 @@ public class CartiController {
 		};
 
 		return listener;
+	}
+
+	private static Set<Integer> arr2Set(final int[] arr) {
+		Set<Integer> s = new HashSet<>(arr.length);
+		for (int i : arr)	{
+			s.add(i);
+		}
+		return s;
 	}
 }
