@@ -18,6 +18,7 @@ import java.util.TreeSet;
 
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
+import mime.plain.PlainItemSet;
 import cart.cartifier.Pair;
 import cart.gui2.Cluster;
 import cart.gui2.DistMeasure;
@@ -415,6 +416,44 @@ public class CartiModel {
 		}
 
 		return medianDists;
+	}
+
+	public int[][] createRelatedDimsMatrix(int minSup, int numItemSets) {
+		int itemSetSize = 5;
+		int[][] relatedDimsMatrix = new int[numDims][numDims];
+
+		for (int i = 0; i < numDims; i++) {
+			PlainItemDB pDb = cartiDb.getProjDbs().get(i);
+			List<PlainItemSet> result = RandomMiner.runParallel(pDb, minSup,
+					numItemSets, itemSetSize);
+
+			for (int j = 0; j < numDims; j++) {
+				int freqCount = 0;
+				for (PlainItemSet set : result) {
+					if (getSupportInDim(set, j) >= minSup) {
+						freqCount++;
+					}
+				}
+				relatedDimsMatrix[i][j] = freqCount;
+			}
+		}
+
+		return relatedDimsMatrix;
+	}
+
+	// returns the support of a given PlainItemSet in a given dimension
+	private int getSupportInDim(PlainItemSet set, int dim) {
+		PlainItemDB pDb = cartiDb.getProjDbs().get(dim);
+
+		Iterator<PlainItem> it = set.iterator();
+		PlainItem item = it.next();
+		BitSet tids = (BitSet) pDb.get(item.getId()).getTIDs().clone();
+		while (it.hasNext()) {
+			item = it.next();
+			tids.and(pDb.get(item.getId()).getTIDs());
+		}
+
+		return tids.cardinality();
 	}
 
 	public Set<Integer> getSelecteds() {

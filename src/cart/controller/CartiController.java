@@ -566,6 +566,18 @@ public class CartiController {
 				"Noise result");
 	}
 
+	public void findRelatedDims() {
+		// TODO get from view
+		int minSup = 100;
+		int numItemSets = 2000;
+
+		// get related dims matrix
+		int[][] relatedDimsMatrix = cartiModel.createRelatedDimsMatrix(minSup,
+				numItemSets);
+
+		// TODO give to view
+	}
+
 	// LISTENERS
 
 	// listens to all the buttons
