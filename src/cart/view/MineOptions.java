@@ -22,18 +22,24 @@ public class MineOptions {
 	public final static String MINEIMM = "MineOptions.MineIMM";
 	public final static String MINERMM = "MineOptions.MineRMM";
 	public final static String MINERMMSEL = "MineOptions.MineRMMSEL";
+	public final static String FINDRELDIMS = "MineOptions.FindRelDims";
 
 	final static String IMMCARD = "ItemSetMaximalMiner";
 	final static String RMMCARD = "RandomMaximalMiner";
+	final static String RELDIMSCARD = "Find related dims";
 
 	private JPanel minePanel;
 	private JPanel cards;
 	private JButton mineIMMButton;
 	private JButton mineRMMButton;
 	private JButton mineRMMSelButton;
+	private JButton findRelDimsButton;
 	private JTextField minLenField;
-	private JTextField minSupField;
-	private JTextField numOfItemSetsField;
+	private JTextField minSupFieldRMM;
+	private JTextField numOfItemSetsFieldRMM;
+	private JTextField minSupFieldRelDims;
+	private JTextField numOfItemSetsFieldRelDims;
+	private JComboBox<String> cb;
 
 	public void init() {
 		// the main panel
@@ -41,8 +47,8 @@ public class MineOptions {
 		minePanel.setBorder(BorderFactory.createTitledBorder("Mining"));
 
 		// the combo box for selecting the miner
-		String comboBoxItems[] = { IMMCARD, RMMCARD };
-		JComboBox<String> cb = new JComboBox<String>(comboBoxItems);
+		String comboBoxItems[] = { IMMCARD, RMMCARD, RELDIMSCARD };
+		cb = new JComboBox<String>(comboBoxItems);
 		cb.setEditable(false);
 		cb.addItemListener(new ItemListener() {
 
@@ -100,22 +106,51 @@ public class MineOptions {
 
 		// add minSup to card
 		JPanel minSupPanel = createPanelWithLabel("minSup");
-		minSupField = new JTextField();
-		minSupField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-		minSupPanel.add(minSupField);
+		minSupFieldRMM = new JTextField();
+		minSupFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+		minSupPanel.add(minSupFieldRMM);
 		cardRMM.add(minSupPanel);
 
 		// add numOfItemSets to card
 		JPanel numOfItemSetsPanel = createPanelWithLabel("numOfItemSets");
-		numOfItemSetsField = new JTextField();
-		numOfItemSetsField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-		numOfItemSetsPanel.add(numOfItemSetsField);
+		numOfItemSetsFieldRMM = new JTextField();
+		numOfItemSetsFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+				25));
+		numOfItemSetsPanel.add(numOfItemSetsFieldRMM);
 		cardRMM.add(numOfItemSetsPanel);
+
+		// RELDIMS card
+		JPanel cardRelDims = CartiView.createVerticalBoxPanel(300, 150);
+		cardRelDims.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		// add button for finding rel dims
+		findRelDimsButton = new JButton("Find related dims");
+		findRelDimsButton.setActionCommand(FINDRELDIMS);
+		findRelDimsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		cardRelDims.add(findRelDimsButton);
+		cardRelDims.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		// add minSup to card
+		JPanel minSupPanel2 = createPanelWithLabel("minSup");
+		minSupFieldRelDims = new JTextField();
+		minSupFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+		minSupPanel2.add(minSupFieldRelDims);
+		cardRelDims.add(minSupPanel2);
+
+		// add numOfItemSets to card
+		JPanel numOfItemSetsPanel2 = createPanelWithLabel("numOfItemSets");
+		numOfItemSetsFieldRelDims = new JTextField("2000");
+		numOfItemSetsFieldRelDims.setMaximumSize(new Dimension(
+				Integer.MAX_VALUE, 25));
+		numOfItemSetsPanel2.add(numOfItemSetsFieldRelDims);
+		cardRelDims.add(numOfItemSetsPanel2);
 
 		// Create the panel that contains the cards
 		cards = new JPanel(new CardLayout());
 		cards.add(cardIMM, IMMCARD);
 		cards.add(cardRMM, RMMCARD);
+		cards.add(cardRelDims, RELDIMSCARD);
 		cards.setAlignmentX(Component.CENTER_ALIGNMENT);
 		cards.setMaximumSize(new Dimension(300, 150));
 
@@ -135,6 +170,7 @@ public class MineOptions {
 		mineIMMButton.addActionListener(buttonsListener);
 		mineRMMButton.addActionListener(buttonsListener);
 		mineRMMSelButton.addActionListener(buttonsListener);
+		findRelDimsButton.addActionListener(buttonsListener);
 	}
 
 	public JPanel getPanel() {
@@ -166,7 +202,11 @@ public class MineOptions {
 	public int getMinSupVal() {
 		int minSup = -1;
 		try {
-			minSup = Integer.parseInt(minSupField.getText());
+			if (cb.getSelectedItem().toString().equals(RMMCARD)) {
+				minSup = Integer.parseInt(minSupFieldRMM.getText());
+			} else if (cb.getSelectedItem().toString().equals(RELDIMSCARD)) {
+				minSup = Integer.parseInt(minSupFieldRelDims.getText());
+			}
 		} catch (NumberFormatException e) {
 			minSup = -1;
 		}
@@ -186,7 +226,13 @@ public class MineOptions {
 	public int getNumOfItemSetsVal() {
 		int numOfItemSets = -1;
 		try {
-			numOfItemSets = Integer.parseInt(numOfItemSetsField.getText());
+			if (cb.getSelectedItem().toString().equals(RMMCARD)) {
+				numOfItemSets = Integer.parseInt(numOfItemSetsFieldRMM
+						.getText());
+			} else if (cb.getSelectedItem().toString().equals(RELDIMSCARD)) {
+				numOfItemSets = Integer.parseInt(numOfItemSetsFieldRelDims
+						.getText());
+			}
 		} catch (NumberFormatException e) {
 			numOfItemSets = -1;
 		}
@@ -203,6 +249,7 @@ public class MineOptions {
 
 	// sets the value of the minSup field
 	public void setMinSupVal(int minSup) {
-		minSupField.setText(Integer.toString(minSup));
+		minSupFieldRMM.setText(Integer.toString(minSup));
+		minSupFieldRelDims.setText(Integer.toString(minSup));
 	}
 }

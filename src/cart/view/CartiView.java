@@ -327,6 +327,16 @@ public class CartiView {
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	public void showRelatedDims(int[][] relatedDimsMatrix) {
+		RelatedDims relatedDims = new RelatedDims();
+		relatedDims.init(relatedDimsMatrix);
+
+		JDialog relatedDimsDialog = new JDialog(theFrame, "Related dims");
+		relatedDimsDialog.add(relatedDims.getRelatedDimsPanel());
+		relatedDimsDialog.pack();
+		relatedDimsDialog.setVisible(true);
+	}
+
 	public JFrame getFrame() {
 		return theFrame;
 	}

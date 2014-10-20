@@ -438,6 +438,15 @@ public class CartiModel {
 			}
 		}
 
+		for (int i = 0; i < numDims; i++) {
+			for (int j = 0; j < numDims; j++) {
+				if (i < j) {
+					int temp = relatedDimsMatrix[i][j];
+					relatedDimsMatrix[i][j] += relatedDimsMatrix[j][i];
+					relatedDimsMatrix[j][i] += temp;
+				}
+			}
+		}
 		return relatedDimsMatrix;
 	}
 

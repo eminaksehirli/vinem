@@ -567,15 +567,15 @@ public class CartiController {
 	}
 
 	public void findRelatedDims() {
-		// TODO get from view
-		int minSup = 100;
-		int numItemSets = 2000;
+		int minSup = cartiView.getMiningOptions().getMinSupVal();
+		int numOfItemSets = cartiView.getMiningOptions().getNumOfItemSetsVal();
 
 		// get related dims matrix
 		int[][] relatedDimsMatrix = cartiModel.createRelatedDimsMatrix(minSup,
-				numItemSets);
+				numOfItemSets);
 
 		// TODO give to view
+		cartiView.showRelatedDims(relatedDimsMatrix);
 	}
 
 	// LISTENERS
@@ -602,6 +602,8 @@ public class CartiController {
 					mineRMM(false);
 				} else if (e.getActionCommand() == MineOptions.MINERMMSEL) {
 					mineRMM(true);
+				} else if (e.getActionCommand() == MineOptions.FINDRELDIMS) {
+					findRelatedDims();
 				} else if (e.getActionCommand() == NoiseOptions.SELMEAS) {
 					getNoiseInSelDistMeas();
 				} else if (e.getActionCommand() == NoiseOptions.ALLMEAS) {
@@ -735,7 +737,7 @@ public class CartiController {
 			public void stateChanged(ChangeEvent e) {
 				JSlider slider = (JSlider) e.getSource();
 
-				// slider has stopped moving on a different value than before
+				// slider has stopped moving
 				if (!slider.getValueIsAdjusting()) {
 					slider.setToolTipText(Integer.toString(slider.getValue()));
 					if (slider == cartiView.getKSlider()) {
@@ -767,7 +769,7 @@ public class CartiController {
 
 	private static Set<Integer> arr2Set(final int[] arr) {
 		Set<Integer> s = new HashSet<>(arr.length);
-		for (int i : arr)	{
+		for (int i : arr) {
 			s.add(i);
 		}
 		return s;
