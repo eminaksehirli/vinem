@@ -31,11 +31,11 @@ public class NoiseOptions {
 		// add allMeas/selMeas buttons
 		allMeas = new JButton("Get noise over all measures");
 		allMeas.setActionCommand(ALLMEAS);
-		allMeas.setAlignmentY(Component.CENTER_ALIGNMENT);
+		allMeas.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		selMeas = new JButton("Get noise for selected measure");
 		selMeas.setActionCommand(SELMEAS);
-		selMeas.setAlignmentY(Component.CENTER_ALIGNMENT);
+		selMeas.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		noisePanel.add(allMeas);
 		noisePanel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -45,11 +45,12 @@ public class NoiseOptions {
 		// add minSup textfield
 		JPanel minSupPanel = CartiView.createHorizontalBoxPanel(300, 40);
 		minSupPanel.add(new JLabel("minSup: "));
-		minSupPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		minSupPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		minSupField = new JTextField();
 		minSupField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minSupPanel.add(minSupField);
+		minSupPanel.setMaximumSize(new Dimension(300, 40));
 
 		noisePanel.add(minSupPanel);
 	}

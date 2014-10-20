@@ -35,6 +35,7 @@ public class CartiView {
 	public final static String CLUSTER = "CartiView.Cluster";
 
 	private JFrame theFrame;
+	private JDialog controlsDialog;
 
 	private JSlider orderSlider;
 	private JCheckBox syncOrderSlider;
@@ -164,7 +165,11 @@ public class CartiView {
 
 		// add visual and controls panel to the frame
 		theFrame.add(visualPanel, BorderLayout.CENTER);
-		theFrame.add(controlsPanel, BorderLayout.LINE_END);
+		
+		controlsDialog = new JDialog(theFrame, "Controls");
+		controlsDialog.add(controlsPanel);
+		controlsDialog.pack();
+		controlsDialog.setVisible(true);
 
 		// DIALOGS
 		// initialise selecteds stats dialog
