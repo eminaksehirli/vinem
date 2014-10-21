@@ -570,13 +570,13 @@ public class CartiController {
 		int[][] relatedDimsMatrix = cartiModel.createRelatedDimsMatrix(minSup,
 				numOfItemSets);
 
-		// TODO give to view
 		cartiView.showRelatedDims(relatedDimsMatrix);
 	}
 
 	// LISTENERS
-
-	// listens to all the buttons
+	/**
+	 * @return Listener to listen to all buttons in the view.
+	 */
 	private ActionListener createButtonsListener() {
 		ActionListener listener = new ActionListener() {
 
@@ -621,7 +621,9 @@ public class CartiController {
 		return listener;
 	}
 
-	// listens for changes in selection in the SelOptions list
+	/**
+	 * @return Listener for changes in selection in the SelOptions list.
+	 */
 	private ListSelectionListener createSelOptionsListListener() {
 		ListSelectionListener listener = new ListSelectionListener() {
 
@@ -638,7 +640,9 @@ public class CartiController {
 		return listener;
 	}
 
-	// listens for mouse clicks in the cartiPanel
+	/**
+	 * @return Listener for mouse licks in the cartiPanel figure.
+	 */
 	private MouseListener createCartiPanelListener() {
 		MouseListener listener = new MouseListener() {
 
@@ -699,8 +703,9 @@ public class CartiController {
 		return listener;
 	}
 
-	// listens for changes in the ClusterInfo table (whether a cluster is
-	// visible/not visible)
+	/**
+	 * @return Listener for changes in the ClusterInfo table (whether a cluster is visible/not visible)
+	 */
 	private TableModelListener createClusterTableModelListener() {
 		TableModelListener listener = new TableModelListener() {
 
@@ -725,7 +730,9 @@ public class CartiController {
 		return listener;
 	}
 
-	// listens for changes in the sliders
+	/**
+	 * @return Listener for changes in the sliders.
+	 */
 	private ChangeListener createSliderListener() {
 		ChangeListener listener = new ChangeListener() {
 
@@ -748,7 +755,9 @@ public class CartiController {
 		return listener;
 	}
 
-	// listens to DistOptions combo box selection
+	/**
+	 * @return Listener for DistOptions combo box selection.
+	 */
 	private ActionListener createDistOptionsBoxListener() {
 		ActionListener listener = new ActionListener() {
 
