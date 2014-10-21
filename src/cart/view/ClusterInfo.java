@@ -17,6 +17,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import cart.gui2.Cluster;
 
@@ -43,19 +45,33 @@ public class ClusterInfo {
 		// the table containg cluster information
 		tableModel = new ClusterTable();
 
-		table = new JTable(tableModel);
+		table = new JTable(tableModel) {
+			// make it so column widths automatically fit largest entry
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer,
+					int row, int column) {
+				Component component = super.prepareRenderer(renderer, row,
+						column);
+				int rendererWidth = component.getPreferredSize().width;
+				TableColumn tableColumn = getColumnModel().getColumn(column);
+				tableColumn.setPreferredWidth(Math.max(rendererWidth
+						+ getIntercellSpacing().width,
+						tableColumn.getPreferredWidth()));
+				return component;
+			}
+		};
 		table.setAlignmentX(Component.CENTER_ALIGNMENT);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		table.getColumnModel().getColumn(0).setMaxWidth(50);
-		table.getColumnModel().getColumn(1).setMaxWidth(70);
-		table.getColumnModel().getColumn(2).setMaxWidth(40);
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		table.setAutoCreateRowSorter(true);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-		// make it so text in cluster id and size columns is centered
+		// make it so text is centered
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 		table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 		table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+		table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+		table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
 
 		infoPanel.add(new JScrollPane(table));
 
@@ -98,28 +114,18 @@ public class ClusterInfo {
 
 	public void updateClusterInfo(Map<Integer, Cluster> clustersMap,
 			Set<Integer> clustersToShow) {
-		boolean clustersHaveBeenDeleted = false;
-		int[] selectedRows = table.getSelectedRows();
-
-		// if clusters have been deleted, we don't need to keep selected rows in
-		// sync
-		if (table.getRowCount() > clustersMap.size()) {
-			clustersHaveBeenDeleted = true;
-		}
+		// cluster Ids of selected rows before update
+		Set<Integer> selectedClusterIds = getSelectedRowsClusterIds();
 
 		// update the table
 		tableModel.setRows(clustersMap, clustersToShow);
 
 		// keep selected rows in sync
-		if (!clustersHaveBeenDeleted) {
-			for (int i = 0; i < selectedRows.length; i++) {
-				table.addRowSelectionInterval(selectedRows[i], selectedRows[i]);
-			}
-		}
+		setSelectedRows(selectedClusterIds);
 	}
 
-	// returns the cluster ids on the rows selected by the user (returns null if
-	// no selection)
+	// returns the cluster ids on the rows selected by the user (returns empty
+	// set if no row is selected)
 	public Set<Integer> getSelectedRowsClusterIds() {
 		int rows[] = table.getSelectedRows();
 		Set<Integer> ids = new HashSet<Integer>();
@@ -131,13 +137,22 @@ public class ClusterInfo {
 		return ids;
 	}
 
+	// sets the selected rows to be the rows with given clusterIds
+	private void setSelectedRows(Set<Integer> clusterIds) {
+		for (int row = 0; row < table.getRowCount(); row++) {
+			if (clusterIds.contains(table.getValueAt(row, 1))) {
+				table.addRowSelectionInterval(row, row);
+			}
+		}
+	}
+
 	public JPanel getInfoPanel() {
 		return infoPanel;
 	}
 
 	public class ClusterTable extends AbstractTableModel {
 		private String[] columnNames = { "Visible", "Cluster id", "Size",
-				"Dims", "Objects" };
+				"#Dims", "Dims", "Objects" };
 
 		private Object[][] data;
 
@@ -188,7 +203,7 @@ public class ClusterInfo {
 
 		public void setRows(Map<Integer, Cluster> clustersMap,
 				Set<Integer> clustersToShow) {
-			data = new Object[clustersMap.size()][5];
+			data = new Object[clustersMap.size()][6];
 
 			int row = 0;
 			for (int clusterId : clustersMap.keySet()) {
@@ -206,15 +221,18 @@ public class ClusterInfo {
 				data[row][2] = new Integer(clustersMap.get(clusterId)
 						.getObjects().size());
 
-				// Dims
+				// #Dims
 				Set<Integer> dims = new HashSet<Integer>(clustersMap.get(
 						clusterId).getDims());
-				data[row][3] = dims;
+				data[row][3] = dims.size();
+
+				// Dims
+				data[row][4] = dims;
 
 				// Objects
 				Set<Integer> objs = new HashSet<Integer>(clustersMap.get(
 						clusterId).getObjects());
-				data[row][4] = objs;
+				data[row][5] = objs;
 
 				row++;
 			}
