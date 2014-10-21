@@ -101,8 +101,10 @@ public class DistOptions {
 		cBoxModel.addElement(distMeasure);
 	}
 
-	// returns a set containing the dimensions which were selected by the user
-	// (by clicking on them in the list)
+	/**
+	 * @return Set containing the dimensions which were selected by the user (by
+	 *         clicking on them in the list)
+	 */
 	public Set<Integer> getSelectedDims() {
 		Set<Integer> dims = new HashSet<Integer>(list.getSelectedValuesList());
 

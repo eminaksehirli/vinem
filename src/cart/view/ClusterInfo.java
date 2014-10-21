@@ -124,8 +124,10 @@ public class ClusterInfo {
 		setSelectedRows(selectedClusterIds);
 	}
 
-	// returns the cluster ids on the rows selected by the user (returns empty
-	// set if no row is selected)
+	/**
+	 * @return The cluster ids on the rows selected by the user (returns empty
+	 *         set if no row is selected)
+	 */
 	public Set<Integer> getSelectedRowsClusterIds() {
 		int rows[] = table.getSelectedRows();
 		Set<Integer> ids = new HashSet<Integer>();
@@ -137,7 +139,11 @@ public class ClusterInfo {
 		return ids;
 	}
 
-	// sets the selected rows to be the rows with given clusterIds
+	/**
+	 * Sets the selected rows to be the rows with given clusterIds.
+	 * 
+	 * @param clusterIds
+	 */
 	private void setSelectedRows(Set<Integer> clusterIds) {
 		for (int row = 0; row < table.getRowCount(); row++) {
 			if (clusterIds.contains(table.getValueAt(row, 1))) {

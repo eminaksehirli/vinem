@@ -262,6 +262,11 @@ public class CartiView {
 		return slider;
 	}
 
+	/**
+	 * @param prefWidth
+	 * @param prefHeight
+	 * @return A panel with vertical box layout and given pref width/height.
+	 */
 	public static JPanel createVerticalBoxPanel(int prefWidth, int prefHeight) {
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -270,6 +275,11 @@ public class CartiView {
 		return p;
 	}
 
+	/**
+	 * @param prefWidth
+	 * @param prefHeight
+	 * @return A panel with horizontal box layout and given pref width/height.
+	 */
 	public static JPanel createHorizontalBoxPanel(int prefWidth, int prefHeight) {
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
@@ -315,7 +325,8 @@ public class CartiView {
 		if (selecteds.size() == 0) {
 			selectedsStatsDialog.setVisible(false);
 		} else {
-			selectedsStats.updateStats(selecteds, dimSupports, standardDevs, medAbsDevs);
+			selectedsStats.updateStats(selecteds, dimSupports, standardDevs,
+					medAbsDevs);
 			selectedsStatsDialog.pack();
 			selectedsStatsDialog.setVisible(true);
 		}

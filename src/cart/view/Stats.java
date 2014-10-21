@@ -76,6 +76,9 @@ public class Stats {
 		return statsPanel;
 	}
 
+	/**
+	 * Table containing stats.
+	 */
 	private class StatsTable extends AbstractTableModel {
 
 		private List<String> columnNames;

@@ -102,8 +102,10 @@ public class SelOptions {
 		list.setSelectedIndices(selectedIndices);
 	}
 
-	// returns a set containing the object ids which were selected by the user
-	// (by clicking on them in the list)
+	/**
+	 * @return Set containing the object ids which were selected by the user (by
+	 *         clicking on them in the list)
+	 */
 	public Set<Integer> getSelecteds() {
 		Set<Integer> objIds = new HashSet<Integer>(list.getSelectedValuesList());
 

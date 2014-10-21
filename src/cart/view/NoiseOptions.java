@@ -64,8 +64,10 @@ public class NoiseOptions {
 		return noisePanel;
 	}
 
-	// returns value of the minSup text field, returns -1 if the text field does
-	// not contain an integer larger than 0
+	/**
+	 * @return Value of the minSup text field, returns -1 if the text field does
+	 *         not contain an integer larger than 0
+	 */
 	public int getMinSupVal() {
 		int minSup = -1;
 		try {

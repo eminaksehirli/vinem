@@ -68,6 +68,11 @@ public class RelatedDims {
 		return relatedDimsPanel;
 	}
 
+	/**
+	 * Turns relatedDimsMatrix into JTable
+	 * 
+	 * @param relatedDimsMatrix
+	 */
 	private void createTable(int[][] relatedDimsMatrix) {
 		Object[][] rowData = new Object[relatedDimsMatrix.length][1 + relatedDimsMatrix[0].length];
 		String[] columnNames = new String[1 + relatedDimsMatrix.length];
@@ -100,6 +105,10 @@ public class RelatedDims {
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	}
 
+	/**
+	 * Renders cells of the table, colours them green if they are above the
+	 * slider value.
+	 */
 	public class MyRenderer extends DefaultTableCellRenderer {
 
 		@Override

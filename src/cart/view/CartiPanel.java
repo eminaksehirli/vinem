@@ -18,6 +18,11 @@ public class CartiPanel extends JPanel {
 	private Set<Integer> selectedLocs;
 	private Set<Integer> clusteredLocs;
 
+	/**
+	 * @param matrix
+	 *            A 2d matrix containing 0s and 1s, where a 1 means we need to
+	 *            colour that spot.
+	 */
 	public CartiPanel(int[][] matrix) {
 		this.matrix = matrix;
 		createImage();
@@ -29,6 +34,13 @@ public class CartiPanel extends JPanel {
 		clusteredLocs = new HashSet<Integer>();
 	}
 
+	/**
+	 * Updates the visualisation
+	 * 
+	 * @param m
+	 *            A 2d matrix containing 0s and 1s, where a 1 means we need to
+	 *            colour that spot.
+	 */
 	void updateMatrix(int[][] m) {
 		this.matrix = m;
 		createImage();
@@ -37,8 +49,12 @@ public class CartiPanel extends JPanel {
 		invalidate();
 	}
 
-	// removes colour from locations no longer selected, adds colour to newly
-	// selected locations
+	/**
+	 * Removes colour from locations no longer selected, adds colour to newly
+	 * selected locations
+	 * 
+	 * @param newLocs
+	 */
 	public void updateSelected(Set<Integer> newLocs) {
 		// locations to decolour = copy(selectedLocs) - newLocs
 		Set<Integer> locsToDeColour = new HashSet<Integer>(selectedLocs); // copy
@@ -56,8 +72,12 @@ public class CartiPanel extends JPanel {
 		invalidate();
 	}
 
-	// removes colour from locations no longer clustered, adds colour to newly
-	// clustered locations
+	/**
+	 * Removes colour from locations no longer clustered, adds colour to newly
+	 * clustered locations
+	 * 
+	 * @param newLocs
+	 */
 	public void updateClustered(Set<Integer> newLocs) {
 		// locations to decolour = copy(clusteredLocs) - newLocs
 		Set<Integer> locsToDeColour = new HashSet<Integer>(clusteredLocs); // copy

@@ -177,8 +177,10 @@ public class MineOptions {
 		return minePanel;
 	}
 
-	// returns value of the minLen text field, returns -1 if the text field does
-	// not contain an integer larger than 1
+	/**
+	 * @return Value of the minLen text field, returns -1 if the text field does
+	 *         not contain an integer larger than 1.
+	 */
 	public int getMinLenVal() {
 		int minLen = -1;
 		try {
@@ -197,8 +199,10 @@ public class MineOptions {
 		return minLen;
 	}
 
-	// returns value of the minSup text field, returns -1 if the text field does
-	// not contain an integer larger than 0
+	/**
+	 * @return Value of the minSup text field, returns -1 if the text field does
+	 *         not contain an integer larger than 0
+	 */
 	public int getMinSupVal() {
 		int minSup = -1;
 		try {
@@ -221,8 +225,10 @@ public class MineOptions {
 		return minSup;
 	}
 
-	// returns value of the numOfItemSets text field, returns -1 if the text
-	// field does not contain an integer larger than 0
+	/**
+	 * @return Value of the numOfItemSets text field, returns -1 if the text
+	 *         field does not contain an integer larger than 0
+	 */
 	public int getNumOfItemSetsVal() {
 		int numOfItemSets = -1;
 		try {
@@ -247,7 +253,11 @@ public class MineOptions {
 		return numOfItemSets;
 	}
 
-	// sets the value of the minSup field
+	/**
+	 * Sets the value of the minSup textField.
+	 * 
+	 * @param minSup
+	 */
 	public void setMinSupVal(int minSup) {
 		minSupFieldRMM.setText(Integer.toString(minSup));
 		minSupFieldRelDims.setText(Integer.toString(minSup));
