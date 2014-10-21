@@ -29,6 +29,11 @@ import mime.tool.Utils;
 
 import com.google.common.collect.Lists;
 
+/**
+ * Simplified copy of RandomMaximalMiner which mines itemsets of a certain size,
+ * rather than maximal itemsets.
+ * 
+ */
 public class RandomMiner {
 
 	private final List<PlainItem> allItems;

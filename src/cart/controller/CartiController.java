@@ -40,6 +40,10 @@ import cart.view.MineOptions;
 import cart.view.NoiseOptions;
 import cart.view.SelOptions;
 
+/**
+ * @author Detlev
+ *
+ */
 public class CartiController {
 	private CartiModel cartiModel;
 	private CartiView cartiView;
@@ -113,12 +117,10 @@ public class CartiController {
 		Set<Integer> selecteds = cartiModel.getSelecteds();
 		int[] dimSupports = cartiModel.getSupports(selecteds);
 		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] measures = cartiModel.getMeasures(selecteds);
 		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
 
 		cartiView.updateFigure(matrixToShow);
-		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				measures, medAbsDevs);
+		cartiView.updateSelStats(selecteds, dimSupports, standardDevs, medAbsDevs);
 		cartiView.getMiningOptions().setMinSupVal((int) (k * 0.75));
 	}
 
@@ -130,13 +132,12 @@ public class CartiController {
 		Set<Integer> selecteds = cartiModel.getSelecteds();
 		int[] dimSupports = cartiModel.getSupports(selecteds);
 		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] measures = cartiModel.getMeasures(selecteds);
 		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
 
 		cartiView.updateFigureSelected(selectedLocs);
 		cartiView.updateSelOptions(orderedObjs, selecteds);
 		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				measures, medAbsDevs);
+				medAbsDevs);
 	}
 
 	public void manSelectedsChange(Set<Integer> toSelect) {
@@ -146,12 +147,11 @@ public class CartiController {
 		Set<Integer> selecteds = cartiModel.getSelecteds();
 		int[] dimSupports = cartiModel.getSupports(selecteds);
 		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] measures = cartiModel.getMeasures(selecteds);
 		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
 
 		cartiView.updateFigureSelected(selectedLocs);
 		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				measures, medAbsDevs);
+				medAbsDevs);
 	}
 
 	public void figureSelectedsChange(Set<Integer> locsToSelect) {
@@ -165,13 +165,12 @@ public class CartiController {
 		Set<Integer> selecteds = cartiModel.getSelecteds();
 		int[] dimSupports = cartiModel.getSupports(selecteds);
 		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] measures = cartiModel.getMeasures(selecteds);
 		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
 
 		cartiView.updateFigureSelected(selectedLocs);
 		cartiView.updateSelOptions(orderedObjs, selecteds);
 		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				measures, medAbsDevs);
+				medAbsDevs);
 	}
 
 	public void manFilteredsClear() {
@@ -200,7 +199,6 @@ public class CartiController {
 		Set<Integer> selecteds = cartiModel.getSelecteds();
 		int[] dimSupports = cartiModel.getSupports(selecteds);
 		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] measures = cartiModel.getMeasures(selecteds);
 		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
 		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
 		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
@@ -211,7 +209,7 @@ public class CartiController {
 		cartiView.updateFigureClustered(clusteredLocs);
 		cartiView.updateSelOptions(orderedObjs, selecteds);
 		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				measures, medAbsDevs);
+				medAbsDevs);
 		cartiView.updateClusterInfo(clustersMap, clustersToShow);
 	}
 
@@ -226,7 +224,6 @@ public class CartiController {
 			Set<Integer> selecteds = cartiModel.getSelecteds();
 			int[] dimSupports = cartiModel.getSupports(selecteds);
 			double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-			int[] measures = cartiModel.getMeasures(selecteds);
 			int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
 			Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
 			Set<Integer> clustersToShow = cartiModel.getClustersToShow();
@@ -237,7 +234,7 @@ public class CartiController {
 			cartiView.updateFigureClustered(clusteredLocs);
 			cartiView.updateSelOptions(orderedObjs, selecteds);
 			cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-					measures, medAbsDevs);
+					medAbsDevs);
 			cartiView.updateClusterInfo(clustersMap, clustersToShow);
 		}
 	}
@@ -355,13 +352,12 @@ public class CartiController {
 		Set<Integer> selecteds = cartiModel.getSelecteds();
 		int[] dimSupports = cartiModel.getSupports(selecteds);
 		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] measures = cartiModel.getMeasures(selecteds);
 		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
 
 		cartiView.updateFigureSelected(selectedLocs);
 		cartiView.updateSelOptions(orderedObjs, selecteds);
 		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				measures, medAbsDevs);
+				medAbsDevs);
 	}
 
 	public void showCluster(int clusterId) {

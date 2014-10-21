@@ -311,12 +311,11 @@ public class CartiView {
 	}
 
 	public void updateSelStats(Set<Integer> selecteds, int[] dimSupports,
-			double[] standardDevs, int[] measures, int[] medAbsDevs) {
+			double[] standardDevs, int[] medAbsDevs) {
 		if (selecteds.size() == 0) {
 			selectedsStatsDialog.setVisible(false);
 		} else {
-			selectedsStats.updateStats(selecteds, dimSupports, standardDevs,
-					measures, medAbsDevs);
+			selectedsStats.updateStats(selecteds, dimSupports, standardDevs, medAbsDevs);
 			selectedsStatsDialog.pack();
 			selectedsStatsDialog.setVisible(true);
 		}

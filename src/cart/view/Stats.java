@@ -49,7 +49,7 @@ public class Stats {
 	}
 
 	public void updateStats(Set<Integer> objIds, int[] dimSupports,
-			double[] standardDevs, int[] measures, int[] medAbsDevs) {
+			double[] standardDevs, int[] medAbsDevs) {
 		sizeLabel.setText(String.valueOf(objIds.size()));
 
 		Object[] supps = new Object[dimSupports.length];
@@ -62,17 +62,12 @@ public class Stats {
 			devs[i] = standardDevs[i];
 		}
 
-		Object[] measrs = new Object[measures.length];
-		for (int i = 0; i < measures.length; i++) {
-			measrs[i] = measures[i];
-		}
-
 		Object[] mads = new Object[medAbsDevs.length];
 		for (int i = 0; i < medAbsDevs.length; i++) {
 			mads[i] = medAbsDevs[i];
 		}
 
-		tableModel.setCols(supps, devs, measrs, mads);
+		tableModel.setCols(supps, devs, mads);
 
 		objIdsArea.setText(objIds.toString());
 	}
@@ -142,7 +137,7 @@ public class Stats {
 		}
 
 		public void setCols(Object[] supports, Object[] devs,
-				Object[] measures, Object[] medAbsDevs) {
+				Object[] medAbsDevs) {
 			data.clear();
 			columnNames.clear();
 			data.add(dims);
@@ -151,8 +146,6 @@ public class Stats {
 			columnNames.add("Support");
 			data.add(devs);
 			columnNames.add("Standard Deviation");
-			data.add(measures);
-			columnNames.add("Measure");
 			data.add(medAbsDevs);
 			columnNames.add("Med. Abs. Dev.");
 
@@ -161,8 +154,7 @@ public class Stats {
 			table.getColumnModel().getColumn(0).setPreferredWidth(80);
 			table.getColumnModel().getColumn(1).setPreferredWidth(80);
 			table.getColumnModel().getColumn(2).setPreferredWidth(130);
-			table.getColumnModel().getColumn(3).setPreferredWidth(100);
-			table.getColumnModel().getColumn(4).setPreferredWidth(130);
+			table.getColumnModel().getColumn(3).setPreferredWidth(130);
 		}
 
 	}

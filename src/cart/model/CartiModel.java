@@ -26,6 +26,12 @@ import cart.gui2.OneDimDistMeasure;
 import cart.maximizer.MaximalMinerCombiner;
 import cart.maximizer.OneDCartifier;
 
+/**
+ * The main model class.
+ * 
+ * @author Detlev
+ * 
+ */
 public class CartiModel {
 	private String filePath;
 	private int numObjects;
@@ -46,6 +52,16 @@ public class CartiModel {
 	private List<DistMeasure> distMeasures;
 	private int selectedDistMeasureId;
 
+	/**
+	 * Initializes the model.
+	 * 
+	 * @param filePath
+	 *            path for the data
+	 * @param k
+	 *            the initial k value
+	 * @param orderDim
+	 *            the initial order value
+	 */
 	public void init(final String filePath, int k, int orderDim) {
 		this.filePath = filePath;
 		this.k = k;
@@ -83,7 +99,9 @@ public class CartiModel {
 		updateCartiDb();
 	}
 
-	// updates the id2loc and loc2id maps when filtereds has changed
+	/**
+	 * Updates the id2loc and loc2id maps, taking filtereds into account.
+	 */
 	private void updateMaps() {
 		initMaps();
 
@@ -106,17 +124,18 @@ public class CartiModel {
 		}
 	}
 
-	// updates the cartiDb
 	private void updateCartiDb() {
 		cartiDb = new MyCartifyDbInMemory(filePath, k, distMeasures);
 		cartiDb.cartify();
 	}
 
-	// adds a distance measure to the cartiDb
 	private void addDistMeasureToCartiDb(DistMeasure measure) {
 		cartiDb.addDistMeasure(measure);
 	}
 
+	/**
+	 * Initializes the id2loc and loc2id maps.
+	 */
 	private void initMaps() {
 		objId2LocMaps = new int[numDims][];
 		loc2ObjIdMaps = new int[numDims][];
@@ -132,6 +151,10 @@ public class CartiModel {
 		}
 	}
 
+	/**
+	 * @return A 2d matrix containing 0s and 1s, where a 1 means we need to
+	 *         colour that spot.
+	 */
 	public int[][] getMatrixToShow() {
 		int[][] matrixToShow = new int[numObjects - filtereds.size()][numObjects
 				- filtereds.size()];
@@ -170,8 +193,10 @@ public class CartiModel {
 		return dims;
 	}
 
-	// returns a list of all object Ids except those which are filtered, ordered
-	// for a given dimension
+	/**
+	 * @return A list of all object Ids except those which are filtered, ordered
+	 *         for a given dimension.
+	 */
 	public List<Integer> getOrderedObjList() {
 		List<Integer> orderedObjs = new ArrayList<Integer>();
 
@@ -190,13 +215,17 @@ public class CartiModel {
 		return distMeasures.get(selectedDistMeasureId);
 	}
 
-	// returns the projection db for the selected dist measure
+	/**
+	 * @return The projection db for the selected dist measure.
+	 */
 	public PlainItemDB getSelectedProjDb() {
 		return cartiDb.getProjDbs().get(selectedDistMeasureId);
 	}
 
-	// returns the projection db, containing only the carts of selected objects,
-	// for the selected dist measure
+	/**
+	 * @return The projection db, containing only the carts of selected objects,
+	 *         for the selected dist measure.
+	 */
 	public PlainItemDB getSelectedProjDbOnlySelected() {
 		PlainItemDB db = cartiDb.getProjDbs().get(selectedDistMeasureId);
 
@@ -211,8 +240,12 @@ public class CartiModel {
 		return onlySelected;
 	}
 
-	// gets the object ids of each object with a support < minSup in the
-	// selected distMeasure
+	/**
+	 * @param minSup
+	 *            the minSup threshold
+	 * @return The object ids of each object with a support < minSup in the
+	 *         selected distMeasure.
+	 */
 	public Set<Integer> getNoiseObjsInSelDistMeas(int minSup) {
 		Set<Integer> noiseObjects = new HashSet<Integer>();
 
@@ -230,8 +263,12 @@ public class CartiModel {
 		return noiseObjects;
 	}
 
-	// gets the object ids of each object with a support < minSup in every
-	// distMeasure
+	/**
+	 * @param minSup
+	 *            the minSup threshold
+	 * @return The object ids of each object with a support < minSup in every
+	 *         distMeasure.
+	 */
 	public Set<Integer> getNoiseObjsInAllDistMeas(int minSup) {
 		Set<Integer> noiseObjects = new HashSet<Integer>();
 
@@ -255,7 +292,10 @@ public class CartiModel {
 		return noiseObjects;
 	}
 
-	// returns the support in each dimension of a given set of object Ids
+	/**
+	 * @param objIds
+	 * @return The support in each 1d dimension of a given set of object Ids.
+	 */
 	public int[] getSupports(Set<Integer> objIds) {
 		for (int id : objIds) {
 			if (filtereds.contains(id)) {
@@ -287,7 +327,11 @@ public class CartiModel {
 		return dimSupports;
 	}
 
-	// calculates the standard deviation of the given objects in every dimension
+	/**
+	 * @param objIds
+	 * @return The standard deviation in each 1d dimension of a given set of
+	 *         object Ids.
+	 */
 	public double[] getStandardDeviations(Set<Integer> objIds) {
 		for (int id : objIds) {
 			if (filtereds.contains(id)) {
@@ -317,38 +361,10 @@ public class CartiModel {
 		return standardDeviations;
 	}
 
-	// TODO name of measure?
-	// calculates the measure of the given objects in every dimension
-	public int[] getMeasures(Set<Integer> objIds) {
-		for (int id : objIds) {
-			if (filtereds.contains(id)) {
-				System.err
-						.println("Getting Measure for object which has been filtered: "
-								+ id);
-			}
-		}
-
-		if (objIds.size() == 0) {
-			return new int[0];
-		}
-
-		int[] measures = new int[dims.size()];
-		double[] means = getMeans(objIds);
-		double[] deviations = getStandardDeviations(objIds);
-
-		for (int dimIx = 0; dimIx < dims.size(); dimIx++) {
-			measures[dimIx] = 0;
-			for (int id : objIds) {
-				if (Math.abs(origData[id][dimIx].v - means[dimIx]) > deviations[dimIx]) {
-					measures[dimIx]++;
-				}
-			}
-		}
-
-		return measures;
-	}
-
-	// calculates the mean of the given objects in every dimension
+	/**
+	 * @param objIds
+	 * @return The mean in each 1d dimension of a given set of object Ids.
+	 */
 	private double[] getMeans(Set<Integer> objIds) {
 		double[] means = new double[dims.size()];
 
@@ -363,8 +379,11 @@ public class CartiModel {
 		return means;
 	}
 
-	// Calculates the median absolute deviation based on locations of the given
-	// objects in every dimension
+	/**
+	 * @param objIds
+	 * @return The median absoluate deviation in each 1d dimension of a given
+	 *         set of object Ids.
+	 */
 	public int[] getLocsMedAbsDev(Set<Integer> objIds) {
 		for (int id : objIds) {
 			if (filtereds.contains(id)) {
@@ -418,6 +437,15 @@ public class CartiModel {
 		return medianDists;
 	}
 
+	/**
+	 * Calculates a similarity matrix for the 1d dimensions. This is done by
+	 * finding numItemSets FIS (based on minSup) of size 5 in each dimension and
+	 * seeing how many of those are frequent in the other dimensions.
+	 * 
+	 * @param minSup
+	 * @param numItemSets
+	 * @return Symmetric 2d matrix showing dimension similarity.
+	 */
 	public int[][] createRelatedDimsMatrix(int minSup, int numItemSets) {
 		int itemSetSize = 5;
 		int[][] relatedDimsMatrix = new int[numDims][numDims];
@@ -438,6 +466,7 @@ public class CartiModel {
 			}
 		}
 
+		// turn into symmetric matrix
 		for (int i = 0; i < numDims; i++) {
 			for (int j = 0; j < numDims; j++) {
 				if (i < j) {
@@ -450,7 +479,11 @@ public class CartiModel {
 		return relatedDimsMatrix;
 	}
 
-	// returns the support of a given PlainItemSet in a given dimension
+	/**
+	 * @param set
+	 * @param dim
+	 * @return The support of a given PlainItemSet in a given dimension.
+	 */
 	private int getSupportInDim(PlainItemSet set, int dim) {
 		PlainItemDB pDb = cartiDb.getProjDbs().get(dim);
 
@@ -479,6 +512,14 @@ public class CartiModel {
 		return locs;
 	}
 
+	/**
+	 * Sets/intersects/adds the selecteds to/with selectedLocs.
+	 * 
+	 * @param selectedLocs
+	 * @param set
+	 * @param intersect
+	 * @param add
+	 */
 	public void selectLocs(Set<Integer> selectedLocs, boolean set,
 			boolean intersect, boolean add) {
 		Set<Integer> selectedIds = new HashSet<Integer>();
@@ -517,7 +558,9 @@ public class CartiModel {
 		return filtereds;
 	}
 
-	// add selecteds to filtereds
+	/**
+	 * Add selecteds to filtereds.
+	 */
 	public void filterSelecteds() {
 		this.savedStates.push(new Memento(selecteds, filtereds, clustersMap));
 		this.filtereds.addAll(selecteds);
@@ -570,7 +613,11 @@ public class CartiModel {
 		return clustersToShow;
 	}
 
-	// selects the objects in the given clusters
+	/**
+	 * Selects the objects in the given clusters.
+	 * 
+	 * @param clusterIds
+	 */
 	public void selectClusters(Set<Integer> clusterIds) {
 		selecteds = new HashSet<Integer>();
 
@@ -579,23 +626,37 @@ public class CartiModel {
 		}
 	}
 
-	// create a new cluster from the selecteds
+	/**
+	 * Create a new cluster from the selecteds.
+	 */
 	public void clusterSelecteds() {
 		clustersMap.put(clusterIdCount, new Cluster(selecteds, dims));
 		clusterIdCount++;
 	}
 
-	// add selecteds to the cluster with given id
+	/**
+	 * Add selecteds to the cluster with given id
+	 * 
+	 * @param clusterId
+	 */
 	public void addSelectedsToCluster(int clusterId) {
 		clustersMap.get(clusterId).addObjects(selecteds);
 	}
 
-	// removes selecteds from the cluster with given id
+	/**
+	 * Removes selecteds from the cluster with given id
+	 * 
+	 * @param clusterId
+	 */
 	public void removeSelectedsFromCluster(int clusterId) {
 		clustersMap.get(clusterId).removeObjects(selecteds);
 	}
 
-	// add the clusters to the clustersMap after removing the filtered objects
+	/**
+	 * Add the clusters to the clustersMap after removing the filtered objects.
+	 * 
+	 * @param cluster
+	 */
 	public void addCluster(Cluster cluster) {
 		cluster.removeObjects(filtereds);
 
@@ -603,23 +664,38 @@ public class CartiModel {
 		clusterIdCount++;
 	}
 
-	// deletes the cluster with given id
+	/**
+	 * Deletes the cluster with given id.
+	 * 
+	 * @param clusterId
+	 */
 	public void deleteCluster(int clusterId) {
 		clustersMap.remove(clusterId);
 		clustersToShow.remove(clusterId);
 	}
 
-	// marks the cluster with given id to be shown
+	/**
+	 * Marks the cluster with given id to be shown.
+	 * 
+	 * @param clusterId
+	 */
 	public void showCluster(int clusterId) {
 		clustersToShow.add(clusterId);
 	}
 
-	// marks the cluster with given id to not be shown
+	/**
+	 * Marks the cluster with given id to not be shown.
+	 * 
+	 * @param clusterId
+	 */
 	public void hideCluster(int clusterId) {
 		clustersToShow.remove(clusterId);
 	}
 
-	// returns whether a cluster is visible
+	/**
+	 * @param clusterId
+	 * @return Whether a cluster is visible.
+	 */
 	public boolean clusterIsVisible(int clusterId) {
 		return clustersToShow.contains(clusterId);
 	}
@@ -646,6 +722,10 @@ public class CartiModel {
 		addDistMeasureToCartiDb(distMeasure);
 	}
 
+	/**
+	 * Keeps track of selecteds/filtereds/clustersMap to allow undo of
+	 * filtering.
+	 */
 	private static class Memento {
 		private final Set<Integer> selecteds;
 		private final Set<Integer> filtereds;
