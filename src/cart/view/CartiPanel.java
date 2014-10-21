@@ -22,7 +22,7 @@ public class CartiPanel extends JPanel {
 		this.matrix = matrix;
 		createImage();
 
-		setMinimumSize(new Dimension(matrix.length+15, matrix[0].length+15));
+		setMinimumSize(new Dimension(matrix.length + 15, matrix[0].length + 15));
 		cellWidth = 10;
 		cellHeight = 10;
 		selectedLocs = new HashSet<Integer>();
@@ -85,7 +85,7 @@ public class CartiPanel extends JPanel {
 		if (matrix.length == 0) {
 			return new Dimension(600, 600);
 		}
-		return new Dimension(matrix[0].length+15, matrix.length+15);
+		return new Dimension(matrix[0].length + 15, matrix.length + 15);
 	}
 
 	@Override

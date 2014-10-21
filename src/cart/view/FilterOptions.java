@@ -26,7 +26,7 @@ public class FilterOptions {
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("Filtering"));
 
 		// add filter/undo buttons
-		filter = new JButton("Filter");
+		filter = new JButton("Filter out");
 		filter.setActionCommand(FILTER);
 		filter.setAlignmentX(Component.CENTER_ALIGNMENT);
 

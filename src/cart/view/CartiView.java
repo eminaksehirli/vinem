@@ -7,6 +7,8 @@ import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -117,15 +119,35 @@ public class CartiView {
 		kSliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		controlsPanelLeft.add(kSliderLabel);
 		kSlider = createSlider(1, maxK);
+		kSlider.addMouseWheelListener(new MouseWheelListener() {
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				int change = -e.getWheelRotation();
+				final JSlider s = JSlider.class.cast(e.getSource());
+				s.setValue(s.getValue() + change);
+			}
+
+		});
 		controlsPanelLeft.add(kSlider);
 		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 20)));
 
 		// add slider for order_1
-		JLabel order_1SliderLabel = new JLabel("order_1");
+		JLabel order_1SliderLabel = new JLabel("order");
 		order_1SliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		controlsPanelLeft.add(order_1SliderLabel);
 		orderSlider = createSlider(0, dims.size() - 1);
 		orderSlider.setMinorTickSpacing(1);
+		orderSlider.addMouseWheelListener(new MouseWheelListener() {
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				int change = -e.getWheelRotation();
+				final JSlider s = JSlider.class.cast(e.getSource());
+				s.setValue(s.getValue() + change);
+			}
+
+		});
 		controlsPanelLeft.add(orderSlider);
 
 		// add checkbox for syncing order_1 with distanceOptions
@@ -165,7 +187,7 @@ public class CartiView {
 
 		// add visual and controls panel to the frame
 		theFrame.add(visualPanel, BorderLayout.CENTER);
-		
+
 		controlsDialog = new JDialog(theFrame, "Controls");
 		controlsDialog.add(controlsPanel);
 		controlsDialog.pack();

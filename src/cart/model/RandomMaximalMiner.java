@@ -60,6 +60,7 @@ import com.google.common.collect.Lists;
  */
 public class RandomMaximalMiner {
 	private static final int DefaultSeedSize = 100;
+
 	// private static final int N_THREADS = 4;
 
 	public static class EqualMeasure implements ItemSetMeasure {
