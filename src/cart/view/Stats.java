@@ -35,6 +35,7 @@ public class Stats {
 		// show the table containing stats
 		tableModel = new StatsTable(dims);
 		table = new JTable(tableModel);
+		table.setAutoCreateRowSorter(true);
 
 		// show the obj Ids of the set
 		objIdsArea = new JTextArea(4, 2);
@@ -67,7 +68,12 @@ public class Stats {
 			mads[i] = medAbsDevs[i];
 		}
 
+		// keep sorting the same after update
+		List keys = table.getRowSorter().getSortKeys();
+
 		tableModel.setCols(supps, devs, mads);
+
+		table.getRowSorter().setSortKeys(keys);
 
 		objIdsArea.setText(objIds.toString());
 	}
