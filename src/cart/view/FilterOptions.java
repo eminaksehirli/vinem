@@ -12,41 +12,59 @@ import javax.swing.JPanel;
 public class FilterOptions {
 
 	public final static String UNDO = "FilterOptions.Undo";
-	public final static String FILTER = "FilterOptions.Filter";
+	public final static String FILTERSEL = "FilterOptions.FilterSel";
+	public final static String FILTERNOTSEL = "FilterOptions.FilterNotSel";
 	public final static String CLEAR = "FilterOptions.Clear";
 
 	private JPanel optionsPanel;
 	private JButton undo;
-	private JButton filter;
+	private JButton filterSel;
+	private JButton filterNotSel;
 	private JButton clear;
 
 	public void init() {
 		// the main panel
-		optionsPanel = CartiView.createHorizontalBoxPanel(300, 50);
+		optionsPanel = CartiView.createVerticalBoxPanel(300, 100);
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("Filtering"));
 
-		// add filter/undo buttons
-		filter = new JButton("Filter out");
-		filter.setActionCommand(FILTER);
-		filter.setAlignmentX(Component.CENTER_ALIGNMENT);
+		// top two buttons
+		JPanel topPanel = CartiView.createHorizontalBoxPanel(300, 50);
 
-		clear = new JButton("Clear");
+		// bottom two buttons
+		JPanel bottomPanel = CartiView.createHorizontalBoxPanel(300, 50);
+
+		// add filter/clear/undo buttons
+		filterSel = new JButton("Filter out selected");
+		filterSel.setActionCommand(FILTERSEL);
+		filterSel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		clear = new JButton("Clear filtereds");
 		clear.setActionCommand(CLEAR);
 		clear.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		filterNotSel = new JButton("Filter out non-selected");
+		filterNotSel.setActionCommand(FILTERNOTSEL);
+		filterNotSel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		undo = new JButton("Undo");
 		undo.setActionCommand(UNDO);
 		undo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		optionsPanel.add(filter);
-		optionsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-		optionsPanel.add(clear);
-		optionsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-		optionsPanel.add(undo);
+		topPanel.add(filterSel);
+		topPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		topPanel.add(clear);
+
+		bottomPanel.add(filterNotSel);
+		bottomPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		bottomPanel.add(undo);
+
+		optionsPanel.add(topPanel);
+		optionsPanel.add(bottomPanel);
 	}
 
 	public void addButtonsListener(ActionListener buttonsListener) {
-		filter.addActionListener(buttonsListener);
+		filterSel.addActionListener(buttonsListener);
+		filterNotSel.addActionListener(buttonsListener);
 		clear.addActionListener(buttonsListener);
 		undo.addActionListener(buttonsListener);
 	}

@@ -25,7 +25,8 @@ import cart.gui2.Cluster;
 public class ClusterInfo {
 
 	public final static String ADD = "ClusterInfo.Add";
-	public final static String REMOVE = "ClusterInfo.Remove";
+	public final static String REMOVESEL = "ClusterInfo.RemoveSel";
+	public final static String REMOVEFIL = "ClusterInfo.RemoveFil";
 	public final static String DELETE = "ClusterInfo.Delete";
 	public final static String SELECT = "ClusterInfo.Select";
 
@@ -34,13 +35,14 @@ public class ClusterInfo {
 	private ClusterTable tableModel;
 
 	private JButton add;
-	private JButton remove;
+	private JButton removeSel;
+	private JButton removeFil;
 	private JButton delete;
 	private JButton select;
 
 	public void init() {
 		// the main panel
-		infoPanel = CartiView.createVerticalBoxPanel(600, 300);
+		infoPanel = CartiView.createVerticalBoxPanel(600, 350);
 
 		// the table containg cluster information
 		tableModel = new ClusterTable();
@@ -76,12 +78,10 @@ public class ClusterInfo {
 		infoPanel.add(new JScrollPane(table));
 
 		// add/remove/delete/select buttons
-		JPanel buttonsPanel = CartiView.createHorizontalBoxPanel(600, 50);
-		add = new JButton("Add to cluster(s)");
+		JPanel topButtonsPanel = CartiView.createHorizontalBoxPanel(600, 50);
+		JPanel bottomButtonsPanel = CartiView.createHorizontalBoxPanel(600, 50);
+		add = new JButton("Add selecteds to cluster(s)");
 		add.setActionCommand(ADD);
-
-		remove = new JButton("Remove from cluster(s)");
-		remove.setActionCommand(REMOVE);
 
 		delete = new JButton("Delete cluster(s)");
 		delete.setActionCommand(DELETE);
@@ -89,21 +89,30 @@ public class ClusterInfo {
 		select = new JButton("Select cluster(s)");
 		select.setActionCommand(SELECT);
 
-		buttonsPanel.add(add);
-		buttonsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-		buttonsPanel.add(remove);
-		buttonsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-		buttonsPanel.add(delete);
-		buttonsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-		buttonsPanel.add(select);
-		buttonsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		removeSel = new JButton("Remove selecteds from cluster(s)");
+		removeSel.setActionCommand(REMOVESEL);
 
-		infoPanel.add(buttonsPanel);
+		removeFil = new JButton("Remove filtereds from cluster(s)");
+		removeFil.setActionCommand(REMOVEFIL);
+
+		topButtonsPanel.add(add);
+		topButtonsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		topButtonsPanel.add(delete);
+		topButtonsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		topButtonsPanel.add(select);
+
+		bottomButtonsPanel.add(removeSel);
+		bottomButtonsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		bottomButtonsPanel.add(removeFil);
+
+		infoPanel.add(topButtonsPanel);
+		infoPanel.add(bottomButtonsPanel);
 	}
 
 	public void addButtonsListener(ActionListener buttonsListener) {
 		add.addActionListener(buttonsListener);
-		remove.addActionListener(buttonsListener);
+		removeSel.addActionListener(buttonsListener);
+		removeFil.addActionListener(buttonsListener);
 		delete.addActionListener(buttonsListener);
 		select.addActionListener(buttonsListener);
 	}

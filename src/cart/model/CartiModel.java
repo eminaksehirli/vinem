@@ -562,24 +562,34 @@ public class CartiModel {
 	 * Add selecteds to filtereds.
 	 */
 	public void filterSelecteds() {
-		this.savedStates.push(new Memento(selecteds, filtereds, clustersMap));
+		this.savedStates.push(new Memento(selecteds, filtereds));
 		this.filtereds.addAll(selecteds);
 		updateMaps();
 
-		// remove filtered objects from clusters
-		for (int clusterId : clustersMap.keySet()) {
-			removeSelectedsFromCluster(clusterId);
-		}
-
 		// remove filtered objects from selected
 		clearSelecteds();
+	}
+
+	/**
+	 * Add everything but the selecteds to filtereds.
+	 */
+	public void filterNotSelecteds() {
+		this.savedStates.push(new Memento(selecteds, filtereds));
+
+		// loop over every non-filtered object id
+		for (int objId : loc2ObjIdMaps[orderDim]) {
+			if (!selecteds.contains(objId)) {
+				this.filtereds.add(objId);
+			}
+		}
+
+		updateMaps();
 	}
 
 	public void undoFiltering() {
 		Memento state = savedStates.pop();
 		this.selecteds = state.getSelecteds();
 		this.filtereds = state.getFiltereds();
-		this.clustersMap = state.getClustersMap();
 		updateMaps();
 	}
 
@@ -588,7 +598,7 @@ public class CartiModel {
 	}
 
 	public void clearFiltereds() {
-		this.savedStates.push(new Memento(selecteds, filtereds, clustersMap));
+		this.savedStates.push(new Memento(selecteds, filtereds));
 		this.filtereds.clear();
 		updateMaps();
 	}
@@ -602,7 +612,10 @@ public class CartiModel {
 
 		for (int clusterId : clustersToShow) {
 			for (int objId : clustersMap.get(clusterId).getObjects()) {
-				locs.add(objId2LocMaps[orderDim][objId]);
+				// cluster might contain filtered ids
+				if (!filtereds.contains(objId)) {
+					locs.add(objId2LocMaps[orderDim][objId]);
+				}
 			}
 		}
 
@@ -621,8 +634,13 @@ public class CartiModel {
 	public void selectClusters(Set<Integer> clusterIds) {
 		selecteds = new HashSet<Integer>();
 
-		for (int id : clusterIds) {
-			selecteds.addAll(clustersMap.get(id).getObjects());
+		for (int cid : clusterIds) {
+			for (int objId : clustersMap.get(cid).getObjects()) {
+				if (!filtereds.contains(objId)) {
+					// cluster might contain filtered ids
+					selecteds.add(objId);
+				}
+			}
 		}
 	}
 
@@ -653,13 +671,20 @@ public class CartiModel {
 	}
 
 	/**
-	 * Add the clusters to the clustersMap after removing the filtered objects.
+	 * Removes filtereds from the cluster with given id
+	 * 
+	 * @param clusterId
+	 */
+	public void removeFilteredsFromCluster(int clusterId) {
+		clustersMap.get(clusterId).removeObjects(filtereds);
+	}
+
+	/**
+	 * Add the clusters to the clustersMap.
 	 * 
 	 * @param cluster
 	 */
 	public void addCluster(Cluster cluster) {
-		cluster.removeObjects(filtereds);
-
 		clustersMap.put(clusterIdCount, cluster);
 		clusterIdCount++;
 	}
@@ -723,26 +748,17 @@ public class CartiModel {
 	}
 
 	/**
-	 * Keeps track of selecteds/filtereds/clustersMap to allow undo of
-	 * filtering.
+	 * Keeps track of selecteds/filtereds to allow undo of filtering.
 	 */
 	private static class Memento {
 		private final Set<Integer> selecteds;
 		private final Set<Integer> filtereds;
-		private final Map<Integer, Cluster> clustersMap;
 
 		public Memento(Set<Integer> selectedsToSave,
-				Set<Integer> filteredsToSave,
-				Map<Integer, Cluster> clustersMapToSave) {
+				Set<Integer> filteredsToSave) {
 
 			selecteds = new HashSet<Integer>(selectedsToSave);
 			filtereds = new HashSet<Integer>(filteredsToSave);
-
-			clustersMap = new TreeMap<Integer, Cluster>();
-			for (int clusterId : clustersMapToSave.keySet()) {
-				Cluster cluster = new Cluster(clustersMapToSave.get(clusterId));
-				clustersMap.put(clusterId, cluster);
-			}
 		}
 
 		public Set<Integer> getSelecteds() {
@@ -751,10 +767,6 @@ public class CartiModel {
 
 		public Set<Integer> getFiltereds() {
 			return filtereds;
-		}
-
-		public Map<Integer, Cluster> getClustersMap() {
-			return clustersMap;
 		}
 	}
 }

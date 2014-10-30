@@ -42,7 +42,7 @@ import cart.view.SelOptions;
 
 /**
  * @author Detlev
- *
+ * 
  */
 public class CartiController {
 	private CartiModel cartiModel;
@@ -120,7 +120,8 @@ public class CartiController {
 		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
 
 		cartiView.updateFigure(matrixToShow);
-		cartiView.updateSelStats(selecteds, dimSupports, standardDevs, medAbsDevs);
+		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
+				medAbsDevs);
 		cartiView.getMiningOptions().setMinSupVal((int) (k * 0.75));
 	}
 
@@ -189,8 +190,17 @@ public class CartiController {
 		cartiView.updateSelOptions(orderedObjs, selecteds);
 	}
 
-	public void filterSelecteds() {
-		cartiModel.filterSelecteds();
+	/**
+	 * Filters either every selected object, or every non-selected object.
+	 * 
+	 * @param filterOutSelected
+	 */
+	public void filter(boolean filterOutSelected) {
+		if (filterOutSelected) {
+			cartiModel.filterSelecteds();
+		} else {
+			cartiModel.filterNotSelecteds();
+		}
 
 		int[][] matrixToShow = cartiModel.getMatrixToShow();
 		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
@@ -277,7 +287,12 @@ public class CartiController {
 		}
 	}
 
-	public void removeSelectedFromClusters() {
+	/**
+	 * Removes either the selecteds or the filtereds from the clusters.
+	 * 
+	 * @param removeSelecteds
+	 */
+	public void removeFromClusters(boolean removeSelecteds) {
 		Set<Integer> clusterIds = cartiView.getClusterInfo()
 				.getSelectedRowsClusterIds();
 
@@ -287,7 +302,11 @@ public class CartiController {
 		}
 
 		for (int id : clusterIds) {
-			cartiModel.removeSelectedsFromCluster(id);
+			if (removeSelecteds) {
+				cartiModel.removeSelectedsFromCluster(id);
+			} else {
+				cartiModel.removeFilteredsFromCluster(id);
+			}
 		}
 
 		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
@@ -588,8 +607,10 @@ public class CartiController {
 					manFilteredsClear();
 				} else if (e.getActionCommand() == FilterOptions.UNDO) {
 					undoFiltering();
-				} else if (e.getActionCommand() == FilterOptions.FILTER) {
-					filterSelecteds();
+				} else if (e.getActionCommand() == FilterOptions.FILTERSEL) {
+					filter(true);
+				} else if (e.getActionCommand() == FilterOptions.FILTERNOTSEL) {
+					filter(false);
 				} else if (e.getActionCommand() == DistOptions.ADD) {
 					addDistMeasure();
 				} else if (e.getActionCommand() == MineOptions.MINEIMM) {
@@ -608,8 +629,10 @@ public class CartiController {
 					clusterSelected();
 				} else if (e.getActionCommand() == ClusterInfo.ADD) {
 					addSelectedToClusters();
-				} else if (e.getActionCommand() == ClusterInfo.REMOVE) {
-					removeSelectedFromClusters();
+				} else if (e.getActionCommand() == ClusterInfo.REMOVESEL) {
+					removeFromClusters(true);
+				} else if (e.getActionCommand() == ClusterInfo.REMOVEFIL) {
+					removeFromClusters(false);
 				} else if (e.getActionCommand() == ClusterInfo.DELETE) {
 					deleteClusters();
 				} else if (e.getActionCommand() == ClusterInfo.SELECT) {
@@ -704,7 +727,8 @@ public class CartiController {
 	}
 
 	/**
-	 * @return Listener for changes in the ClusterInfo table (whether a cluster is visible/not visible)
+	 * @return Listener for changes in the ClusterInfo table (whether a cluster
+	 *         is visible/not visible)
 	 */
 	private TableModelListener createClusterTableModelListener() {
 		TableModelListener listener = new TableModelListener() {
