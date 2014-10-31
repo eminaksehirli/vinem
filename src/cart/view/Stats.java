@@ -40,6 +40,7 @@ public class Stats {
 		// show the obj Ids of the set
 		objIdsArea = new JTextArea(4, 2);
 		objIdsArea.setText("[]");
+		objIdsArea.setLineWrap(true);
 		objIdsArea.setEditable(false);
 		JScrollPane sPane = new JScrollPane(objIdsArea);
 		sPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
