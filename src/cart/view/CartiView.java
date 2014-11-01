@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JViewport;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
@@ -345,8 +346,21 @@ public class CartiView {
 		clusterInfoListenerShouldListen = true;
 	}
 
+	/**
+	 * Updates the orderSlider to be equal to a given order. A changeEvent is
+	 * fired even when the order does not actually change. This is necessary to
+	 * allow the syncing of orderSlider to the Selected Dist Measure
+	 * 
+	 * @param order
+	 */
 	public void updateOrderSlider(int order) {
-		orderSlider.setValue(order);
+		if (orderSlider.getValue() != order) {
+			orderSlider.setValue(order);
+		} else {
+			for (ChangeListener cl : orderSlider.getChangeListeners()) {
+				cl.stateChanged(new ChangeEvent(orderSlider));
+			}
+		}
 	}
 
 	public void updateSelectedDistMeasureId(int id) {
