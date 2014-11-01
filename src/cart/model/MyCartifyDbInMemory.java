@@ -13,7 +13,9 @@ import java.util.concurrent.TimeUnit;
 
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
+import cart.cartifier.CartifierInMemory;
 import cart.gui2.DistMeasure;
+import cart.gui2.OneDimDistMeasure;
 
 public class MyCartifyDbInMemory {
 
@@ -29,10 +31,21 @@ public class MyCartifyDbInMemory {
 		@Override
 		public void run() {
 			log("Creating cart for distMeasure #" + distMeasureIx);
-			MyCartifierInMemory cartifier = new MyCartifierInMemory(
-					originalDatabase);
-			cartifier.cartifyNumeric(distMeasure, k);
-			projectedDbs.set(distMeasureIx, cartifier.itemDb);
+
+			if (distMeasure.getClass().equals(OneDimDistMeasure.class)) {
+				// use carti-bander Cartifier for 1-dimensional dist measures
+				CartifierInMemory cartifier = new CartifierInMemory(
+						originalDatabase);
+				int[] dimension = { distMeasureIx };
+				cartifier.cartifyNumeric(dimension, k);
+				projectedDbs.set(distMeasureIx, cartifier.itemDb);
+			} else {
+				// use MyCartifier for other dist measures
+				MyCartifierInMemory cartifier = new MyCartifierInMemory(
+						originalDatabase);
+				cartifier.cartifyNumeric(distMeasure, k);
+				projectedDbs.set(distMeasureIx, cartifier.itemDb);
+			}
 		}
 	}
 
