@@ -34,8 +34,18 @@ public class MyCartifierInMemory {
 
 			Arrays.sort(cart);
 
-			for (int neighbor = 0; neighbor < Math.min(cart.length, k); neighbor++) {
+			int neighbor = 0;
+			while (neighbor < Math.min(cart.length, k)) {
 				itemDb.get(cart[neighbor].ix).getTIDs().set(itemIx);
+				neighbor++;
+			}
+
+			// don't cut off cart when (distance to neighbor == distance to
+			// neighbor-1)
+			while ((neighbor < cart.length)
+					&& (cart[neighbor].v == cart[neighbor - 1].v)) {
+				itemDb.get(cart[neighbor].ix).getTIDs().set(itemIx);
+				neighbor++;
 			}
 		}
 	}
