@@ -38,6 +38,8 @@ public class RelatedDims {
 		// the slider controlling which cells to highlight
 		int max = (int) (0.25 * relatedDimsMatrix[0][0]);
 		slider = new JSlider(0, max) {
+			private static final long serialVersionUID = -5323561605574322770L;
+
 			@Override
 			public Point getToolTipLocation(MouseEvent event) {
 				return new Point(event.getX() + 15, event.getY());
@@ -91,6 +93,8 @@ public class RelatedDims {
 
 		DefaultTableModel tableModel = new DefaultTableModel(rowData,
 				columnNames) {
+			private static final long serialVersionUID = 1774014217061930195L;
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -101,8 +105,10 @@ public class RelatedDims {
 		MyRenderer renderer = new MyRenderer();
 		renderer.setHorizontalAlignment(JLabel.CENTER);
 		table.setDefaultRenderer(Object.class, renderer);
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		for (int cIx = 0; cIx < columnNames.length; cIx++) {
+			table.getColumnModel().getColumn(cIx).setPreferredWidth(15);
+		}
 	}
 
 	/**
@@ -110,6 +116,7 @@ public class RelatedDims {
 	 * slider value.
 	 */
 	public class MyRenderer extends DefaultTableCellRenderer {
+		private static final long serialVersionUID = 8255460337844895789L;
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
