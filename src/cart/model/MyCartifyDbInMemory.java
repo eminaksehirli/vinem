@@ -19,36 +19,6 @@ import cart.gui2.OneDimDistMeasure;
 
 public class MyCartifyDbInMemory {
 
-	private final class RunnableImplementation implements Runnable {
-		private DistMeasure distMeasure;
-		private int distMeasureIx;
-
-		private RunnableImplementation(int distMeasureIx) {
-			this.distMeasureIx = distMeasureIx;
-			this.distMeasure = distMeasures.get(distMeasureIx);
-		}
-
-		@Override
-		public void run() {
-			log("Creating cart for distMeasure #" + distMeasureIx);
-
-			if (distMeasure.getClass().equals(OneDimDistMeasure.class)) {
-				// use carti-bander Cartifier for 1-dimensional dist measures
-				CartifierInMemory cartifier = new CartifierInMemory(
-						originalDatabase);
-				int[] dimension = { distMeasureIx };
-				cartifier.cartifyNumeric(dimension, k);
-				projectedDbs.set(distMeasureIx, cartifier.itemDb);
-			} else {
-				// use MyCartifier for other dist measures
-				MyCartifierInMemory cartifier = new MyCartifierInMemory(
-						originalDatabase);
-				cartifier.cartifyNumeric(distMeasure, k);
-				projectedDbs.set(distMeasureIx, cartifier.itemDb);
-			}
-		}
-	}
-
 	private int k;
 
 	private List<DistMeasure> distMeasures;
@@ -98,6 +68,35 @@ public class MyCartifyDbInMemory {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			executor.shutdownNow();
+		}
+	}
+
+	private final class RunnableImplementation implements Runnable {
+		private DistMeasure distMeasure;
+		private int distMeasureIx;
+
+		private RunnableImplementation(int distMeasureIx) {
+			this.distMeasureIx = distMeasureIx;
+			this.distMeasure = distMeasures.get(distMeasureIx);
+		}
+
+		@Override
+		public void run() {
+			log("Creating cart for distMeasure #" + distMeasureIx);
+
+			if (distMeasure.getClass().equals(OneDimDistMeasure.class)) {
+				// use carti-bander Cartifier for 1-dimensional dist measures
+				CartifierInMemory cartifier = new CartifierInMemory(originalDatabase);
+				int[] dimension = { distMeasureIx };
+				cartifier.cartifyNumeric(dimension, k);
+				projectedDbs.set(distMeasureIx, cartifier.itemDb);
+			} else {
+				// use MyCartifier for other dist measures
+				MyCartifierInMemory cartifier = new MyCartifierInMemory(
+						originalDatabase);
+				cartifier.cartifyNumeric(distMeasure, k);
+				projectedDbs.set(distMeasureIx, cartifier.itemDb);
+			}
 		}
 	}
 

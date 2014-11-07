@@ -51,6 +51,9 @@ public class CartiModel {
 	private Stack<Memento> savedStates;
 	private List<DistMeasure> distMeasures;
 	private int selectedDistMeasureId;
+	private ArrayList<double[]> data;
+	private int[] byObjId2LocMap;
+	private int[] byObjLoc2IdMap;
 
 	/**
 	 * Initializes the model.
@@ -75,7 +78,6 @@ public class CartiModel {
 		this.distMeasures = new ArrayList<DistMeasure>();
 		this.selectedDistMeasureId = 0;
 
-		ArrayList<double[]> data;
 		try {
 			data = OneDCartifier.readData(filePath);
 			origData = OneDCartifier.toPairs(data);
@@ -113,10 +115,10 @@ public class CartiModel {
 			for (int loc = 0; loc < loc2ObjIdMaps[dimId].length; loc++) {
 				if (!filtereds.contains(loc2ObjIdMaps[dimId][loc])) {
 					loc2id[putLoc] = loc2ObjIdMaps[dimId][loc];
-					objId2LocMaps[dimId][loc2ObjIdMaps[dimId][loc]] = putLoc;
+					objId2Loc(dimId)[loc2ObjIdMaps[dimId][loc]] = putLoc;
 					putLoc++;
 				} else {
-					objId2LocMaps[dimId][loc2ObjIdMaps[dimId][loc]] = -1;
+					objId2Loc(dimId)[loc2ObjIdMaps[dimId][loc]] = -1;
 				}
 			}
 
@@ -144,9 +146,9 @@ public class CartiModel {
 			objId2LocMaps[dimId] = MaximalMinerCombiner.getId2Ord(getOrd2Id(
 					origData, dimId));
 
-			loc2ObjIdMaps[dimId] = new int[objId2LocMaps[dimId].length];
-			for (int i = 0; i < objId2LocMaps[dimId].length; i++) {
-				loc2ObjIdMaps[dimId][objId2LocMaps[dimId][i]] = i;
+			loc2ObjIdMaps[dimId] = new int[objId2Loc(dimId).length];
+			for (int i = 0; i < objId2Loc(dimId).length; i++) {
+				loc2ObjIdMaps[dimId][objId2Loc(dimId)[i]] = i;
 			}
 		}
 	}
@@ -170,8 +172,7 @@ public class CartiModel {
 				for (int objId = item.getTIDs().nextSetBit(0); objId >= 0; objId = item
 						.getTIDs().nextSetBit(objId + 1)) {
 					if (!filtereds.contains(objId)) {
-						// matrixToShow[row][col] = 1;
-						matrixToShow[objId2LocMaps[orderDim][objId]][objId2LocMaps[orderDim][item
+						matrixToShow[objId2Loc(orderDim)[objId]][objId2Loc(orderDim)[item
 								.getId()]] = 1;
 					}
 				}
@@ -200,8 +201,8 @@ public class CartiModel {
 	public List<Integer> getOrderedObjList() {
 		List<Integer> orderedObjs = new ArrayList<Integer>();
 
-		for (int i = 0; i < loc2ObjIdMaps[orderDim].length; i++) {
-			orderedObjs.add(loc2ObjIdMaps[orderDim][i]);
+		for (int i = 0; i < loc2ObjId().length; i++) {
+			orderedObjs.add(loc2ObjId()[i]);
 		}
 
 		return orderedObjs;
@@ -404,7 +405,7 @@ public class CartiModel {
 			int[] locs = new int[objIds.size()];
 			int i = 0;
 			for (int id : objIds) {
-				locs[i] = objId2LocMaps[dimIx][id];
+				locs[i] = objId2Loc(dimIx)[id];
 				i++;
 			}
 			Arrays.sort(locs);
@@ -506,7 +507,7 @@ public class CartiModel {
 		Set<Integer> locs = new HashSet<Integer>();
 
 		for (int id : selecteds) {
-			locs.add(objId2LocMaps[orderDim][id]);
+			locs.add(objId2Loc(orderDim)[id]);
 		}
 
 		return locs;
@@ -525,7 +526,7 @@ public class CartiModel {
 		Set<Integer> selectedIds = new HashSet<Integer>();
 
 		for (int loc : selectedLocs) {
-			selectedIds.add(loc2ObjIdMaps[orderDim][loc]);
+			selectedIds.add(loc2ObjId()[loc]);
 		}
 
 		// depending on selection mode, set/intersect/add to the selecteds
@@ -577,7 +578,7 @@ public class CartiModel {
 		this.savedStates.push(new Memento(selecteds, filtereds));
 
 		// loop over every non-filtered object id
-		for (int objId : loc2ObjIdMaps[orderDim]) {
+		for (int objId : loc2ObjId()) {
 			if (!selecteds.contains(objId)) {
 				this.filtereds.add(objId);
 			}
@@ -614,7 +615,7 @@ public class CartiModel {
 			for (int objId : clustersMap.get(clusterId).getObjects()) {
 				// cluster might contain filtered ids
 				if (!filtereds.contains(objId)) {
-					locs.add(objId2LocMaps[orderDim][objId]);
+					locs.add(objId2Loc(orderDim)[objId]);
 				}
 			}
 		}
@@ -738,6 +739,23 @@ public class CartiModel {
 		this.orderDim = orderDim;
 	}
 
+	public void setOrderByObj(int objIx) {
+		int objId = loc2ObjId()[objIx];
+		System.out.println("Order by object " + objId);
+		DistMeasure dm = getSelectedDistMeasure();
+		MyCartifierInMemory cartifier = new MyCartifierInMemory(data);
+		Pair[] carts = cartifier.cartOf(objId, dm);
+
+		this.orderDim = dims.size() * 2;
+
+		this.byObjId2LocMap = MaximalMinerCombiner.getId2Ord(carts);
+		this.byObjLoc2IdMap = new int[byObjId2LocMap.length];
+
+		for (int i = 0; i < byObjId2LocMap.length; i++) {
+			byObjLoc2IdMap[byObjId2LocMap[i]] = i;
+		}
+	}
+
 	public void setSelectedDistMeasureId(int selectedDistMeasureId) {
 		this.selectedDistMeasureId = selectedDistMeasureId;
 	}
@@ -745,6 +763,20 @@ public class CartiModel {
 	public void addDistMeasure(DistMeasure distMeasure) {
 		distMeasures.add(distMeasure);
 		addDistMeasureToCartiDb(distMeasure);
+	}
+
+	private int[] objId2Loc(int dimId) {
+		if (dimId > dims.size()) {
+			return byObjId2LocMap;
+		}
+		return objId2LocMaps[dimId];
+	}
+
+	private int[] loc2ObjId() {
+		if (orderDim > dims.size()) {
+			return byObjLoc2IdMap;
+		}
+		return loc2ObjIdMaps[orderDim];
 	}
 
 	/**

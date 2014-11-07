@@ -709,6 +709,20 @@ public class CartiController {
 				figureSelectedsChange(selectedLocs);
 			}
 
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// Only right click
+				if (e.getButton() != MouseEvent.BUTTON3) {
+					return;
+				}
+
+				int x = e.getX();
+
+				int[] cells = cartiView.getCartiPanel().getCells(x, x);
+
+				orderByObject(cells[0]);
+			}
+
 			// do nothing for these
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -718,9 +732,6 @@ public class CartiController {
 			public void mouseExited(MouseEvent e) {
 			}
 
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
 		};
 
 		return listener;
