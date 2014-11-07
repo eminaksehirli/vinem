@@ -192,6 +192,28 @@ public class CartiPanel extends JPanel {
 		}
 	}
 
+	// colour rows
+	private void colourRows(int[] starts, int red, int green, int blue) {
+		for (int col = 0; col < image[0].length; col++) {
+			for (int row = starts[col]; row < image[col].length; row++) {
+				image[row][col][0] += red;
+				image[row][col][1] += green;
+				image[row][col][2] += blue;
+			}
+		}
+	}
+
+	// de-colour rows
+	private void deColourRows(int[] starts, int red, int green, int blue) {
+		for (int col = 0; col < image[0].length; col++) {
+			for (int row = starts[col]; row < image[col].length; row++) {
+				image[row][col][0] -= red;
+				image[row][col][1] -= green;
+				image[row][col][2] -= blue;
+			}
+		}
+	}
+
 	private void setCellSize() {
 		if (matrix.length == 0) {
 			cellWidth = 600;
@@ -216,4 +238,11 @@ public class CartiPanel extends JPanel {
 		return matrix.length;
 	}
 
+	public void showDistribution(int[] starts) {
+		colourRows(starts, 0, 0, 120);
+	}
+
+	public void hideDistribution(int[] starts) {
+		deColourRows(starts, 0, 0, 120);
+	}
 }

@@ -97,6 +97,15 @@ public class CartiController {
 					.updateSelectedDistMeasureId(cartiView.getOrderSliderVal());
 		}
 
+		updateAfterOrderChange();
+	}
+
+	public void orderByObject(int objIx) {
+		cartiModel.setOrderByObj(objIx);
+		updateAfterOrderChange();
+	}
+
+	public void updateAfterOrderChange() {
 		int[][] matrixToShow = cartiModel.getMatrixToShow();
 		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
 		Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
@@ -107,6 +116,7 @@ public class CartiController {
 		cartiView.updateFigureSelected(selectedLocs);
 		cartiView.updateFigureClustered(clusteredLocs);
 		cartiView.updateSelOptions(orderedObjs, selecteds);
+		updateDistribution(true);
 	}
 
 	public void kSliderChanged() {
@@ -123,6 +133,7 @@ public class CartiController {
 		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
 				medAbsDevs);
 		cartiView.getMiningOptions().setMinSupVal((int) (k * 0.75));
+		updateDistribution(true);
 	}
 
 	public void manSelectedsClear() {
@@ -627,6 +638,8 @@ public class CartiController {
 					getNoiseInAllDistMeas();
 				} else if (e.getActionCommand() == CartiView.CLUSTER) {
 					clusterSelected();
+				} else if (e.getActionCommand() == CartiView.SHOWDIST) {
+					updateDistribution(false);
 				} else if (e.getActionCommand() == ClusterInfo.ADD) {
 					addSelectedToClusters();
 				} else if (e.getActionCommand() == ClusterInfo.REMOVESEL) {
@@ -642,6 +655,10 @@ public class CartiController {
 		};
 
 		return listener;
+	}
+
+	protected void updateDistribution(boolean reset) {
+		cartiView.updateDistribution(cartiModel.getDistribution(), reset);
 	}
 
 	/**

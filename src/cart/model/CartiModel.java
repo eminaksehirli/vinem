@@ -801,4 +801,19 @@ public class CartiModel {
 			return filtereds;
 		}
 	}
+
+	public int[] getDistribution() {
+		List<PlainItemDB> pDbs = cartiDb.getProjDbs();
+		PlainItemDB pDb = pDbs.get(selectedDistMeasureId);
+		int size = pDb.size() - filtereds.size();
+		int[] starts = new int[size];
+
+		for (PlainItem item : pDb) {
+			if (!filtereds.contains(item.getId())) {
+				starts[objId2Loc(orderDim)[item.getId()]] = size
+						- item.getTIDs().cardinality();
+			}
+		}
+		return starts;
+	}
 }

@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JToggleButton;
 import javax.swing.JViewport;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -36,6 +37,7 @@ import cart.gui2.Cluster;
 public class CartiView {
 
 	public final static String CLUSTER = "CartiView.Cluster";
+	public final static String SHOWDIST = "CartiView.ShowDist";
 
 	private JFrame theFrame;
 	private JDialog controlsDialog;
@@ -54,20 +56,15 @@ public class CartiView {
 	private JDialog selectedsStatsDialog;
 	private ClusterInfo clusterInfo;
 	private JDialog clusterInfoDialog;
+	private JToggleButton showDistButton;
 
-	private boolean selOptionsListenerShouldListen; // prevents the selection
-													// options list listener
-													// from listening while
-													// updating
-	private boolean clusterInfoListenerShouldListen; // prevents cluster info
-														// table listener from
-														// listening while
-														// updating
-
-	private boolean distOptionsListenerShouldListen; // prevents the distance
-														// options box listener
-														// from listening while
-														// updating
+	// prevents the selection options list listener from listening while updating
+	private boolean selOptionsListenerShouldListen;
+	// prevents cluster infotable listener from listening while updating
+	private boolean clusterInfoListenerShouldListen;
+	// prevents the distance options box listener from listening while updating
+	private boolean distOptionsListenerShouldListen;
+	private boolean showingDist;
 
 	public CartiView() {
 		theFrame = new JFrame("Carti");
@@ -110,9 +107,16 @@ public class CartiView {
 		// add button for clustering
 		clusterButton = new JButton("Cluster selected");
 		clusterButton.setActionCommand(CLUSTER);
-		clusterButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		controlsPanelLeft.add(clusterButton);
+		showDistButton = new JToggleButton("Show Distribution");
+		showDistButton.setActionCommand(SHOWDIST);
+
+		JPanel midButtons = new JPanel();
+		midButtons.add(clusterButton);
+		midButtons.add(showDistButton);
+		midButtons.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		controlsPanelLeft.add(midButtons);
 		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add slider for k
@@ -215,6 +219,7 @@ public class CartiView {
 
 	public void addButtonsListener(ActionListener buttonsListener) {
 		clusterButton.addActionListener(buttonsListener);
+		showDistButton.addActionListener(buttonsListener);
 		selectionOptions.addButtonsListener(buttonsListener);
 		filteringOptions.addButtonsListener(buttonsListener);
 		clusterInfo.addButtonsListener(buttonsListener);
@@ -446,5 +451,18 @@ public class CartiView {
 
 	public boolean distOptionsListenerShouldListen() {
 		return distOptionsListenerShouldListen;
+	}
+
+	public void updateDistribution(int[] starts, boolean reset) {
+		showingDist = !reset && showingDist;
+		if (!showingDist && showDistButton.isSelected()) {
+			cartiPanel.showDistribution(starts);
+			showingDist = true;
+		} else if (showingDist) {
+			cartiPanel.hideDistribution(starts);
+			showingDist = false;
+		}
+		theFrame.validate();
+		theFrame.repaint();
 	}
 }
