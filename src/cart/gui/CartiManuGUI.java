@@ -26,8 +26,7 @@ import cart.maximizer.OneDCartifier;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-public class CartiManuGUI
-{
+public class CartiManuGUI {
 	private static double[][] dims;
 	private static CartiMinerFrame frame;
 	private static int[][][] mat;
@@ -40,8 +39,7 @@ public class CartiManuGUI
 	private static CartPane cartPane;
 	private static Multimap<Integer, Layer> layers;
 
-	public static void main(String[] args) throws Exception
-	{
+	public static void main(String[] args) throws Exception {
 		final String dir = "/home/memin/research/data/synth";
 
 		// String pathname = dir + "/6c10d/6c10d.mime";
@@ -66,17 +64,14 @@ public class CartiManuGUI
 		frame = new CartiMinerFrame(k, dims.length, numOfObjects);
 		frame.dimSlider.addChangeListener(new ChangeListener() {
 			@Override
-			public void stateChanged(ChangeEvent e)
-			{
+			public void stateChanged(ChangeEvent e) {
 				JSlider s = (JSlider) e.getSource();
-				if (s.getValueIsAdjusting())
-				{
+				if (s.getValueIsAdjusting()) {
 					return;
 				}
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						updateFigure();
 						updateFileName();
 					}
@@ -85,17 +80,14 @@ public class CartiManuGUI
 		});
 		frame.kSlider.addChangeListener(new ChangeListener() {
 			@Override
-			public void stateChanged(ChangeEvent e)
-			{
+			public void stateChanged(ChangeEvent e) {
 				JSlider s = (JSlider) e.getSource();
-				if (s.getValueIsAdjusting())
-				{
+				if (s.getValueIsAdjusting()) {
 					return;
 				}
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						updateCarts();
 						updateFigure();
 						updateFileName();
@@ -107,13 +99,11 @@ public class CartiManuGUI
 		frame.mineButton.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 
 					@Override
-					public void run()
-					{
+					public void run() {
 						runMiner();
 						updateCarts();
 						updateFigure();
@@ -125,13 +115,11 @@ public class CartiManuGUI
 		frame.lineButton.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 
 					@Override
-					public void run()
-					{
+					public void run() {
 						runLiner();
 						updateCarts();
 						updateFigure();
@@ -143,13 +131,11 @@ public class CartiManuGUI
 		frame.tightButton.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 
 					@Override
-					public void run()
-					{
+					public void run() {
 						runTighter();
 						updateCarts();
 						updateFigure();
@@ -160,8 +146,7 @@ public class CartiManuGUI
 
 		frame.saveButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				int w = cartPane.getWidth();
 				int h = cartPane.getHeight();
 				BufferedImage img = new BufferedImage(w, h, TYPE_INT_RGB);
@@ -177,8 +162,7 @@ public class CartiManuGUI
 		frame.showTime();
 	}
 
-	private static void updateCarts()
-	{
+	private static void updateCarts() {
 		k = frame.kSlider.getValue();
 		// int[][][] carts = CartiKSelectGUI.findCarts(dims, k, true);
 		int[][][] carts = CartiGUITools.getAllCarts(dims, k, false);
@@ -214,17 +198,14 @@ public class CartiManuGUI
 		// }
 	}
 
-	private static void createLayers()
-	{
+	private static void createLayers() {
 		layers = HashMultimap.create();
 
 		// int ofset = k / 2;
 		int ofset = 0;
-		for (Entry<Integer, Map<Integer, Integer>> freq : freqs.entrySet())
-		{
+		for (Entry<Integer, Map<Integer, Integer>> freq : freqs.entrySet()) {
 			final int dim = freq.getKey();
-			for (Entry<Integer, Integer> dimFreq : freq.getValue().entrySet())
-			{
+			for (Entry<Integer, Integer> dimFreq : freq.getValue().entrySet()) {
 				int end = dimFreq.getKey() + ofset;
 				int start = dimFreq.getValue() + ofset;
 
@@ -242,10 +223,8 @@ public class CartiManuGUI
 				// }
 
 				int[][] lm = new int[yend - ystart][end - start];
-				for (int i : Utils.range(0, lm.length))
-				{
-					for (int j : Utils.range(0, lm[0].length))
-					{
+				for (int i : Utils.range(0, lm.length)) {
+					for (int j : Utils.range(0, lm[0].length)) {
 						lm[i][j] = 1;
 					}
 				}
@@ -255,48 +234,40 @@ public class CartiManuGUI
 		}
 	}
 
-	private static void runMiner()
-	{
+	private static void runMiner() {
 		freqs = maxer.mineCarts(dims, k);
 		createLayers();
 	}
 
-	private static void runLiner()
-	{
+	private static void runLiner() {
 		freqs = liner.mineCarts(dims, k);
 		createLayers();
 	}
 
-	private static void runTighter()
-	{
+	private static void runTighter() {
 		freqs = tighter.mineCarts(dims, k);
 		createLayers();
 	}
 
-	private static void updateFigure()
-	{
+	private static void updateFigure() {
 		currentDim = frame.dimSlider.getValue();
 		int[][] processedMatrix = mat[currentDim];
-		if (cartPane == null)
-		{
+		if (cartPane == null) {
 			cartPane = new CartPane(processedMatrix);
 			final JScrollPane sPane = new JScrollPane(cartPane);
 			sPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 			frame.add(sPane, BorderLayout.CENTER);
-		} else
-		{
+		} else {
 			cartPane.updateMatrix(processedMatrix);
 		}
-		if (layers != null)
-		{
+		if (layers != null) {
 			cartPane.setLayers(layers.get(currentDim));
 		}
 		frame.validate();
 		frame.repaint();
 	}
 
-	private static void updateFileName()
-	{
+	private static void updateFileName() {
 		frame.fileText.setText("/tmp/carti-k-" + frame.dimSlider.getValue() + "-"
 				+ frame.kSlider.getValue() + ".png");
 	}

@@ -10,8 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 
-public class CartiMinerFrame extends JFrame
-{
+public class CartiMinerFrame extends JFrame {
 	private static final long serialVersionUID = 3728417676164781628L;
 
 	JSlider dimSlider;
@@ -23,8 +22,7 @@ public class CartiMinerFrame extends JFrame
 	JTextField fileText;
 	JButton saveButton;
 
-	public CartiMinerFrame(int k, int numOfDims, int maxK)
-	{
+	public CartiMinerFrame(int k, int numOfDims, int maxK) {
 		setLayout(new BorderLayout());
 
 		dimSlider = new JSlider(0, numOfDims - 1);
@@ -65,8 +63,7 @@ public class CartiMinerFrame extends JFrame
 		cpane.add(savePane);
 	}
 
-	void showTime()
-	{
+	void showTime() {
 		setSize(1000, 1000);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

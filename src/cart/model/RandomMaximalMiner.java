@@ -93,14 +93,13 @@ public class RandomMaximalMiner {
 	private static List<PlainItem> AllItems;
 
 	public static List<PlainItemSet> runParallel(
-			Iterable<? extends PlainItem> items, final int minSup,
-			int numOfItemSets) {
+			Iterable<? extends PlainItem> items, final int minSup, int numOfItemSets) {
 		return runParallel(items, minSup, numOfItemSets, DefaultSeedSize);
 	}
 
 	public static List<PlainItemSet> runParallel(
-			Iterable<? extends PlainItem> items, final int minSup,
-			int numOfItemSets, final int seedSize) {
+			Iterable<? extends PlainItem> items, final int minSup, int numOfItemSets,
+			final int seedSize) {
 
 		AllItems = Lists.newArrayList(items);
 
@@ -165,7 +164,7 @@ public class RandomMaximalMiner {
 	 * branches that need to be traversed
 	 * 
 	 * @param measure
-	 *            itemset measure that is used to score different branches
+	 *          itemset measure that is used to score different branches
 	 */
 	public void setApproximationMeasure(ItemSetMeasure measure) {
 		this.approximationMeasure = measure;
@@ -176,7 +175,7 @@ public class RandomMaximalMiner {
 	 * branches that need to be traversed
 	 * 
 	 * @param measure
-	 *            itemset measure that is used to score different branches
+	 *          itemset measure that is used to score different branches
 	 */
 	public void setPruningMeasure(ItemSetMeasure measure) {
 		this.pruningMeasure = measure;
@@ -186,7 +185,7 @@ public class RandomMaximalMiner {
 	 * Sets the minimum size of an itemset that is to be found
 	 * 
 	 * @param minSize
-	 *            the mimimum size of an itemset
+	 *          the mimimum size of an itemset
 	 */
 	public void setMinSize(int minSize) {
 		this.minSize = minSize;
@@ -196,9 +195,9 @@ public class RandomMaximalMiner {
 	 * Prunes a list of items based on the minimal support
 	 * 
 	 * @param items
-	 *            the list of items that must be pruned
+	 *          the list of items that must be pruned
 	 * @param minSup
-	 *            the minimal support threshold that must be met
+	 *          the minimal support threshold that must be met
 	 * @return a new list of items that is pruned based on minimal support
 	 */
 	private List<PlainItem> pruneItemsOnMinsup() {
@@ -220,10 +219,10 @@ public class RandomMaximalMiner {
 	 * Prunes a list of items based on the minimal support
 	 * 
 	 * @param items
-	 *            the list of items that must be pruned
+	 *          the list of items that must be pruned
 	 * @param itemset
-	 *            the itemset to which each of the individual is added prior to
-	 *            computing support
+	 *          the itemset to which each of the individual is added prior to
+	 *          computing support
 	 * 
 	 * @return a new list of items that is pruned based on minimal support
 	 */
@@ -242,9 +241,9 @@ public class RandomMaximalMiner {
 	 * specified number of itemsets.
 	 * 
 	 * @param minSup
-	 *            minimal support of the maximal frequent itemsets
+	 *          minimal support of the maximal frequent itemsets
 	 * @param numberOfItemsets
-	 *            number of itemsets that need to be mined
+	 *          number of itemsets that need to be mined
 	 * @return a list of maximal frequent itemsets
 	 */
 	public List<PlainItemSet> run(int minSup, int numberOfItemsets) {
@@ -311,7 +310,7 @@ public class RandomMaximalMiner {
 	 * itemset measure
 	 * 
 	 * @param items
-	 *            the list of items
+	 *          the list of items
 	 * 
 	 * @return map containing the different measure values for the items
 	 */
@@ -337,16 +336,16 @@ public class RandomMaximalMiner {
 	}
 
 	/**
-	 * Gets an array of cumulated values sorted according to the ordering of
-	 * items in the list
+	 * Gets an array of cumulated values sorted according to the ordering of items
+	 * in the list
 	 * 
 	 * @param values
-	 *            map containing the values of the probabilities of the
-	 *            individual items
+	 *          map containing the values of the probabilities of the individual
+	 *          items
 	 * @param items
-	 *            sorted list of items
-	 * @return array of double values containing the values of the indivual
-	 *         items sorted according to the list of items
+	 *          sorted list of items
+	 * @return array of double values containing the values of the indivual items
+	 *         sorted according to the list of items
 	 */
 	private double[] getCumulatedValuesAsArray(Map<PlainItem, Double> values) {
 		double[] arrayValues = new double[items.size()];
@@ -364,8 +363,8 @@ public class RandomMaximalMiner {
 	 * measure
 	 * 
 	 * @param items
-	 *            the list of items that have to be evaluated and from which the
-	 *            next item is picked
+	 *          the list of items that have to be evaluated and from which the
+	 *          next item is picked
 	 * 
 	 * @return a new item from the list of items
 	 */

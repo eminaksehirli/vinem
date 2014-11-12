@@ -24,20 +24,16 @@ import javax.swing.JToggleButton;
 
 import cart.gui.CartiCombineGUI.TableModel;
 
-public class CartiCombinerFrame extends JFrame
-{
-	static final class WheelListener implements MouseWheelListener
-	{
+public class CartiCombinerFrame extends JFrame {
+	static final class WheelListener implements MouseWheelListener {
 		private int size;
 
-		public WheelListener(int i)
-		{
+		public WheelListener(int i) {
 			size = i;
 		}
 
 		@Override
-		public void mouseWheelMoved(MouseWheelEvent e)
-		{
+		public void mouseWheelMoved(MouseWheelEvent e) {
 			int change = -e.getWheelRotation() * size;
 			final JSlider s = JSlider.class.cast(e.getSource());
 			s.setValue(s.getValue() + change);
@@ -80,8 +76,7 @@ public class CartiCombinerFrame extends JFrame
 	private JPanel dimSupPane;
 	private JTextArea infoObjects;
 
-	public CartiCombinerFrame(int k, int numOfDims, int maxK)
-	{
+	public CartiCombinerFrame(int k, int numOfDims, int maxK) {
 		super("Carti Combiner");
 		setLayout(new BorderLayout());
 
@@ -141,7 +136,8 @@ public class CartiCombinerFrame extends JFrame
 		selectionPane.add(selClear);
 
 		selectField = new JTextField(30);
-		selectField.setToolTipText("Put the id's of the items that you want to select, comma separated.");
+		selectField
+				.setToolTipText("Put the id's of the items that you want to select, comma separated.");
 		manualSel = new JButton("Select");
 		selectionPane.add(selectField);
 		selectionPane.add(manualSel);
@@ -177,8 +173,7 @@ public class CartiCombinerFrame extends JFrame
 		cpane.add(savePane);
 
 		Integer[] dims = new Integer[numOfDims];
-		for (int i = 0; i < numOfDims; i++)
-		{
+		for (int i = 0; i < numOfDims; i++) {
 			dims[i] = i;
 		}
 		dimsList = new JList<Integer>(dims);
@@ -187,8 +182,7 @@ public class CartiCombinerFrame extends JFrame
 		add(dimsList, BorderLayout.EAST);
 	}
 
-	void showClusterTable(TableModel model)
-	{
+	void showClusterTable(TableModel model) {
 		clusterDialog = new JDialog(this);
 		clusterTable = new JTable(model);
 		clusterTable.getColumnModel().getColumn(0).setPreferredWidth(20);
@@ -201,10 +195,8 @@ public class CartiCombinerFrame extends JFrame
 		cframe.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
-	void updateInfoPane(int size, int[] dimSupports, String objects)
-	{
-		if (infoDialog == null)
-		{
+	void updateInfoPane(int size, int[] dimSupports, String objects) {
+		if (infoDialog == null) {
 			infoDialog = new JDialog(this);
 			infoPane = new JPanel();
 			BoxLayout l = new BoxLayout(infoPane, BoxLayout.PAGE_AXIS);
@@ -237,11 +229,9 @@ public class CartiCombinerFrame extends JFrame
 		infoDialog.setVisible(true);
 	}
 
-	private void setDimSupports(int[] dimSupports)
-	{
+	private void setDimSupports(int[] dimSupports) {
 		dimSupPane.removeAll();
-		for (int i = 0; i < dimSupports.length; i++)
-		{
+		for (int i = 0; i < dimSupports.length; i++) {
 			// JPanel aPane = new JPanel(new FlowLayout());
 			// aPane.add(new JLabel("D" + i + ":"));
 			dimSupPane.add(new JLabel("D_" + i + ":"));
@@ -249,8 +239,7 @@ public class CartiCombinerFrame extends JFrame
 		}
 	}
 
-	void showTime()
-	{
+	void showTime() {
 		setSize(1000, 1000);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -260,10 +249,8 @@ public class CartiCombinerFrame extends JFrame
 		cframe.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
-	public void hideInfoPane()
-	{
-		if (infoDialog != null)
-		{
+	public void hideInfoPane() {
+		if (infoDialog != null) {
 			infoDialog.setVisible(false);
 		}
 	}

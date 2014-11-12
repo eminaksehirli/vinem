@@ -50,15 +50,13 @@ public class ClusterInfo {
 		table = new JTable(tableModel) {
 			// make it so column widths automatically fit largest entry
 			@Override
-			public Component prepareRenderer(TableCellRenderer renderer,
-					int row, int column) {
-				Component component = super.prepareRenderer(renderer, row,
-						column);
+			public Component prepareRenderer(TableCellRenderer renderer, int row,
+					int column) {
+				Component component = super.prepareRenderer(renderer, row, column);
 				int rendererWidth = component.getPreferredSize().width;
 				TableColumn tableColumn = getColumnModel().getColumn(column);
 				tableColumn.setPreferredWidth(Math.max(rendererWidth
-						+ getIntercellSpacing().width,
-						tableColumn.getPreferredWidth()));
+						+ getIntercellSpacing().width, tableColumn.getPreferredWidth()));
 				return component;
 			}
 		};
@@ -134,8 +132,8 @@ public class ClusterInfo {
 	}
 
 	/**
-	 * @return The cluster ids on the rows selected by the user (returns empty
-	 *         set if no row is selected)
+	 * @return The cluster ids on the rows selected by the user (returns empty set
+	 *         if no row is selected)
 	 */
 	public Set<Integer> getSelectedRowsClusterIds() {
 		int rows[] = table.getSelectedRows();
@@ -166,8 +164,8 @@ public class ClusterInfo {
 	}
 
 	public class ClusterTable extends AbstractTableModel {
-		private String[] columnNames = { "Visible", "Cluster id", "Size",
-				"#Dims", "Dims", "Objects" };
+		private String[] columnNames = { "Visible", "Cluster id", "Size", "#Dims",
+				"Dims", "Objects" };
 
 		private Object[][] data;
 
@@ -233,20 +231,20 @@ public class ClusterInfo {
 				data[row][1] = new Integer(clusterId);
 
 				// Size
-				data[row][2] = new Integer(clustersMap.get(clusterId)
-						.getObjects().size());
+				data[row][2] = new Integer(clustersMap.get(clusterId).getObjects()
+						.size());
 
 				// #Dims
-				Set<Integer> dims = new HashSet<Integer>(clustersMap.get(
-						clusterId).getDims());
+				Set<Integer> dims = new HashSet<Integer>(clustersMap.get(clusterId)
+						.getDims());
 				data[row][3] = dims.size();
 
 				// Dims
 				data[row][4] = dims;
 
 				// Objects
-				Set<Integer> objs = new HashSet<Integer>(clustersMap.get(
-						clusterId).getObjects());
+				Set<Integer> objs = new HashSet<Integer>(clustersMap.get(clusterId)
+						.getObjects());
 				data[row][5] = objs;
 
 				row++;

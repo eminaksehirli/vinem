@@ -32,6 +32,7 @@ import cart.maximizer.OneDCartifier;
  * @author Detlev
  * 
  */
+
 public class CartiModel {
 	private String filePath;
 	private int numObjects;
@@ -59,11 +60,11 @@ public class CartiModel {
 	 * Initializes the model.
 	 * 
 	 * @param filePath
-	 *            path for the data
+	 *          path for the data
 	 * @param k
-	 *            the initial k value
+	 *          the initial k value
 	 * @param orderDim
-	 *            the initial order value
+	 *          the initial order value
 	 */
 	public void init(final String filePath, int k, int orderDim) {
 		this.filePath = filePath;
@@ -108,8 +109,7 @@ public class CartiModel {
 		initMaps();
 
 		for (int dimId = 0; dimId < numDims; dimId++) {
-			int[] loc2id = new int[loc2ObjIdMaps[dimId].length
-					- filtereds.size()];
+			int[] loc2id = new int[loc2ObjIdMaps[dimId].length - filtereds.size()];
 
 			int putLoc = 0;
 			for (int loc = 0; loc < loc2ObjIdMaps[dimId].length; loc++) {
@@ -143,8 +143,8 @@ public class CartiModel {
 		loc2ObjIdMaps = new int[numDims][];
 
 		for (int dimId = 0; dimId < numDims; dimId++) {
-			objId2LocMaps[dimId] = MaximalMinerCombiner.getId2Ord(getOrd2Id(
-					origData, dimId));
+			objId2LocMaps[dimId] = MaximalMinerCombiner.getId2Ord(getOrd2Id(origData,
+					dimId));
 
 			loc2ObjIdMaps[dimId] = new int[objId2Loc(dimId).length];
 			for (int i = 0; i < objId2Loc(dimId).length; i++) {
@@ -154,8 +154,8 @@ public class CartiModel {
 	}
 
 	/**
-	 * @return A 2d matrix containing 0s and 1s, where a 1 means we need to
-	 *         colour that spot.
+	 * @return A 2d matrix containing 0s and 1s, where a 1 means we need to colour
+	 *         that spot.
 	 */
 	public int[][] getMatrixToShow() {
 		int[][] matrixToShow = new int[numObjects - filtereds.size()][numObjects
@@ -243,7 +243,7 @@ public class CartiModel {
 
 	/**
 	 * @param minSup
-	 *            the minSup threshold
+	 *          the minSup threshold
 	 * @return The object ids of each object with a support < minSup in the
 	 *         selected distMeasure.
 	 */
@@ -266,7 +266,7 @@ public class CartiModel {
 
 	/**
 	 * @param minSup
-	 *            the minSup threshold
+	 *          the minSup threshold
 	 * @return The object ids of each object with a support < minSup in every
 	 *         distMeasure.
 	 */
@@ -382,8 +382,8 @@ public class CartiModel {
 
 	/**
 	 * @param objIds
-	 * @return The median absoluate deviation in each 1d dimension of a given
-	 *         set of object Ids.
+	 * @return The median absoluate deviation in each 1d dimension of a given set
+	 *         of object Ids.
 	 */
 	public int[] getLocsMedAbsDev(Set<Integer> objIds) {
 		for (int id : objIds) {
@@ -786,8 +786,7 @@ public class CartiModel {
 		private final Set<Integer> selecteds;
 		private final Set<Integer> filtereds;
 
-		public Memento(Set<Integer> selectedsToSave,
-				Set<Integer> filteredsToSave) {
+		public Memento(Set<Integer> selectedsToSave, Set<Integer> filteredsToSave) {
 
 			selecteds = new HashSet<Integer>(selectedsToSave);
 			filtereds = new HashSet<Integer>(filteredsToSave);

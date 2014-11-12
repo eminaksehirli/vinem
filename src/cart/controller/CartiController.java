@@ -75,8 +75,7 @@ public class CartiController {
 		cartiView.addButtonsListener(createButtonsListener());
 		cartiView.addSelOptionsListListener(createSelOptionsListListener());
 		cartiView.addCartiPanelListener(createCartiPanelListener());
-		cartiView
-				.addClusterTableModelListener(createClusterTableModelListener());
+		cartiView.addClusterTableModelListener(createClusterTableModelListener());
 		cartiView.addSliderListener(createSliderListener());
 		cartiView.addDistOptionsBoxListener(createDistOptionsBoxListener());
 
@@ -93,8 +92,7 @@ public class CartiController {
 		if (cartiView.shouldSyncOrderSlider()) {
 			// need to update the selected distance measure id
 			cartiModel.setSelectedDistMeasureId(cartiView.getOrderSliderVal());
-			cartiView
-					.updateSelectedDistMeasureId(cartiView.getOrderSliderVal());
+			cartiView.updateSelectedDistMeasureId(cartiView.getOrderSliderVal());
 		}
 
 		updateAfterOrderChange();
@@ -130,8 +128,7 @@ public class CartiController {
 		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
 
 		cartiView.updateFigure(matrixToShow);
-		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				medAbsDevs);
+		cartiView.updateSelStats(selecteds, dimSupports, standardDevs, medAbsDevs);
 		cartiView.getMiningOptions().setMinSupVal((int) (k * 0.75));
 		updateDistribution(true);
 	}
@@ -148,8 +145,7 @@ public class CartiController {
 
 		cartiView.updateFigureSelected(selectedLocs);
 		cartiView.updateSelOptions(orderedObjs, selecteds);
-		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				medAbsDevs);
+		cartiView.updateSelStats(selecteds, dimSupports, standardDevs, medAbsDevs);
 	}
 
 	public void manSelectedsChange(Set<Integer> toSelect) {
@@ -162,8 +158,7 @@ public class CartiController {
 		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
 
 		cartiView.updateFigureSelected(selectedLocs);
-		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				medAbsDevs);
+		cartiView.updateSelStats(selecteds, dimSupports, standardDevs, medAbsDevs);
 	}
 
 	public void figureSelectedsChange(Set<Integer> locsToSelect) {
@@ -181,8 +176,7 @@ public class CartiController {
 
 		cartiView.updateFigureSelected(selectedLocs);
 		cartiView.updateSelOptions(orderedObjs, selecteds);
-		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				medAbsDevs);
+		cartiView.updateSelStats(selecteds, dimSupports, standardDevs, medAbsDevs);
 	}
 
 	public void manFilteredsClear() {
@@ -229,8 +223,7 @@ public class CartiController {
 		cartiView.updateFigureSelected(selectedLocs);
 		cartiView.updateFigureClustered(clusteredLocs);
 		cartiView.updateSelOptions(orderedObjs, selecteds);
-		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				medAbsDevs);
+		cartiView.updateSelStats(selecteds, dimSupports, standardDevs, medAbsDevs);
 		cartiView.updateClusterInfo(clustersMap, clustersToShow);
 	}
 
@@ -254,8 +247,8 @@ public class CartiController {
 			cartiView.updateFigureSelected(selectedLocs);
 			cartiView.updateFigureClustered(clusteredLocs);
 			cartiView.updateSelOptions(orderedObjs, selecteds);
-			cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-					medAbsDevs);
+			cartiView
+					.updateSelStats(selecteds, dimSupports, standardDevs, medAbsDevs);
 			cartiView.updateClusterInfo(clustersMap, clustersToShow);
 		}
 	}
@@ -386,8 +379,7 @@ public class CartiController {
 
 		cartiView.updateFigureSelected(selectedLocs);
 		cartiView.updateSelOptions(orderedObjs, selecteds);
-		cartiView.updateSelStats(selecteds, dimSupports, standardDevs,
-				medAbsDevs);
+		cartiView.updateSelStats(selecteds, dimSupports, standardDevs, medAbsDevs);
 	}
 
 	public void showCluster(int clusterId) {
@@ -417,8 +409,7 @@ public class CartiController {
 		List<Freq> result = maximer.mineFor(cartiModel.getK(), minLen);
 
 		if (result.size() == 0) {
-			cartiView.showInfoMessage(
-					"0 clusters found, try different k or minLen.",
+			cartiView.showInfoMessage("0 clusters found, try different k or minLen.",
 					"Mining result");
 			return;
 		}
@@ -457,12 +448,11 @@ public class CartiController {
 		}
 
 		// do mining
-		List<PlainItemSet> result = RandomMaximalMiner.runParallel(items,
-				minSup, numOfItemSets);
+		List<PlainItemSet> result = RandomMaximalMiner.runParallel(items, minSup,
+				numOfItemSets);
 
 		if (result.size() == 0) {
-			cartiView.showInfoMessage(
-					"0 clusters found, try different k or minSup.",
+			cartiView.showInfoMessage("0 clusters found, try different k or minSup.",
 					"Mining result");
 			return;
 		}
@@ -515,8 +505,7 @@ public class CartiController {
 				.getSelectedMeasureId();
 		int numDims = cartiModel.getNumDims();
 
-		if (cartiView.shouldSyncOrderSlider()
-				&& (selectedDistMeasureId < numDims)) {
+		if (cartiView.shouldSyncOrderSlider() && (selectedDistMeasureId < numDims)) {
 			// need to change orderSlider, which will do all the necessary
 			// updates
 			cartiView.updateOrderSlider(selectedDistMeasureId);
@@ -541,8 +530,8 @@ public class CartiController {
 		Set<Integer> noiseObjs = cartiModel.getNoiseObjsInSelDistMeas(minSup);
 
 		if (noiseObjs.size() == 0) {
-			cartiView.showInfoMessage(
-					"0 noise objects found for given minSup.", "Noise result");
+			cartiView.showInfoMessage("0 noise objects found for given minSup.",
+					"Noise result");
 			return;
 		}
 
@@ -557,8 +546,7 @@ public class CartiController {
 
 		cartiView.updateClusterInfo(clustersMap, clustersToShow);
 		cartiView.showInfoMessage(noiseObjs.size()
-				+ " noise objects found, adding them as a cluster.",
-				"Noise result");
+				+ " noise objects found, adding them as a cluster.", "Noise result");
 	}
 
 	public void getNoiseInAllDistMeas() {
@@ -572,8 +560,8 @@ public class CartiController {
 		Set<Integer> noiseObjs = cartiModel.getNoiseObjsInAllDistMeas(minSup);
 
 		if (noiseObjs.size() == 0) {
-			cartiView.showInfoMessage(
-					"0 noise objects found for given minSup.", "Noise result");
+			cartiView.showInfoMessage("0 noise objects found for given minSup.",
+					"Noise result");
 			return;
 		}
 
@@ -588,8 +576,7 @@ public class CartiController {
 
 		cartiView.updateClusterInfo(clustersMap, clustersToShow);
 		cartiView.showInfoMessage(noiseObjs.size()
-				+ " noise objects found, adding them as a cluster.",
-				"Noise result");
+				+ " noise objects found, adding them as a cluster.", "Noise result");
 	}
 
 	public void findRelatedDims() {
@@ -671,8 +658,7 @@ public class CartiController {
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting() == false
 						&& (cartiView.selOptionsListenerShouldListen())) {
-					manSelectedsChange(cartiView.getSelectionOptions()
-							.getSelecteds());
+					manSelectedsChange(cartiView.getSelectionOptions().getSelecteds());
 				}
 			}
 		};
@@ -755,8 +741,8 @@ public class CartiController {
 	}
 
 	/**
-	 * @return Listener for changes in the ClusterInfo table (whether a cluster
-	 *         is visible/not visible)
+	 * @return Listener for changes in the ClusterInfo table (whether a cluster is
+	 *         visible/not visible)
 	 */
 	private TableModelListener createClusterTableModelListener() {
 		TableModelListener listener = new TableModelListener() {

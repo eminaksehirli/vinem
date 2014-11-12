@@ -146,8 +146,7 @@ public class Stats {
 			fireTableCellUpdated(row, col);
 		}
 
-		public void setCols(Object[] supports, Object[] devs,
-				Object[] medAbsDevs) {
+		public void setCols(Object[] supports, Object[] devs, Object[] medAbsDevs) {
 			data.clear();
 			columnNames.clear();
 			data.add(dims);

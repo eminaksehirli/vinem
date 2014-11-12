@@ -319,8 +319,7 @@ public class CartiView {
 		theFrame.repaint();
 	}
 
-	public void updateSelOptions(List<Integer> orderedObjs,
-			Set<Integer> selecteds) {
+	public void updateSelOptions(List<Integer> orderedObjs, Set<Integer> selecteds) {
 		selOptionsListenerShouldListen = false;
 		selectionOptions.updateSelected(orderedObjs, selecteds);
 		selOptionsListenerShouldListen = true;

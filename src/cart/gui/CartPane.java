@@ -11,24 +11,20 @@ import java.util.Collection;
 
 import javax.swing.JPanel;
 
-public class CartPane extends JPanel
-{
-	public static class Layer
-	{
+public class CartPane extends JPanel {
+	public static class Layer {
 
 		int[][] mat;
 		Color color;
 		int ofsetX = 0;
 		int ofsetY = 0;
 
-		public Layer(int[][] mat, Color color)
-		{
+		public Layer(int[][] mat, Color color) {
 			this.mat = mat;
 			this.color = color;
 		}
 
-		public Layer(int[][] mat, Color color, int ofset_x, int ofset_y)
-		{
+		public Layer(int[][] mat, Color color, int ofset_x, int ofset_y) {
 			this(mat, color);
 			this.ofsetX = ofset_x;
 			this.ofsetY = ofset_y;
@@ -44,8 +40,7 @@ public class CartPane extends JPanel
 	private int[][][] image;
 	private Collection<Layer> layers;
 
-	public CartPane(int[][] matrix)
-	{
+	public CartPane(int[][] matrix) {
 		layers = new ArrayList<>();
 		this.matrix = matrix;
 		createImage();
@@ -56,50 +51,42 @@ public class CartPane extends JPanel
 		layers = new ArrayList<>();
 	}
 
-	void updateMatrix(int[][] m)
-	{
+	void updateMatrix(int[][] m) {
 		this.matrix = m;
 		createImage();
 	}
 
 	@Override
-	public Dimension getPreferredSize()
-	{
+	public Dimension getPreferredSize() {
 		return new Dimension(matrix[0].length, matrix.length);
 	}
 
 	@Override
-	public void paintComponent(Graphics g_1)
-	{
+	public void paintComponent(Graphics g_1) {
 		Graphics2D g = (Graphics2D) g_1;
 		super.paintComponent(g);
 
 		setCellSize();
 
-		for (int i = 0; i < matrix[0].length; i += 100)
-		{
+		for (int i = 0; i < matrix[0].length; i += 100) {
 			g.setColor(black);
 			g.drawLine(i * cellWidth + X_Ofset, 0, i * cellWidth + X_Ofset, Y_Ofset);
 		}
 
-		for (int i = 0; i < matrix.length; i += 100)
-		{
+		for (int i = 0; i < matrix.length; i += 100) {
 			g.setColor(black);
 			g.drawLine(0, i * cellHeight + Y_Ofset, X_Ofset, i * cellHeight + Y_Ofset);
 		}
 
 		int y = Y_Ofset;
-		for (int[][] row : image)
-		{
+		for (int[][] row : image) {
 			int x = X_Ofset;
-			for (int[] cell : row)
-			{
+			for (int[] cell : row) {
 				g.setColor(new Color(cell[0], cell[1], cell[2]));
 				g.fillRect(x, y, cellWidth, cellHeight);
 				x += cellWidth;
 			}
-			if (cellHeight > 1)
-			{
+			if (cellHeight > 1) {
 				g.setColor(Color.BLACK);
 				g.drawLine(X_Ofset, y, x, y);
 			}
@@ -107,21 +94,16 @@ public class CartPane extends JPanel
 		}
 	}
 
-	private void createImage()
-	{
-		if (image == null)
-		{
+	private void createImage() {
+		if (image == null) {
 			image = new int[matrix.length][matrix[0].length][3];
 		} else if (image.length != matrix.length
-				|| image[0].length != matrix[0].length)
-		{
+				|| image[0].length != matrix[0].length) {
 			image = new int[matrix.length][matrix[0].length][3];
 		}
 
-		for (int i = 0; i < matrix.length; i++)
-		{
-			for (int j = 0; j < matrix[i].length; j++)
-			{
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[i].length; j++) {
 				image[i][j][0] = matrix[i][j] * 40;
 				image[i][j][1] = matrix[i][j] * 40;
 				image[i][j][2] = matrix[i][j] * 40;
@@ -140,45 +122,33 @@ public class CartPane extends JPanel
 		greenMax = Math.min(10, greenMax);
 
 		int colMax = 255 - 160;
-		if (redMax > 0)
-		{
+		if (redMax > 0) {
 			mergeLayer(redLayer, 0, colMax / redMax);
 		}
-		if (greenMax > 0)
-		{
+		if (greenMax > 0) {
 			mergeLayer(greenLayer, 1, colMax / greenMax);
 		}
-		if (blueMax > 0)
-		{
+		if (blueMax > 0) {
 			mergeLayer(blueLayer, 2, colMax / blueMax);
 		}
 		invalidate();
 	}
 
-	private void mergeLayer(int[][] rlayer, int colLayer, int col)
-	{
-		for (int i = 0; i < image.length; i++)
-		{
-			for (int j = 0; j < image[i].length; j++)
-			{
+	private void mergeLayer(int[][] rlayer, int colLayer, int col) {
+		for (int i = 0; i < image.length; i++) {
+			for (int j = 0; j < image[i].length; j++) {
 				image[i][j][colLayer] += Math.min(255 - image[i][j][colLayer],
 						rlayer[i][j] * col);
 			}
 		}
 	}
 
-	private int createLayer(final Color col, int[][] layer)
-	{
-		for (Layer l : layers)
-		{
-			if (l.color == col)
-			{
-				for (int i = 0; i < l.mat.length; i++)
-				{
-					for (int j = 0; j < l.mat[0].length; j++)
-					{
-						if (l.mat[i][j] != 0)
-						{
+	private int createLayer(final Color col, int[][] layer) {
+		for (Layer l : layers) {
+			if (l.color == col) {
+				for (int i = 0; i < l.mat.length; i++) {
+					for (int j = 0; j < l.mat[0].length; j++) {
+						if (l.mat[i][j] != 0) {
 							layer[l.ofsetY + i][l.ofsetX + j] += 1;
 						}
 					}
@@ -186,12 +156,9 @@ public class CartPane extends JPanel
 			}
 		}
 		int max = 0;
-		for (int i = 0; i < layer.length; i++)
-		{
-			for (int j = 0; j < layer[i].length; j++)
-			{
-				if (layer[i][j] > max)
-				{
+		for (int i = 0; i < layer.length; i++) {
+			for (int j = 0; j < layer[i].length; j++) {
+				if (layer[i][j] > max) {
 					max = layer[i][j];
 				}
 			}
@@ -199,8 +166,7 @@ public class CartPane extends JPanel
 		return max;
 	}
 
-	private void setCellSize()
-	{
+	private void setCellSize() {
 		int width = this.getWidth() - X_Ofset;
 		int height = this.getHeight() - Y_Ofset;
 
@@ -208,23 +174,19 @@ public class CartPane extends JPanel
 		cellWidth = Math.max(1, width / matrix[0].length);
 	}
 
-	public int[] getCells(int x1, int x2)
-	{
+	public int[] getCells(int x1, int x2) {
 		int start = (x1 - X_Ofset) / cellWidth;
 		int end = (x2 - X_Ofset) / cellWidth + 1;
-		return new int[]
-		{ start, end };
+		return new int[] { start, end };
 	}
 
-	public void setLayer(int[][] mat, Color color)
-	{
+	public void setLayer(int[][] mat, Color color) {
 		layers = new ArrayList<>();
 		layers.add(new Layer(mat, color));
 		createImage();
 	}
 
-	public void setLayers(Collection<Layer> layers)
-	{
+	public void setLayers(Collection<Layer> layers) {
 		this.layers = layers;
 		createImage();
 	}

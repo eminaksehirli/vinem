@@ -114,8 +114,7 @@ public class MineOptions {
 		// add numOfItemSets to card
 		JPanel numOfItemSetsPanel = createPanelWithLabel("numOfItemSets");
 		numOfItemSetsFieldRMM = new JTextField();
-		numOfItemSetsFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-				25));
+		numOfItemSetsFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		numOfItemSetsPanel.add(numOfItemSetsFieldRMM);
 		cardRMM.add(numOfItemSetsPanel);
 
@@ -141,8 +140,8 @@ public class MineOptions {
 		// add numOfItemSets to card
 		JPanel numOfItemSetsPanel2 = createPanelWithLabel("numOfItemSets");
 		numOfItemSetsFieldRelDims = new JTextField("2000");
-		numOfItemSetsFieldRelDims.setMaximumSize(new Dimension(
-				Integer.MAX_VALUE, 25));
+		numOfItemSetsFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+				25));
 		numOfItemSetsPanel2.add(numOfItemSetsFieldRelDims);
 		cardRelDims.add(numOfItemSetsPanel2);
 
@@ -226,18 +225,16 @@ public class MineOptions {
 	}
 
 	/**
-	 * @return Value of the numOfItemSets text field, returns -1 if the text
-	 *         field does not contain an integer larger than 0
+	 * @return Value of the numOfItemSets text field, returns -1 if the text field
+	 *         does not contain an integer larger than 0
 	 */
 	public int getNumOfItemSetsVal() {
 		int numOfItemSets = -1;
 		try {
 			if (cb.getSelectedItem().toString().equals(RMMCARD)) {
-				numOfItemSets = Integer.parseInt(numOfItemSetsFieldRMM
-						.getText());
+				numOfItemSets = Integer.parseInt(numOfItemSetsFieldRMM.getText());
 			} else if (cb.getSelectedItem().toString().equals(RELDIMSCARD)) {
-				numOfItemSets = Integer.parseInt(numOfItemSetsFieldRelDims
-						.getText());
+				numOfItemSets = Integer.parseInt(numOfItemSetsFieldRelDims.getText());
 			}
 		} catch (NumberFormatException e) {
 			numOfItemSets = -1;

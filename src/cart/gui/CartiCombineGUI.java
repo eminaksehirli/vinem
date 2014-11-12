@@ -55,8 +55,7 @@ import cart.maximizer.MaximalMinerCombiner;
 import cart.maximizer.MaximalMinerCombiner.FreqCollector;
 import cart.maximizer.OneDCartifier;
 
-public class CartiCombineGUI
-{
+public class CartiCombineGUI {
 	private List<Integer> AllDims;
 	private double[][] dims;
 	private CartiCombinerFrame frame;
@@ -82,13 +81,10 @@ public class CartiCombineGUI
 	private int[] selectedClusterRows;
 	private CartifyDbInMemory cartiDb;
 
-	public static void main(String[] args)
-	{
-		try
-		{
+	public static void main(String[] args) {
+		try {
 			UIManager.setLookAndFeel(new NimbusLookAndFeel());
-		} catch (UnsupportedLookAndFeelException e1)
-		{
+		} catch (UnsupportedLookAndFeelException e1) {
 			e1.printStackTrace();
 		}
 
@@ -111,22 +107,18 @@ public class CartiCombineGUI
 		// pathname = "/a/data.mime";
 	}
 
-	void run(final String path)
-	{
+	void run(final String path) {
 		pathname = path;
 		ArrayList<double[]> data;
-		try
-		{
+		try {
 			data = OneDCartifier.readData(pathname);
 			origData = OneDCartifier.toPairs(data);
-		} catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 		dims = OneDCartifier.transpose(data);
 		AllDims = new ArrayList<>();
-		for (int i = 0; i < dims.length; i++)
-		{
+		for (int i = 0; i < dims.length; i++) {
 			AllDims.add(i);
 		}
 		AllDims = Collections.unmodifiableList(AllDims);
@@ -145,17 +137,14 @@ public class CartiCombineGUI
 
 		dimOrderSlideListener = new ChangeListener() {
 			@Override
-			public void stateChanged(ChangeEvent e)
-			{
+			public void stateChanged(ChangeEvent e) {
 				JSlider s = (JSlider) e.getSource();
-				if (s.getValueIsAdjusting())
-				{
+				if (s.getValueIsAdjusting()) {
 					return;
 				}
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						updateFigure();
 						updateFileName();
 					}
@@ -164,8 +153,7 @@ public class CartiCombineGUI
 		};
 		notAdvancedListener = new ChangeListener() {
 			@Override
-			public void stateChanged(ChangeEvent e)
-			{
+			public void stateChanged(ChangeEvent e) {
 				final int val = frame.orderSlider_1.getValue();
 				frame.orderSlider_2.setValue(val);
 			}
@@ -175,17 +163,14 @@ public class CartiCombineGUI
 		frame.orderSlider_1.addChangeListener(notAdvancedListener);
 		frame.kSlider.addChangeListener(new ChangeListener() {
 			@Override
-			public void stateChanged(ChangeEvent e)
-			{
+			public void stateChanged(ChangeEvent e) {
 				JSlider s = (JSlider) e.getSource();
-				if (s.getValueIsAdjusting())
-				{
+				if (s.getValueIsAdjusting()) {
 					return;
 				}
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						System.out.println("k: " + frame.kSlider.getValue());
 
 						updateCarts();
@@ -199,12 +184,10 @@ public class CartiCombineGUI
 
 		frame.selClear.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						selecteds = new HashSet<>();
 						updateSelectedStats();
 						updateFigure();
@@ -215,17 +198,13 @@ public class CartiCombineGUI
 
 		frame.dimButton.addItemListener(new ItemListener() {
 			@Override
-			public void itemStateChanged(final ItemEvent e)
-			{
+			public void itemStateChanged(final ItemEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
-						if (e.getStateChange() == ItemEvent.SELECTED)
-						{
+					public void run() {
+						if (e.getStateChange() == ItemEvent.SELECTED) {
 							enableAdvanced();
-						} else
-						{
+						} else {
 							disableAdvanced();
 						}
 					}
@@ -235,18 +214,14 @@ public class CartiCombineGUI
 
 		frame.filterButton.addItemListener(new ItemListener() {
 			@Override
-			public void itemStateChanged(final ItemEvent e)
-			{
+			public void itemStateChanged(final ItemEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
-						if (e.getStateChange() == ItemEvent.SELECTED)
-						{
+					public void run() {
+						if (e.getStateChange() == ItemEvent.SELECTED) {
 							filterByCluster = true;
 							updateFigure();
-						} else
-						{
+						} else {
 							filterByCluster = false;
 							cartPane = null; // Reset the cart pane to prevent size
 																// discrepancy
@@ -260,12 +235,10 @@ public class CartiCombineGUI
 
 		frame.clusterButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						clusterTheSelected();
 					}
 				});
@@ -274,12 +247,10 @@ public class CartiCombineGUI
 
 		frame.clearClustersButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						clearClusters();
 					}
 				});
@@ -288,12 +259,10 @@ public class CartiCombineGUI
 
 		final ActionListener manuallySelected = new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						manuallySelected();
 					}
 				});
@@ -304,12 +273,10 @@ public class CartiCombineGUI
 
 		frame.mineButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						runMineByItems();
 					}
 				});
@@ -318,12 +285,10 @@ public class CartiCombineGUI
 
 		frame.mine2Button.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						runMineByDims();
 					}
 				});
@@ -332,12 +297,10 @@ public class CartiCombineGUI
 
 		frame.selMineButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
 					@Override
-					public void run()
-					{
+					public void run() {
 						runMineSelected();
 					}
 				});
@@ -346,8 +309,7 @@ public class CartiCombineGUI
 
 		frame.saveButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				int w = cartPane.getWidth();
 				int h = cartPane.getHeight();
 				BufferedImage img = new BufferedImage(w, h, TYPE_INT_RGB);
@@ -363,19 +325,16 @@ public class CartiCombineGUI
 		frame.showTime();
 	}
 
-	private void runMineByItems()
-	{
+	private void runMineByItems() {
 		final FreqCollector fc = new MaximalMinerCombiner.FreqCollector() {
 			@Override
-			public void foundFreq(Freq freq)
-			{
+			public void foundFreq(Freq freq) {
 				addAsCluster(freq.freqDims, arr2Set(freq.freqSet));
 			}
 		};
 		Thread t = new Thread(new Runnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				maximer.mineFor(k, Integer.valueOf(frame.minlenField.getText()), fc);
 			}
 		});
@@ -388,38 +347,32 @@ public class CartiCombineGUI
 		// }
 	}
 
-	private void runMineByDims()
-	{
+	private void runMineByDims() {
 		List<Freq> freqs = dimer.mineFor(k, 100);
 
-		for (Freq freq : freqs)
-		{
+		for (Freq freq : freqs) {
 			addAsCluster(freq.freqDims, arr2Set(freq.freqSet));
 		}
 	}
 
-	private void runMineSelected()
-	{
+	private void runMineSelected() {
 		Set<Integer> aMined = new HashSet<>(selecteds);
 		int[] arr = new int[aMined.size()];
 
 		int counter = 0;
-		for (int i : aMined)
-		{
+		for (int i : aMined) {
 			arr[counter++] = i;
 		}
 
 		Integer startDimIx = frame.orderSlider_1.getValue();
 		List<Freq> freqs = maximer.mineFor(arr, k, startDimIx);
 
-		for (Freq freq : freqs)
-		{
+		for (Freq freq : freqs) {
 			addAsCluster(freq.freqDims, arr2Set(freq.freqSet));
 		}
 	}
 
-	private void runFindKnees()
-	{
+	private void runFindKnees() {
 		// CartiPointUnderTheLineFinder kneer = new CartiPointUnderTheLineFinder();
 		// List<Freq> knees = kneer.mineFor(pathname, k);
 		//
@@ -430,23 +383,20 @@ public class CartiCombineGUI
 		// updateFigure();
 	}
 
-	private void clusterTheSelected()
-	{
+	private void clusterTheSelected() {
 		addAsCluster(AllDims, selecteds);
 		System.err.println("CLUSTER: " + selecteds.size() + ":" + selecteds);
 		updateFigure();
 	}
 
-	private void clearClusters()
-	{
+	private void clearClusters() {
 		clustersToMark.clear();
 		clusters.clear();
 		clusterTableModel.fireTableDataChanged();
 		updateFigure();
 	}
 
-	private void disableAdvanced()
-	{
+	private void disableAdvanced() {
 		frame.orderSlider_2.setEnabled(false);
 		frame.dimsList.setEnabled(false);
 		frame.orderSlider_2.removeChangeListener(dimOrderSlideListener);
@@ -458,14 +408,11 @@ public class CartiCombineGUI
 
 	}
 
-	private void enableAdvanced()
-	{
-		if (listListener == null)
-		{
+	private void enableAdvanced() {
+		if (listListener == null) {
 			listListener = new ListSelectionListener() {
 				@Override
-				public void valueChanged(ListSelectionEvent e)
-				{
+				public void valueChanged(ListSelectionEvent e) {
 					updateFigure();
 					updateFileName();
 				}
@@ -479,8 +426,7 @@ public class CartiCombineGUI
 		frame.dimsList.setEnabled(true);
 	}
 
-	private void updateCarts()
-	{
+	private void updateCarts() {
 		k = frame.kSlider.getValue();
 
 		cartiDb = new CartifyDbInMemory(pathname, k);
@@ -489,15 +435,12 @@ public class CartiCombineGUI
 		mat = new int[dims.length][][];
 
 		PlainItemDB[] pDbs = cartiDb.getProjDbs();
-		for (int dimIx = 0; dimIx < pDbs.length; dimIx++)
-		{
+		for (int dimIx = 0; dimIx < pDbs.length; dimIx++) {
 			PlainItemDB pDb = pDbs[dimIx];
 			int[][] newMatrix = new int[numOfObjects][numOfObjects];
-			for (PlainItem item : pDb)
-			{
-				for (int tid = item.getTIDs().nextSetBit(0); tid >= 0; tid = item.getTIDs()
-						.nextSetBit(tid + 1))
-				{
+			for (PlainItem item : pDb) {
+				for (int tid = item.getTIDs().nextSetBit(0); tid >= 0; tid = item
+						.getTIDs().nextSetBit(tid + 1)) {
 					newMatrix[tid][item.getId()] += 2;
 				}
 			}
@@ -506,8 +449,7 @@ public class CartiCombineGUI
 		}
 	}
 
-	private void updateFigure()
-	{
+	private void updateFigure() {
 		List<Integer> dimsToShow = getDimsToShow();
 
 		int[] id2LocMap_1 = getId2LocMap(frame.orderSlider_1.getValue());
@@ -515,25 +457,21 @@ public class CartiCombineGUI
 
 		int[][] matrixToShow = translate(mat, dimsToShow, id2LocMap_1, id2LocMap_2);
 		List<Layer> layers = new ArrayList<>();
-		if (selecteds.size() != 0)
-		{
+		if (selecteds.size() != 0) {
 			int[][] selectedsToShow = translate(cluster2Mat(selecteds), dimsToShow,
 					id2LocMap_1, id2LocMap_2);
 			layers.add(new Layer(selectedsToShow, Color.green));
 		}
 
 		Collection<Cluster> dimClusters = clustersToMark;
-		if (dimClusters != null && dimClusters.size() > 0)
-		{
+		if (dimClusters != null && dimClusters.size() > 0) {
 			Iterator<Cluster> it = dimClusters.iterator();
 			int[][] selectedsToShow = null;
-			if (it.hasNext())
-			{
+			if (it.hasNext()) {
 				selectedsToShow = translate(cluster2Mat(it.next().objects), dimsToShow,
 						id2LocMap_1, id2LocMap_2);
 			}
-			while (it.hasNext())
-			{
+			while (it.hasNext()) {
 				Set<Integer> cluster = it.next().objects;
 				selectedsToShow = translateInto(selectedsToShow, cluster2Mat(cluster),
 						dimsToShow, id2LocMap_1, id2LocMap_2);
@@ -541,16 +479,14 @@ public class CartiCombineGUI
 			layers.add(new Layer(selectedsToShow, Color.red));
 		}
 
-		if (cartPane == null)
-		{
+		if (cartPane == null) {
 			cartPane = new CartPane(matrixToShow);
 			cartPane.setLayers(layers);
 			cartPane.addMouseListener(new SelectorMouseAdapter());
 			sPane = new JScrollPane(cartPane);
 			sPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 			frame.add(sPane, BorderLayout.CENTER);
-		} else
-		{
+		} else {
 			cartPane.setLayers(layers);
 			cartPane.updateMatrix(matrixToShow);
 		}
@@ -558,25 +494,20 @@ public class CartiCombineGUI
 		frame.repaint();
 	}
 
-	private List<Integer> getDimsToShow()
-	{
-		if (frame.dimButton.isSelected())
-		{
+	private List<Integer> getDimsToShow() {
+		if (frame.dimButton.isSelected()) {
 			return frame.dimsList.getSelectedValuesList();
 		}
 		return Collections.singletonList(frame.orderSlider_1.getValue());
 	}
 
-	private int[][][] cluster2Mat(Set<Integer> toShow)
-	{
+	private int[][][] cluster2Mat(Set<Integer> toShow) {
 		int[][][] selectedsLayer = new int[dims.length][numOfObjects][numOfObjects];
-		for (int dimIx = 0; dimIx < dims.length; dimIx++)
-		{
+		for (int dimIx = 0; dimIx < dims.length; dimIx++) {
 			for (int i : Utils.range(numOfObjects))
 			// for (int i : toShow)
 			{
-				for (int j : toShow)
-				{
+				for (int j : toShow) {
 					selectedsLayer[dimIx][i][j] += 1;
 				}
 			}
@@ -585,8 +516,7 @@ public class CartiCombineGUI
 	}
 
 	private int[][] translate(int[][][] mat, List<Integer> dimsToInclude,
-			int[] id2LocMap_1, int[] id2LocMap_2)
-	{
+			int[] id2LocMap_1, int[] id2LocMap_2) {
 		int[][] matrixToShow = new int[numOfObjects][numOfObjects];
 		matrixToShow = translateInto(matrixToShow, mat, dimsToInclude, id2LocMap_1,
 				id2LocMap_2);
@@ -594,36 +524,28 @@ public class CartiCombineGUI
 	}
 
 	private int[][] translateInto(int[][] matrixToShow, int[][][] mat,
-			List<Integer> dimsToInclude, int[] id2LocMap_1, int[] id2LocMap_2)
-	{
-		for (int dim : dimsToInclude)
-		{
-			for (int i = 0; i < mat[dim].length; i++)
-			{
-				for (int j = 0; j < mat[dim][i].length; j++)
-				{
+			List<Integer> dimsToInclude, int[] id2LocMap_1, int[] id2LocMap_2) {
+		for (int dim : dimsToInclude) {
+			for (int i = 0; i < mat[dim].length; i++) {
+				for (int j = 0; j < mat[dim][i].length; j++) {
 					matrixToShow[id2LocMap_2[i]][id2LocMap_1[j]] += mat[dim][i][j];
 				}
 			}
 		}
 
 		Collection<Cluster> dimClusters = clustersToMark;
-		if (filterByCluster && dimClusters.size() == 1)
-		{
+		if (filterByCluster && dimClusters.size() == 1) {
 			Set<Integer> firstCl = dimClusters.iterator().next().objects;
 			int[][] newMat = new int[matrixToShow.length][firstCl.size()];
 
-			for (int rowIx = 0; rowIx < matrixToShow.length; rowIx++)
-			{
+			for (int rowIx = 0; rowIx < matrixToShow.length; rowIx++) {
 				int[] colsToShow = new int[firstCl.size()];
 				int i = 0;
-				for (int col : firstCl)
-				{
+				for (int col : firstCl) {
 					colsToShow[i++] = id2LocMap_2[col];
 				}
 				Arrays.sort(colsToShow);
-				for (int j = 0; j < colsToShow.length; j++)
-				{
+				for (int j = 0; j < colsToShow.length; j++) {
 					newMat[rowIx][j] = matrixToShow[rowIx][colsToShow[j]];
 				}
 			}
@@ -633,35 +555,30 @@ public class CartiCombineGUI
 		return matrixToShow;
 	}
 
-	private int[] getId2LocMap(int dim)
-	{
-		if (id2LocMaps == null)
-		{
+	private int[] getId2LocMap(int dim) {
+		if (id2LocMaps == null) {
 			id2LocMaps = new int[dims.length][];
 		}
 
-		if (id2LocMaps[dim] == null)
-		{
-			id2LocMaps[dim] = MaximalMinerCombiner.getId2Ord(getOrd2Id(origData, dim));
+		if (id2LocMaps[dim] == null) {
+			id2LocMaps[dim] = MaximalMinerCombiner
+					.getId2Ord(getOrd2Id(origData, dim));
 		}
 		return id2LocMaps[dim];
 	}
 
-	private void updateFileName()
-	{
+	private void updateFileName() {
 		frame.fileText.setText("/tmp/carti-k-" + frame.orderSlider_1.getValue()
 				+ "_" + frame.orderSlider_2.getValue() + "-" + frame.kSlider.getValue()
 				+ ".png");
 		frame.fileText.invalidate();
 	}
 
-	protected void selectUntil(Point point)
-	{
+	protected void selectUntil(Point point) {
 		int[] id2LocM = getId2LocMap(frame.orderSlider_2.getValue());
 
 		int[] loc2IdM = new int[id2LocM.length];
-		for (int i = 0; i < id2LocM.length; i++)
-		{
+		for (int i = 0; i < id2LocM.length; i++) {
 			loc2IdM[id2LocM[i]] = i;
 		}
 
@@ -675,19 +592,15 @@ public class CartiCombineGUI
 		cells[1] = min(loc2IdM.length, cells[1]);
 
 		Set<Integer> selectedObjects = new HashSet<>(cells[1] - cells[0]);
-		for (int i = cells[0]; i < cells[1]; i++)
-		{
+		for (int i = cells[0]; i < cells[1]; i++) {
 			selectedObjects.add(loc2IdM[i]);
 		}
 
-		if (frame.selSelect.isSelected())
-		{
+		if (frame.selSelect.isSelected()) {
 			selecteds = selectedObjects;
-		} else if (frame.selAnd.isSelected())
-		{
+		} else if (frame.selAnd.isSelected()) {
 			selecteds.retainAll(selectedObjects);
-		} else if (frame.selOr.isSelected())
-		{
+		} else if (frame.selOr.isSelected()) {
 			selecteds.addAll(selectedObjects);
 		}
 
@@ -698,22 +611,18 @@ public class CartiCombineGUI
 		updateFileName();
 	}
 
-	private void updateSelectedStats()
-	{
-		if (selecteds.size() == 0)
-		{
+	private void updateSelectedStats() {
+		if (selecteds.size() == 0) {
 			frame.hideInfoPane();
 			return;
 		}
 		PlainItemDB[] dbs = cartiDb.getProjDbs();
 		int[] dimSupports = new int[dbs.length];
-		for (int dimIx = 0; dimIx < dbs.length; dimIx++)
-		{
+		for (int dimIx = 0; dimIx < dbs.length; dimIx++) {
 			Iterator<Integer> it = selecteds.iterator();
 			Integer obj = it.next();
 			BitSet tids = (BitSet) dbs[dimIx].get(obj).getTIDs().clone();
-			while (it.hasNext())
-			{
+			while (it.hasNext()) {
 				obj = it.next();
 				tids.and(dbs[dimIx].get(obj).getTIDs());
 			}
@@ -723,29 +632,24 @@ public class CartiCombineGUI
 		frame.updateInfoPane(selecteds.size(), dimSupports, selecteds.toString());
 	}
 
-	private class SelectorMouseAdapter extends MouseAdapter
-	{
+	private class SelectorMouseAdapter extends MouseAdapter {
 		@Override
-		public void mousePressed(MouseEvent e)
-		{
+		public void mousePressed(MouseEvent e) {
 			selectionStart = e.getPoint();
 		}
 
 		@Override
-		public void mouseReleased(MouseEvent e)
-		{
+		public void mouseReleased(MouseEvent e) {
 			selectUntil(e.getPoint());
 		}
 	}
 
-	private void manuallySelected()
-	{
+	private void manuallySelected() {
 		String t = frame.selectField.getText();
 		String[] idArr = t.split(",");
 
 		Set<Integer> manSel = new HashSet<>(idArr.length);
-		for (String idStr : idArr)
-		{
+		for (String idStr : idArr) {
 			manSel.add(Integer.valueOf(idStr.trim()));
 		}
 		selecteds = manSel;
@@ -755,45 +659,37 @@ public class CartiCombineGUI
 		updateFileName();
 	}
 
-	private void addAsCluster(Collection<Integer> dims, Set<Integer> objects)
-	{
+	private void addAsCluster(Collection<Integer> dims, Set<Integer> objects) {
 		final Cluster cl = new Cluster(new HashSet<>(dims), objects);
 		clusters.add(cl);
 
-		if (clusterTableModel == null)
-		{
+		if (clusterTableModel == null) {
 			clusterTableModel = new TableModel(clusters);
 			frame.showClusterTable(clusterTableModel);
 			frame.clusterTable.getSelectionModel().addListSelectionListener(
 					new ListSelectionListener() {
 						@Override
-						public void valueChanged(ListSelectionEvent e)
-						{
-							if (e.getValueIsAdjusting())
-							{
+						public void valueChanged(ListSelectionEvent e) {
+							if (e.getValueIsAdjusting()) {
 								return;
 							}
 							clusterSelected();
 						}
 					});
-		} else
-		{
+		} else {
 			clusterTableModel.fireTableDataChanged();
 		}
 
 	}
 
-	private void clusterSelected()
-	{
+	private void clusterSelected() {
 		int[] rows = frame.clusterTable.getSelectedRows();
-		if (Arrays.equals(rows, selectedClusterRows))
-		{
+		if (Arrays.equals(rows, selectedClusterRows)) {
 			return;
 		}
 		clustersToMark.clear();
 		selectedClusterRows = rows;
-		for (int rowIx : rows)
-		{
+		for (int rowIx : rows) {
 			Cluster cl = clusters.get(rowIx);
 
 			clustersToMark.add(cl);
@@ -801,60 +697,47 @@ public class CartiCombineGUI
 		updateFigure();
 	}
 
-	private static Set<Integer> arr2Set(final int[] arr)
-	{
+	private static Set<Integer> arr2Set(final int[] arr) {
 		Set<Integer> s = new HashSet<>(arr.length);
-		for (int i : arr)
-		{
+		for (int i : arr) {
 			s.add(i);
 		}
 		return s;
 	}
 
-	public static void writeImage(BufferedImage img, final String file)
-	{
-		try
-		{
-			if (ImageIO.write(img, "png", new File(file)))
-			{
+	public static void writeImage(BufferedImage img, final String file) {
+		try {
+			if (ImageIO.write(img, "png", new File(file))) {
 				System.out.println("-- saved as " + file);
 			}
-		} catch (IOException ex)
-		{
+		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	static class TableModel extends AbstractTableModel
-	{
+	static class TableModel extends AbstractTableModel {
 		private static final long serialVersionUID = 3337994276952657633L;
 		private List<Cluster> clusters;
 		private String[] names;
 
-		public TableModel(List<Cluster> clusters)
-		{
+		public TableModel(List<Cluster> clusters) {
 			this.clusters = clusters;
-			this.names = new String[]
-			{ "id", "Size", "Dims", "Objects" };
+			this.names = new String[] { "id", "Size", "Dims", "Objects" };
 		}
 
 		@Override
-		public int getRowCount()
-		{
+		public int getRowCount() {
 			return clusters.size();
 		}
 
 		@Override
-		public int getColumnCount()
-		{
+		public int getColumnCount() {
 			return 4;
 		}
 
 		@Override
-		public Object getValueAt(int rowIndex, int columnIndex)
-		{
-			switch (columnIndex)
-			{
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			switch (columnIndex) {
 			case 0:
 				return rowIndex;
 			case 1:
@@ -869,19 +752,16 @@ public class CartiCombineGUI
 		}
 
 		@Override
-		public String getColumnName(int column)
-		{
+		public String getColumnName(int column) {
 			return names[column];
 		}
 	}
 
-	static class Cluster
-	{
+	static class Cluster {
 		Set<Integer> dims;
 		Set<Integer> objects;
 
-		public Cluster(Set<Integer> dims, Set<Integer> objects)
-		{
+		public Cluster(Set<Integer> dims, Set<Integer> objects) {
 			this.dims = dims;
 			this.objects = objects;
 		}

@@ -20,8 +20,8 @@ public class CartiPanel extends JPanel {
 
 	/**
 	 * @param matrix
-	 *            A 2d matrix containing 0s and 1s, where a 1 means we need to
-	 *            colour that spot.
+	 *          A 2d matrix containing 0s and 1s, where a 1 means we need to
+	 *          colour that spot.
 	 */
 	public CartiPanel(int[][] matrix) {
 		this.matrix = matrix;
@@ -38,8 +38,8 @@ public class CartiPanel extends JPanel {
 	 * Updates the visualisation
 	 * 
 	 * @param m
-	 *            A 2d matrix containing 0s and 1s, where a 1 means we need to
-	 *            colour that spot.
+	 *          A 2d matrix containing 0s and 1s, where a 1 means we need to
+	 *          colour that spot.
 	 */
 	void updateMatrix(int[][] m) {
 		this.matrix = m;
@@ -133,8 +133,8 @@ public class CartiPanel extends JPanel {
 		// add horizontal indication lines
 		for (int i = 0; i < matrix[0].length; i += 100) {
 			g.setColor(Color.BLACK);
-			g.drawLine(i * cellWidth, matrix.length * cellHeight,
-					i * cellWidth, (matrix.length * cellHeight) + 15);
+			g.drawLine(i * cellWidth, matrix.length * cellHeight, i * cellWidth,
+					(matrix.length * cellHeight) + 15);
 		}
 
 		// add vertical indication lines

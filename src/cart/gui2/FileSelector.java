@@ -168,8 +168,7 @@ public class FileSelector extends JFrame {
 
 		CartiModel cartiModel = new CartiModel();
 		CartiView cartiView = new CartiView();
-		CartiController cartiController = new CartiController(cartiModel,
-				cartiView);
+		CartiController cartiController = new CartiController(cartiModel, cartiView);
 
 		cartiController.run(filePath);
 	}

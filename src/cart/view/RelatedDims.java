@@ -27,8 +27,8 @@ public class RelatedDims {
 	public void init(int[][] relatedDimsMatrix) {
 		// the main panel
 		relatedDimsPanel = new JPanel();
-		relatedDimsPanel.setLayout(new BoxLayout(relatedDimsPanel,
-				BoxLayout.Y_AXIS));
+		relatedDimsPanel
+				.setLayout(new BoxLayout(relatedDimsPanel, BoxLayout.Y_AXIS));
 		relatedDimsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		// the table containing the related dims matrix
@@ -57,8 +57,7 @@ public class RelatedDims {
 				// slider has stopped moving
 				if (!slider.getValueIsAdjusting()) {
 					slider.setToolTipText(Integer.toString(slider.getValue()));
-					((DefaultTableModel) table.getModel())
-							.fireTableDataChanged();
+					((DefaultTableModel) table.getModel()).fireTableDataChanged();
 				}
 			}
 		});
@@ -91,8 +90,7 @@ public class RelatedDims {
 			}
 		}
 
-		DefaultTableModel tableModel = new DefaultTableModel(rowData,
-				columnNames) {
+		DefaultTableModel tableModel = new DefaultTableModel(rowData, columnNames) {
 			private static final long serialVersionUID = 1774014217061930195L;
 
 			@Override
@@ -112,16 +110,15 @@ public class RelatedDims {
 	}
 
 	/**
-	 * Renders cells of the table, colours them green if they are above the
-	 * slider value.
+	 * Renders cells of the table, colours them green if they are above the slider
+	 * value.
 	 */
 	public class MyRenderer extends DefaultTableCellRenderer {
 		private static final long serialVersionUID = 8255460337844895789L;
 
 		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
+		public Component getTableCellRendererComponent(JTable table, Object value,
+				boolean isSelected, boolean hasFocus, int row, int column) {
 			Component c = super.getTableCellRendererComponent(table, value,
 					isSelected, hasFocus, row, column);
 

@@ -34,8 +34,7 @@ public class DistOptions {
 	public void init(Set<Integer> dimList, List<String> distMeasures) {
 		// the main panel
 		distPanel = CartiView.createVerticalBoxPanel(300, 240);
-		distPanel.setBorder(BorderFactory
-				.createTitledBorder("Distance measures"));
+		distPanel.setBorder(BorderFactory.createTitledBorder("Distance measures"));
 
 		// panel containing radio buttons, dim list, add button
 		JPanel topPanel = CartiView.createHorizontalBoxPanel(300, 200);
