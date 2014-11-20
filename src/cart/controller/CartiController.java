@@ -28,8 +28,6 @@ import cart.gui2.Cluster;
 import cart.gui2.CosineDistMeasure;
 import cart.gui2.DistMeasure;
 import cart.gui2.EuclidianDistMeasure;
-import cart.maximizer.Freq;
-import cart.maximizer.ItemsetMaximalMiner;
 import cart.model.CartiModel;
 import cart.model.RandomMaximalMiner;
 import cart.view.CartiView;
@@ -41,23 +39,20 @@ import cart.view.NoiseOptions;
 import cart.view.SelOptions;
 
 /**
- * @author Detlev
+ * @author Detlev, Aksehirli
  * 
  */
 public class CartiController {
 	private CartiModel cartiModel;
 	private CartiView cartiView;
-	private ItemsetMaximalMiner maximer;
 
 	public CartiController(CartiModel cartiModel, CartiView cartiView) {
 		this.cartiModel = cartiModel;
 		this.cartiView = cartiView;
 	}
 
-	public void run(String filePath) {
-		int initOrderDim = 0;
-		int initK = 1;
-		cartiModel.init(filePath, initK, initOrderDim);
+	public void run() {
+		cartiModel.init();
 
 		int maxK = cartiModel.getNumObjects();
 		Set<Integer> dims = cartiModel.getDims();
@@ -79,11 +74,8 @@ public class CartiController {
 		cartiView.addSliderListener(createSliderListener());
 		cartiView.addDistOptionsBoxListener(createDistOptionsBoxListener());
 
-		maximer = new ItemsetMaximalMiner(filePath);
-
 		cartiView.getFrame().pack();
 		cartiView.getFrame().setVisible(true);
-
 	}
 
 	public void orderSliderChanged() {
@@ -405,21 +397,11 @@ public class CartiController {
 			return;
 		}
 
-		// do mining
-		List<Freq> result = maximer.mineFor(cartiModel.getK(), minLen);
-
-		if (result.size() == 0) {
+		int resultSize = cartiModel.mineItemsets(minLen);
+		if (resultSize == 0) {
 			cartiView.showInfoMessage("0 clusters found, try different k or minLen.",
 					"Mining result");
 			return;
-		}
-
-		// turn result into clusters and add to model
-		for (Freq freq : result) {
-			Cluster cluster = new Cluster(arr2Set(freq.freqSet),
-					new HashSet<Integer>(freq.freqDims));
-
-			cartiModel.addCluster(cluster);
 		}
 
 		// update view
@@ -427,7 +409,7 @@ public class CartiController {
 		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
 
 		cartiView.updateClusterInfo(clustersMap, clustersToShow);
-		cartiView.showInfoMessage(result.size() + " cluster(s) found.",
+		cartiView.showInfoMessage(resultSize + " cluster(s) found.",
 				"Mining result");
 	}
 
@@ -808,13 +790,5 @@ public class CartiController {
 		};
 
 		return listener;
-	}
-
-	private static Set<Integer> arr2Set(final int[] arr) {
-		Set<Integer> s = new HashSet<>(arr.length);
-		for (int i : arr) {
-			s.add(i);
-		}
-		return s;
 	}
 }

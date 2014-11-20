@@ -23,13 +23,15 @@ import cart.cartifier.Pair;
 import cart.gui2.Cluster;
 import cart.gui2.DistMeasure;
 import cart.gui2.OneDimDistMeasure;
+import cart.maximizer.Freq;
+import cart.maximizer.ItemsetMaximalMiner;
 import cart.maximizer.MaximalMinerCombiner;
 import cart.maximizer.OneDCartifier;
 
 /**
  * The main model class.
  * 
- * @author Detlev
+ * @author Detlev, Aksehirli
  * 
  */
 
@@ -55,21 +57,12 @@ public class CartiModel {
 	private ArrayList<double[]> data;
 	private int[] byObjId2LocMap;
 	private int[] byObjLoc2IdMap;
+	private ItemsetMaximalMiner maximer;
 
-	/**
-	 * Initializes the model.
-	 * 
-	 * @param filePath
-	 *          path for the data
-	 * @param k
-	 *          the initial k value
-	 * @param orderDim
-	 *          the initial order value
-	 */
-	public void init(final String filePath, int k, int orderDim) {
+	public CartiModel(String filePath) {
 		this.filePath = filePath;
-		this.k = k;
-		this.orderDim = orderDim;
+		this.k = 1;
+		this.orderDim = 0;
 		this.clusterIdCount = 0;
 		this.filtereds = new HashSet<Integer>();
 		this.selecteds = new HashSet<Integer>();
@@ -79,6 +72,13 @@ public class CartiModel {
 		this.distMeasures = new ArrayList<DistMeasure>();
 		this.selectedDistMeasureId = 0;
 
+		maximer = new ItemsetMaximalMiner(filePath);
+	}
+
+	/**
+	 * Initializes the model.
+	 */
+	public void init() {
 		try {
 			data = OneDCartifier.readData(filePath);
 			origData = OneDCartifier.toPairs(data);
@@ -814,5 +814,28 @@ public class CartiModel {
 			}
 		}
 		return starts;
+	}
+
+	public int mineItemsets(int minLen) {
+		// do mining
+		List<Freq> result = maximer.mineFor(getK(), minLen);
+
+		// turn result into clusters and add to model
+		for (Freq freq : result) {
+			Cluster cluster = new Cluster(arr2Set(freq.freqSet),
+					new HashSet<Integer>(freq.freqDims));
+
+			addCluster(cluster);
+		}
+
+		return result.size();
+	}
+
+	private static Set<Integer> arr2Set(final int[] arr) {
+		Set<Integer> s = new HashSet<>(arr.length);
+		for (int i : arr) {
+			s.add(i);
+		}
+		return s;
 	}
 }
