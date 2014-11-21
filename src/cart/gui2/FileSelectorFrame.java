@@ -21,8 +21,8 @@ public class FileSelectorFrame extends JFrame {
 	private static final long serialVersionUID = 3599962945189307089L;
 
 	JPanel recentFilesPane;
-	JCheckBox headerRowCB;
-	JCheckBox headerColumnCB;
+	JCheckBox rowNamesCB;
+	JCheckBox columnNamesCB;
 	JTextField separatorTF;
 	JTextField fileNameField;
 	JButton browseButton;
@@ -35,7 +35,7 @@ public class FileSelectorFrame extends JFrame {
 		newFilePane.setBorder(BorderFactory.createEtchedBorder());
 		newFilePane.add(new JLabel("Select a new file"), BorderLayout.NORTH);
 
-		JPanel filePane = CartiView.createHorizontalBoxPanel(500, 30);
+		JPanel filePane = CartiView.createHorizontalBoxPanel(500, 40);
 		fileNameField = new JTextField(50);
 		filePane.add(fileNameField);
 
@@ -43,19 +43,19 @@ public class FileSelectorFrame extends JFrame {
 
 		filePane.add(browseButton);
 
-		headerRowCB = new JCheckBox("Header Row");
-		headerColumnCB = new JCheckBox("Header Column");
+		rowNamesCB = new JCheckBox("Rows Has Names");
+		columnNamesCB = new JCheckBox("Column Has Names");
 		separatorTF = new JTextField(" ", 2);
 		runBt = new JButton("Run with a new file");
 
-		JPanel detailsPane = createHorizontalBoxPanel(600, 30);
-		detailsPane.add(headerRowCB);
-		detailsPane.add(headerColumnCB);
+		JPanel detailsPane = createHorizontalBoxPanel(600, 40);
+		detailsPane.add(rowNamesCB);
+		detailsPane.add(columnNamesCB);
 		detailsPane.add(new JLabel("Column separator:"));
 		detailsPane.add(separatorTF);
 		detailsPane.add(runBt);
 
-		JPanel fileInfoPane = CartiView.createVerticalBoxPanel(500, 70);
+		JPanel fileInfoPane = CartiView.createVerticalBoxPanel(500, 90);
 		fileInfoPane.add(filePane);
 		fileInfoPane.add(detailsPane);
 

@@ -17,29 +17,31 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionListener;
 
+import cart.model.Obj;
+
 public class SelOptions {
 
 	public final static String CLEAR = "SelOptions.Clear";
 
 	private JPanel optionsPanel;
-	private JList<Integer> list;
-	private DefaultListModel<Integer> listModel;
+	private JList<Obj> list;
+	private DefaultListModel<Obj> listModel;
 	private JButton clear;
 	private JRadioButton modeSelect;
 	private JRadioButton modeAnd;
 	private JRadioButton modeOr;
 
-	public void init(List<Integer> orderedObjs) {
+	public SelOptions(List<Obj> orderedObjs) {
 		// the main panel
 		optionsPanel = CartiView.createVerticalBoxPanel(300, 300);
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("Selection"));
 
 		// list of selected/unselected objects
-		listModel = new DefaultListModel<Integer>();
+		listModel = new DefaultListModel<>();
 		for (int i = 0; i < orderedObjs.size(); i++) {
 			listModel.addElement(orderedObjs.get(i));
 		}
-		list = new JList<Integer>(listModel);
+		list = new JList<>(listModel);
 		JScrollPane listPane = new JScrollPane(list);
 		listPane.setPreferredSize(new Dimension(200, 200));
 		listPane.setMaximumSize(new Dimension(200, 200));
@@ -80,11 +82,11 @@ public class SelOptions {
 		return optionsPanel;
 	}
 
-	public void updateSelected(List<Integer> orderedObjs, Set<Integer> selecteds) {
+	public void updateSelected(List<Obj> orderedObjs, Set<Integer> selecteds) {
 		listModel.clear();
 
 		// fill the list
-		for (int objId : orderedObjs) {
+		for (Obj objId : orderedObjs) {
 			listModel.addElement(objId);
 		}
 
@@ -93,7 +95,7 @@ public class SelOptions {
 		int selIx = 0;
 
 		for (int i = 0; i < orderedObjs.size(); i++) {
-			if (selecteds.contains(orderedObjs.get(i))) {
+			if (selecteds.contains(orderedObjs.get(i).id)) {
 				selectedIndices[selIx] = i;
 				selIx++;
 			}
@@ -103,13 +105,16 @@ public class SelOptions {
 	}
 
 	/**
-	 * @return Set containing the object ids which were selected by the user (by
-	 *         clicking on them in the list)
+	 * @return Object ids which were selected by the user (by clicking on them in
+	 *         the list)
 	 */
 	public Set<Integer> getSelecteds() {
-		Set<Integer> objIds = new HashSet<Integer>(list.getSelectedValuesList());
-
-		return objIds;
+		final List<Obj> sels = list.getSelectedValuesList();
+		Set<Integer> selecteds = new HashSet<>(sels.size());
+		for (Obj i : sels) {
+			selecteds.add(i.id);
+		}
+		return selecteds;
 	}
 
 	public boolean selModeIsSelect() {

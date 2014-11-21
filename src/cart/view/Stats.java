@@ -2,6 +2,7 @@ package cart.view;
 
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +14,8 @@ import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.table.AbstractTableModel;
 
+import cart.model.Obj;
+
 public class Stats {
 
 	private JPanel statsPanel;
@@ -21,7 +24,7 @@ public class Stats {
 	private StatsTable tableModel;
 	private JTextArea objIdsArea;
 
-	public void init(Set<Integer> dims) {
+	public Stats(Set<Integer> dims) {
 		// the main panel
 		statsPanel = CartiView.createVerticalBoxPanel(520, 300);
 
@@ -50,7 +53,7 @@ public class Stats {
 		statsPanel.add(sPane);
 	}
 
-	public void updateStats(Set<Integer> objIds, int[] dimSupports,
+	public void updateStats(Collection<Obj> objIds, int[] dimSupports,
 			double[] standardDevs, int[] medAbsDevs) {
 		sizeLabel.setText(String.valueOf(objIds.size()));
 

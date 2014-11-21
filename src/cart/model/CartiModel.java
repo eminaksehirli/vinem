@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -59,6 +60,9 @@ public class CartiModel {
 	private int[] byObjLoc2IdMap;
 	private ItemsetMaximalMiner maximer;
 	private InputFile inputFile;
+	public String[] columnNames;
+	public String[] rowNames;
+	private Obj[] objects;
 
 	public CartiModel(InputFile inputFile) {
 		this.inputFile = inputFile;
@@ -89,6 +93,23 @@ public class CartiModel {
 
 		numObjects = data.size();
 		numDims = OneDCartifier.transpose(data).length;
+
+		if (inputFile.colsHasNames) {
+			columnNames = inputFile.columnNames;
+		} else {
+			columnNames = rangeAsArr(numDims);
+		}
+
+		if (inputFile.rowsHasNames) {
+			rowNames = inputFile.rowNames;
+		} else {
+			rowNames = rangeAsArr(numObjects);
+		}
+
+		objects = new Obj[numObjects];
+		for (int i = 0; i < rowNames.length; i++) {
+			objects[i] = new Obj(i, rowNames[i]);
+		}
 
 		dims = new TreeSet<Integer>();
 		for (int i = 0; i < numDims; i++) {
@@ -199,11 +220,11 @@ public class CartiModel {
 	 * @return A list of all object Ids except those which are filtered, ordered
 	 *         for a given dimension.
 	 */
-	public List<Integer> getOrderedObjList() {
-		List<Integer> orderedObjs = new ArrayList<Integer>();
+	public List<Obj> getOrderedObjList() {
+		List<Obj> orderedObjs = new ArrayList<>();
 
 		for (int i = 0; i < loc2ObjId().length; i++) {
-			orderedObjs.add(loc2ObjId()[i]);
+			orderedObjs.add(getObj(loc2ObjId()[i]));
 		}
 
 		return orderedObjs;
@@ -248,8 +269,8 @@ public class CartiModel {
 	 * @return The object ids of each object with a support < minSup in the
 	 *         selected distMeasure.
 	 */
-	public Set<Integer> getNoiseObjsInSelDistMeas(int minSup) {
-		Set<Integer> noiseObjects = new HashSet<Integer>();
+	public List<Obj> getNoiseObjsInSelDistMeas(int minSup) {
+		List<Obj> noiseObjects = new ArrayList<>();
 
 		List<PlainItemDB> pDbs = cartiDb.getProjDbs();
 		PlainItemDB pDb = pDbs.get(selectedDistMeasureId);
@@ -258,7 +279,7 @@ public class CartiModel {
 		for (PlainItem item : pDb) {
 			if ((!filtereds.contains(item.getId()))
 					&& (item.getTIDs().cardinality() < minSup)) {
-				noiseObjects.add(item.getId());
+				noiseObjects.add(getObj(item.getId()));
 			}
 		}
 
@@ -271,7 +292,7 @@ public class CartiModel {
 	 * @return The object ids of each object with a support < minSup in every
 	 *         distMeasure.
 	 */
-	public Set<Integer> getNoiseObjsInAllDistMeas(int minSup) {
+	public List<Obj> getNoiseObjsInAllDistMeas(int minSup) {
 		Set<Integer> noiseObjects = new HashSet<Integer>();
 
 		// add each object to noiseObjects to remove them later
@@ -291,7 +312,7 @@ public class CartiModel {
 			}
 		}
 
-		return noiseObjects;
+		return ids2Objs(noiseObjects);
 	}
 
 	/**
@@ -504,6 +525,10 @@ public class CartiModel {
 		return selecteds;
 	}
 
+	public List<Obj> getSelectedObjs() {
+		return ids2Objs(selecteds);
+	}
+
 	public Set<Integer> getSelectedLocs() {
 		Set<Integer> locs = new HashSet<Integer>();
 
@@ -613,10 +638,10 @@ public class CartiModel {
 		Set<Integer> locs = new HashSet<Integer>();
 
 		for (int clusterId : clustersToShow) {
-			for (int objId : clustersMap.get(clusterId).getObjects()) {
+			for (Obj obj : clustersMap.get(clusterId).getObjects()) {
 				// cluster might contain filtered ids
-				if (!filtereds.contains(objId)) {
-					locs.add(objId2Loc(orderDim)[objId]);
+				if (!filtereds.contains(obj.id)) {
+					locs.add(objId2Loc(orderDim)[obj.id]);
 				}
 			}
 		}
@@ -637,10 +662,10 @@ public class CartiModel {
 		selecteds = new HashSet<Integer>();
 
 		for (int cid : clusterIds) {
-			for (int objId : clustersMap.get(cid).getObjects()) {
-				if (!filtereds.contains(objId)) {
+			for (Obj obj : clustersMap.get(cid).getObjects()) {
+				if (!filtereds.contains(obj.id)) {
 					// cluster might contain filtered ids
-					selecteds.add(objId);
+					selecteds.add(obj.id);
 				}
 			}
 		}
@@ -650,7 +675,7 @@ public class CartiModel {
 	 * Create a new cluster from the selecteds.
 	 */
 	public void clusterSelecteds() {
-		clustersMap.put(clusterIdCount, new Cluster(selecteds, dims));
+		clustersMap.put(clusterIdCount, new Cluster(getSelectedObjs(), dims));
 		clusterIdCount++;
 	}
 
@@ -660,7 +685,7 @@ public class CartiModel {
 	 * @param clusterId
 	 */
 	public void addSelectedsToCluster(int clusterId) {
-		clustersMap.get(clusterId).addObjects(selecteds);
+		clustersMap.get(clusterId).addObjects(getSelectedObjs());
 	}
 
 	/**
@@ -669,7 +694,7 @@ public class CartiModel {
 	 * @param clusterId
 	 */
 	public void removeSelectedsFromCluster(int clusterId) {
-		clustersMap.get(clusterId).removeObjects(selecteds);
+		clustersMap.get(clusterId).removeObjects(getSelectedObjs());
 	}
 
 	/**
@@ -678,7 +703,7 @@ public class CartiModel {
 	 * @param clusterId
 	 */
 	public void removeFilteredsFromCluster(int clusterId) {
-		clustersMap.get(clusterId).removeObjects(filtereds);
+		clustersMap.get(clusterId).removeObjects(ids2Objs(filtereds));
 	}
 
 	/**
@@ -832,10 +857,30 @@ public class CartiModel {
 		return result.size();
 	}
 
-	private static Set<Integer> arr2Set(final int[] arr) {
-		Set<Integer> s = new HashSet<>(arr.length);
+	public Obj getObj(final int id) {
+		return objects[id];
+	}
+
+	private static String[] rangeAsArr(int r) {
+		String[] names = new String[r];
+		for (int i = 0; i < names.length; i++) {
+			names[i] = String.valueOf(i);
+		}
+		return names;
+	}
+
+	private List<Obj> ids2Objs(final Collection<Integer> ids) {
+		List<Obj> selectedItems = new ArrayList<>(ids.size());
+		for (Integer id : ids) {
+			selectedItems.add(getObj(id));
+		}
+		return selectedItems;
+	}
+
+	private Set<Obj> arr2Set(final int[] arr) {
+		Set<Obj> s = new HashSet<>(arr.length);
 		for (int i : arr) {
-			s.add(i);
+			s.add(getObj(i));
 		}
 		return s;
 	}

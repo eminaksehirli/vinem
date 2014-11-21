@@ -86,8 +86,8 @@ public class FileSelector {
 	private void runWithANewFile() {
 		InputFile inf = new InputFile();
 		inf.fileName = frame.fileNameField.getText();
-		inf.headerColumn = frame.headerColumnCB.isSelected();
-		inf.headerRow = frame.headerRowCB.isSelected();
+		inf.colsHasNames = frame.columnNamesCB.isSelected();
+		inf.rowsHasNames = frame.rowNamesCB.isSelected();
 		inf.separator = frame.separatorTF.getText();
 
 		// There can be only one configuration for a file
@@ -210,8 +210,8 @@ public class FileSelector {
 		closeBt.setToolTipText("Remove this file");
 		JButton bt = new JButton(inputFile.fileName);
 		bt.setToolTipText(String.format(
-				"Col header:%b, Row header:%b, Separator:'%s'", inputFile.headerColumn,
-				inputFile.headerRow, inputFile.separator));
+				"Col header:%b, Row header:%b, Separator:'%s'", inputFile.colsHasNames,
+				inputFile.rowsHasNames, inputFile.separator));
 		final JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
 		buttonPane.add(closeBt);
 		buttonPane.add(bt);
@@ -276,7 +276,7 @@ public class FileSelector {
 			return;
 		}
 
-		CartiModel cartiModel = new CartiModel(inputFile.fileName);
+		CartiModel cartiModel = new CartiModel(inputFile);
 		CartiView cartiView = new CartiView();
 		CartiController cartiController = new CartiController(cartiModel, cartiView);
 
@@ -314,8 +314,8 @@ public class FileSelector {
 				InputFile inf = new InputFile();
 
 				inf.fileName = path;
-				inf.headerRow = false;
-				inf.headerColumn = false;
+				inf.rowsHasNames = false;
+				inf.colsHasNames = false;
 				inf.separator = " ";
 
 				inputs.add(inf);
@@ -347,8 +347,8 @@ public class FileSelector {
 			}
 			int sl = parseInt(str.substring(0, slp));
 			inf.separator = str.substring(slp + 1, slp + 1 + sl);
-			inf.headerColumn = str.charAt(slp + 1 + sl) == 'Y';
-			inf.headerRow = str.charAt(slp + 1 + sl + 1) == 'Y';
+			inf.colsHasNames = str.charAt(slp + 1 + sl) == 'Y';
+			inf.rowsHasNames = str.charAt(slp + 1 + sl + 1) == 'Y';
 			inf.fileName = str.substring(slp + 1 + sl + 1 + 1);
 
 			return inf;
@@ -358,8 +358,8 @@ public class FileSelector {
 		public String toString() {
 			int sl = separator.length();
 
-			String col = headerColumn ? "Y" : "N";
-			String row = headerRow ? "Y" : "N";
+			String col = colsHasNames ? "Y" : "N";
+			String row = rowsHasNames ? "Y" : "N";
 
 			return sl + Sep + separator + col + row + fileName;
 		}

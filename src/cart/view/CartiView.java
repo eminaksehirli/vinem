@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +34,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 
 import cart.gui2.Cluster;
+import cart.model.Obj;
 
 public class CartiView {
 
@@ -72,7 +74,7 @@ public class CartiView {
 		theFrame.setLayout(new BorderLayout(10, 10));
 	}
 
-	public void init(List<Integer> orderedObjs, Set<Integer> dims, int maxK,
+	public void init(List<Obj> orderedObjs, Set<Integer> dims, int maxK,
 			int[][] matrixToShow, List<String> distMeasures) {
 		// visualPanel contains the visual representation
 		JPanel visualPanel = createVerticalBoxPanel(700, 700);
@@ -91,8 +93,7 @@ public class CartiView {
 		// CONTROLS GO HERE
 		// CONTROLS PANEL LEFT
 		// add the selection options panel
-		selectionOptions = new SelOptions();
-		selectionOptions.init(orderedObjs);
+		selectionOptions = new SelOptions(orderedObjs);
 
 		controlsPanelLeft.add(selectionOptions.getPanel());
 		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -200,8 +201,7 @@ public class CartiView {
 
 		// DIALOGS
 		// initialise selecteds stats dialog
-		selectedsStats = new Stats();
-		selectedsStats.init(dims);
+		selectedsStats = new Stats(dims);
 		selectedsStatsDialog = new JDialog(theFrame, "Selecteds stats");
 		selectedsStatsDialog.add(selectedsStats.getStatsPanel());
 
@@ -319,13 +319,13 @@ public class CartiView {
 		theFrame.repaint();
 	}
 
-	public void updateSelOptions(List<Integer> orderedObjs, Set<Integer> selecteds) {
+	public void updateSelOptions(List<Obj> orderedObjs, Set<Integer> selecteds) {
 		selOptionsListenerShouldListen = false;
 		selectionOptions.updateSelected(orderedObjs, selecteds);
 		selOptionsListenerShouldListen = true;
 	}
 
-	public void updateSelStats(Set<Integer> selecteds, int[] dimSupports,
+	public void updateSelStats(Collection<Obj> selecteds, int[] dimSupports,
 			double[] standardDevs, int[] medAbsDevs) {
 		if (selecteds.size() == 0) {
 			selectedsStatsDialog.setVisible(false);

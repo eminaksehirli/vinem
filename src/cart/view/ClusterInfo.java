@@ -21,6 +21,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import cart.gui2.Cluster;
+import cart.model.Obj;
 
 public class ClusterInfo {
 
@@ -235,7 +236,7 @@ public class ClusterInfo {
 						.size());
 
 				// #Dims
-				Set<Integer> dims = new HashSet<Integer>(clustersMap.get(clusterId)
+				Set<Integer> dims = new HashSet<>(clustersMap.get(clusterId)
 						.getDims());
 				data[row][3] = dims.size();
 
@@ -243,14 +244,12 @@ public class ClusterInfo {
 				data[row][4] = dims;
 
 				// Objects
-				Set<Integer> objs = new HashSet<Integer>(clustersMap.get(clusterId)
-						.getObjects());
+				Set<Obj> objs = new HashSet<>(clustersMap.get(clusterId).getObjects());
 				data[row][5] = objs;
 
 				row++;
 			}
 			fireTableDataChanged();
 		}
-
 	}
 }
