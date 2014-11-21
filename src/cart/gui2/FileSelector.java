@@ -1,23 +1,28 @@
 package cart.gui2;
 
+import static java.lang.Integer.parseInt;
+
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import cart.controller.CartiController;
 import cart.model.CartiModel;
@@ -25,151 +30,338 @@ import cart.view.CartiView;
 
 import com.google.common.base.Joiner;
 
-public class FileSelector extends JFrame {
-	private static final long serialVersionUID = 3599962945189307089L;
+public class FileSelector {
+	private static final String Input_File_Sep = "||";
+	private static final String Recent_Key = "recent-files";
+	private static final String Pref_Key = "be.adrem.cartiliner";
 
-	private List<String> filesList = new ArrayList<>();
-	private JPanel recentsPanel;
+	private FileSelectorFrame frame;
+	private List<InputFile> filesList = new ArrayList<>();
 
-	private static class PrevFileListener implements ActionListener {
-		String path;
-
-		PrevFileListener(String path) {
-			this.path = path;
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			runCarti(path);
-		}
+	public static void run() {
+		FileSelector fs = new FileSelector();
+		fs.frame.showTime();
 	}
 
 	public FileSelector() {
-		setLayout(new BorderLayout(10, 10));
+		frame = new FileSelectorFrame();
 
-		// contains browse and clear button
-		JPanel optionsPanel = CartiView.createHorizontalBoxPanel(550, 60);
-
-		// browse button
-		JButton browseButton = new JButton("Run With a New File");
-		browseButton.addActionListener(new ActionListener() {
+		frame.browseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				final JFileChooser fc = new JFileChooser();
-				int returnVal = fc.showOpenDialog(FileSelector.this);
+				int returnVal = fc.showOpenDialog(frame);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
-					final String path = file.getAbsolutePath();
-					runWithANewFile(path);
+					final String fileName = file.getAbsolutePath();
+					frame.fileNameField.setText(fileName);
+					if (fileName.endsWith(".csv")) {
+						frame.separatorTF.setText(",");
+					}
 				} else {
 					System.out.println("Open command cancelled by user.");
 				}
 			}
 		});
-		optionsPanel.add(browseButton);
-		optionsPanel.add(Box.createRigidArea(new Dimension(10, 0)));
 
-		// clear button
-		JButton clearButton = new JButton("Clear Recent Files");
-		clearButton.addActionListener(new ActionListener() {
+		frame.runBt.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				clearRecents();
+				runWithANewFile();
 			}
 		});
-		optionsPanel.add(clearButton);
 
-		add(optionsPanel, BorderLayout.PAGE_START);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				super.windowClosing(e);
+				saveRecents();
+				frame.dispose();
+			}
+		});
 
-		// contains buttons for recent files
-		recentsPanel = new JPanel();
-		recentsPanel.setLayout(new BoxLayout(recentsPanel, BoxLayout.Y_AXIS));
-		recentsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		getRecents();
+	}
 
-		JScrollPane recentsScrollPane = new JScrollPane(recentsPanel);
-		add(recentsScrollPane, BorderLayout.CENTER);
+	private void runWithANewFile() {
+		InputFile inf = new InputFile();
+		inf.fileName = frame.fileNameField.getText();
+		inf.headerColumn = frame.headerColumnCB.isSelected();
+		inf.headerRow = frame.headerRowCB.isSelected();
+		inf.separator = frame.separatorTF.getText();
+
+		// There can be only one configuration for a file
+		for (Iterator<InputFile> it = filesList.iterator(); it.hasNext();) {
+			InputFile lf = it.next();
+			if (lf.fileName.equals(inf.fileName)) {
+				it.remove();
+			}
+		}
+
+		filesList.add(0, inf);
+		updateRecentsPane();
+
+		runCarti(inf);
 	}
 
 	private void getRecents() {
-		Preferences pref = Preferences.userRoot().node("be.adrem.cartiliner");
+		Preferences pref = Preferences.userRoot().node(Pref_Key);
 
-		String recentFilesStr = pref.get("recent-files", "||");
+		String recentFilesStr = pref.get(Recent_Key, Input_File_Sep);
 		System.out.println("RecentFiles:" + recentFilesStr);
 
-		String[] files = recentFilesStr.split("\\|\\|");
-		if (files.length > 0) {
-			for (String file : files) {
-				filesList.add(file);
-				addRecentFileButton(file);
+		String[] encodeds = recentFilesStr.split("\\|\\|");
+		List<InputFile> newFilesList = new ArrayList<>(encodeds.length);
+		if (encodeds.length > 0) {
+			for (String encoded : encodeds) {
+				InputFile inputFile = InputFile.fromString(encoded);
+				if (inputFile == null) {
+					problemWithTheRecents();
+					break;
+				}
+				newFilesList.add(inputFile);
 			}
 		}
+		filesList = newFilesList;
+		updateRecentsPane();
 	}
 
-	private void runWithANewFile(String path) {
-		boolean alreadyInFilesList = false;
+	private void updateRecentsPane() {
+		frame.recentFilesPane.removeAll();
+		for (InputFile inputFile : filesList) {
+			addRecentFileButton(inputFile);
+		}
+		frame.recentFilesPane.updateUI();
+	}
 
-		// check for duplicate
-		for (String file : filesList) {
-			if (file.equals(path)) {
-				alreadyInFilesList = true;
+	private void problemWithTheRecents() {
+		System.out.println("There is a problem with the recent files.");
+
+		final JDialog dl = new JDialog(frame,
+				"There is a problem with the recent files!");
+		dl.setLayout(new BorderLayout(10, 10));
+
+		JPanel infoPane = new JPanel(new FlowLayout());
+		infoPane.add(new JLabel("There is a problem with the recent files!"));
+		infoPane.add(new JLabel("This may be caused by a version change. "
+				+ "Please select what you want to do."));
+
+		dl.add(infoPane, BorderLayout.CENTER);
+
+		JPanel fixBts = CartiView.createHorizontalBoxPanel(600, 30);
+		JButton repairBt = new JButton("Try to repair");
+		JButton showBt = new JButton("Just show the broken info");
+		JButton clearBt = new JButton("Clear the recent files");
+
+		fixBts.add(repairBt);
+		fixBts.add(showBt);
+		fixBts.add(clearBt);
+
+		dl.add(fixBts, BorderLayout.SOUTH);
+
+		repairBt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				upgradeRecents();
+				dl.dispose();
 			}
-		}
+		});
 
-		if (!alreadyInFilesList) {
-			filesList.add(path);
-			saveRecents();
-			addRecentFileButton(path);
-		}
+		showBt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				listTheRecents();
+			}
+		});
 
-		runCarti(path);
+		clearBt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int confPane = JOptionPane.showConfirmDialog(frame,
+						"Do you want to remove all the recent files?");
+				if (confPane == 0) {
+					clearRecents();
+					dl.dispose();
+				}
+			}
+		});
+
+		dl.setSize(600, 200);
+		dl.setVisible(true);
 	}
 
-	private void addRecentFileButton(String filePath) {
-		JButton bt = new JButton(filePath);
-		bt.addActionListener(new PrevFileListener(filePath));
-		recentsPanel.add(bt);
-		recentsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		recentsPanel.revalidate();
+	private static void listTheRecents() {
+		Preferences pref = Preferences.userRoot().node(Pref_Key);
+		String recentFilesStr = pref.get(Recent_Key, Input_File_Sep);
+
+		System.out.println("RecentFiles:" + recentFilesStr);
+
+		String[] encodeds = recentFilesStr.split("\\|\\|");
+
+		for (String encoded : encodeds) {
+			System.out.println(encoded);
+		}
+
+		JOptionPane.showMessageDialog(null, "Printed to the console");
 	}
 
-	public void showTime() {
-		this.setMinimumSize(new Dimension(550, 500));
-		this.setVisible(true);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+	private void addRecentFileButton(final InputFile inputFile) {
+		JButton closeBt = new JButton("X");
+		closeBt.setToolTipText("Remove this file");
+		JButton bt = new JButton(inputFile.fileName);
+		bt.setToolTipText(String.format(
+				"Col header:%b, Row header:%b, Separator:'%s'", inputFile.headerColumn,
+				inputFile.headerRow, inputFile.separator));
+		final JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		buttonPane.add(closeBt);
+		buttonPane.add(bt);
+		frame.recentFilesPane.add(buttonPane);
+		frame.recentFilesPane.revalidate();
+
+		bt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				filesList.remove(inputFile);
+				filesList.add(0, inputFile);
+				updateRecentsPane();
+				runCarti(inputFile);
+			}
+		});
+		closeBt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				filesList.remove(inputFile);
+				updateRecentsPane();
+			}
+		});
 	}
 
 	private void saveRecents() {
-		Preferences pref = Preferences.userRoot().node("be.adrem.cartiliner");
+		Preferences pref = Preferences.userRoot().node(Pref_Key);
 
-		Joiner j = Joiner.on("||");
+		Joiner j = Joiner.on(Input_File_Sep);
 		String str = j.join(filesList);
-		pref.put("recent-files", str);
+		pref.put(Recent_Key, str);
 	}
 
 	private void clearRecents() {
-		Preferences pref = Preferences.userRoot().node("be.adrem.cartiliner");
+		Preferences pref = Preferences.userRoot().node(Pref_Key);
+		String oldValue = pref.get(Recent_Key, "");
+		try {
+			File tf = File.createTempFile(Pref_Key, ".txt");
+			FileWriter fw = new FileWriter(tf);
+			fw.write(oldValue);
+			fw.close();
+			final String msg = "Old value for the key is written to the file: "
+					+ tf.getAbsolutePath();
+			System.err.println(msg);
+			// JOptionPane.showMessageDialog(null, msg);
+		} catch (IOException e) {
+			System.err.println("Could not save the old value: ");
+			e.printStackTrace();
+		}
 		try {
 			pref.clear();
 		} catch (BackingStoreException e) {
 			e.printStackTrace();
 		}
 		filesList.clear();
-		recentsPanel.removeAll();
-		recentsPanel.updateUI();
+		updateRecentsPane();
 	}
 
-	private static void runCarti(String filePath) {
+	private static void runCarti(InputFile inputFile) {
 		// make sure the file exists
-		if (!(new File(filePath).isFile())) {
-			System.out.println("File not found: " + filePath);
+		if (!(new File(inputFile.fileName).isFile())) {
+			System.out.println("File not found: " + inputFile);
 			return;
 		}
 
-		CartiModel cartiModel = new CartiModel(filePath);
+		CartiModel cartiModel = new CartiModel(inputFile.fileName);
 		CartiView cartiView = new CartiView();
 		CartiController cartiController = new CartiController(cartiModel, cartiView);
 
 		cartiController.run();
+	}
+
+	private void upgradeRecents() {
+		Preferences pref = Preferences.userRoot().node(Pref_Key);
+		String recentFilesStr = pref.get(Recent_Key, Input_File_Sep);
+
+		List<InputFile> inputFiles = null;
+		try {
+			inputFiles = recentsToNewFormat(recentFilesStr);
+		} catch (Exception e) {
+			System.err.println("Couln't convert!");
+			JOptionPane.showMessageDialog(null, "Could not convert!", "Problem",
+					JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+			return;
+		}
+
+		filesList = inputFiles;
+		System.out.println("Successfully converted the recent files.");
+		saveRecents();
+		getRecents();
+
+		System.out.println("Old info: " + recentFilesStr);
+	}
+
+	private static List<InputFile> recentsToNewFormat(String recentFilesStr) {
+		String[] paths = recentFilesStr.split("\\|\\|");
+		List<InputFile> inputs = new ArrayList<>(paths.length);
+		if (paths.length > 0) {
+			for (String path : paths) {
+				InputFile inf = new InputFile();
+
+				inf.fileName = path;
+				inf.headerRow = false;
+				inf.headerColumn = false;
+				inf.separator = " ";
+
+				inputs.add(inf);
+			}
+		}
+
+		Joiner j = Joiner.on(Input_File_Sep);
+		String str = j.join(inputs);
+
+		List<InputFile> filesList = new ArrayList<>();
+		String[] encodeds = str.split("\\|\\|");
+		if (encodeds.length > 0) {
+			for (String encoded : encodeds) {
+				InputFile inputFile = InputFile.fromString(encoded);
+				filesList.add(inputFile);
+			}
+		}
+		return filesList;
+	}
+
+	static private class InputFile extends cart.model.InputFile {
+		static final String Sep = "|";
+
+		static InputFile fromString(String str) {
+			InputFile inf = new InputFile();
+			int slp = str.indexOf(Sep);
+			if (slp < 0) {
+				return null;
+			}
+			int sl = parseInt(str.substring(0, slp));
+			inf.separator = str.substring(slp + 1, slp + 1 + sl);
+			inf.headerColumn = str.charAt(slp + 1 + sl) == 'Y';
+			inf.headerRow = str.charAt(slp + 1 + sl + 1) == 'Y';
+			inf.fileName = str.substring(slp + 1 + sl + 1 + 1);
+
+			return inf;
+		}
+
+		@Override
+		public String toString() {
+			int sl = separator.length();
+
+			String col = headerColumn ? "Y" : "N";
+			String row = headerRow ? "Y" : "N";
+
+			return sl + Sep + separator + col + row + fileName;
+		}
 	}
 }
