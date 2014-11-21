@@ -48,6 +48,7 @@ import mime.tool.Utils;
 import cart.cartifier.CartifyDbInMemory;
 import cart.cartifier.Pair;
 import cart.gui.CartPane.Layer;
+import cart.io.InputFile;
 import cart.maximizer.DimBasedMaximalMiner;
 import cart.maximizer.Freq;
 import cart.maximizer.ItemsetMaximalMiner;
@@ -62,7 +63,7 @@ public class CartiCombineGUI {
 	private int[][][] mat;
 	private int k;
 	private CartPane cartPane;
-	private String pathname;
+	private InputFile inputFile;
 	private Pair[][] origData;
 	private int numOfObjects;
 	private Point selectionStart;
@@ -108,10 +109,10 @@ public class CartiCombineGUI {
 	}
 
 	void run(final String path) {
-		pathname = path;
+		inputFile = InputFile.forMime(path);
 		ArrayList<double[]> data;
 		try {
-			data = OneDCartifier.readData(pathname);
+			data = inputFile.getData();
 			origData = OneDCartifier.toPairs(data);
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
@@ -128,8 +129,8 @@ public class CartiCombineGUI {
 
 		// miner = new CartiMiner();
 		// liner = new CartiLinerLight();
-		maximer = new ItemsetMaximalMiner(pathname);
-		dimer = new DimBasedMaximalMiner(pathname);
+		maximer = new ItemsetMaximalMiner(inputFile);
+		dimer = new DimBasedMaximalMiner(inputFile);
 		numOfObjects = data.size();
 
 		k = 1;
@@ -429,7 +430,7 @@ public class CartiCombineGUI {
 	private void updateCarts() {
 		k = frame.kSlider.getValue();
 
-		cartiDb = new CartifyDbInMemory(pathname, k);
+		cartiDb = new CartifyDbInMemory(inputFile, k);
 		cartiDb.cartify();
 
 		mat = new int[dims.length][][];

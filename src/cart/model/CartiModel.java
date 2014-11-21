@@ -23,6 +23,7 @@ import cart.cartifier.Pair;
 import cart.gui2.Cluster;
 import cart.gui2.DistMeasure;
 import cart.gui2.OneDimDistMeasure;
+import cart.io.InputFile;
 import cart.maximizer.Freq;
 import cart.maximizer.ItemsetMaximalMiner;
 import cart.maximizer.MaximalMinerCombiner;
@@ -36,7 +37,6 @@ import cart.maximizer.OneDCartifier;
  */
 
 public class CartiModel {
-	private String filePath;
 	private int numObjects;
 	private int numDims;
 	private int k;
@@ -58,9 +58,10 @@ public class CartiModel {
 	private int[] byObjId2LocMap;
 	private int[] byObjLoc2IdMap;
 	private ItemsetMaximalMiner maximer;
+	private InputFile inputFile;
 
-	public CartiModel(String filePath) {
-		this.filePath = filePath;
+	public CartiModel(InputFile inputFile) {
+		this.inputFile = inputFile;
 		this.k = 1;
 		this.orderDim = 0;
 		this.clusterIdCount = 0;
@@ -72,7 +73,7 @@ public class CartiModel {
 		this.distMeasures = new ArrayList<DistMeasure>();
 		this.selectedDistMeasureId = 0;
 
-		maximer = new ItemsetMaximalMiner(filePath);
+		maximer = new ItemsetMaximalMiner(inputFile);
 	}
 
 	/**
@@ -80,7 +81,7 @@ public class CartiModel {
 	 */
 	public void init() {
 		try {
-			data = OneDCartifier.readData(filePath);
+			data = inputFile.getData();
 			origData = OneDCartifier.toPairs(data);
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
@@ -127,7 +128,7 @@ public class CartiModel {
 	}
 
 	private void updateCartiDb() {
-		cartiDb = new MyCartifyDbInMemory(filePath, k, distMeasures);
+		cartiDb = new MyCartifyDbInMemory(data, k, distMeasures);
 		cartiDb.cartify();
 	}
 

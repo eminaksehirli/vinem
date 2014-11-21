@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -23,16 +22,15 @@ public class MyCartifyDbInMemory {
 
 	private List<DistMeasure> distMeasures;
 	private List<double[]> originalDatabase;
-	private String originalDatabaseFilename;
 
 	private List<PlainItemDB> projectedDbs;
 	public PlainItemDB completeDb;
 
 	private PrintWriter log;
 
-	public MyCartifyDbInMemory(String databaseFileName, int k,
+	public MyCartifyDbInMemory(List<double[]> data, int k,
 			List<DistMeasure> distMeasures) {
-		originalDatabaseFilename = databaseFileName;
+		originalDatabase = data;
 		this.k = k;
 		this.distMeasures = new ArrayList<DistMeasure>(distMeasures);
 		try {
@@ -40,11 +38,6 @@ public class MyCartifyDbInMemory {
 		} catch (IOException e) {
 			e.printStackTrace();
 			log = new PrintWriter(System.out);
-		}
-		try {
-			readOriginalDatabase();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -103,26 +96,6 @@ public class MyCartifyDbInMemory {
 	private void log(final String msg) {
 		log.println(msg);
 		log.flush();
-	}
-
-	private void readOriginalDatabase() throws FileNotFoundException {
-		originalDatabase = new ArrayList<double[]>();
-
-		log("Reading the file: " + originalDatabaseFilename);
-		Scanner sc = new Scanner(new File(originalDatabaseFilename));
-		while (sc.hasNextLine()) {
-			String line = sc.nextLine();
-			String delimiter = " ";
-			String[] lineArr = line.split(delimiter);
-
-			double[] thisRow = new double[lineArr.length];
-			for (int i = 0; i < lineArr.length; i++) {
-				thisRow[i] = Double.parseDouble(lineArr[i]);
-			}
-			originalDatabase.add(thisRow);
-		}
-		sc.close();
-
 	}
 
 	private void createCarts() {

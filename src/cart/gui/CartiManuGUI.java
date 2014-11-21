@@ -20,6 +20,7 @@ import javax.swing.event.ChangeListener;
 
 import mime.tool.Utils;
 import cart.gui.CartPane.Layer;
+import cart.io.InputFile;
 import cart.maximizer.CartiFiner;
 import cart.maximizer.OneDCartifier;
 
@@ -51,7 +52,7 @@ public class CartiManuGUI {
 
 		// String pathname = "/a/data.mime";
 		// String pathname = "/home/memin/research/cartiplus/dat.mime";
-		ArrayList<double[]> data = OneDCartifier.readData(pathname);
+		ArrayList<double[]> data = InputFile.forMime(pathname).getData();
 		dims = OneDCartifier.transpose(data);
 
 		// miner = new CartiMiner();

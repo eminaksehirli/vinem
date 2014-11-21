@@ -336,7 +336,7 @@ public class FileSelector {
 		return filesList;
 	}
 
-	static private class InputFile extends cart.model.InputFile {
+	static private class InputFile extends cart.io.InputFile {
 		static final String Sep = "|";
 
 		static InputFile fromString(String str) {
