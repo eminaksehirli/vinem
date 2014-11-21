@@ -45,147 +45,147 @@ import cart.view.SelOptions;
  * 
  */
 public class CartiController {
-	private CartiModel cartiModel;
-	private CartiView cartiView;
+	private CartiModel model;
+	private CartiView view;
 
 	public CartiController(CartiModel cartiModel, CartiView cartiView) {
-		this.cartiModel = cartiModel;
-		this.cartiView = cartiView;
+		this.model = cartiModel;
+		this.view = cartiView;
 	}
 
 	public void run() {
-		cartiModel.init();
+		model.init();
 
-		int maxK = cartiModel.getNumObjects();
-		Set<Integer> dims = cartiModel.getDims();
-		int[][] matrixToShow = cartiModel.getMatrixToShow();
-		List<DistMeasure> distMeasures = cartiModel.getDistMeasures();
+		int maxK = model.getNumObjects();
+		Set<Integer> dims = model.getDims();
+		int[][] matrixToShow = model.getMatrixToShow();
+		List<DistMeasure> distMeasures = model.getDistMeasures();
 		List<String> distMeasuresStringList = new ArrayList<String>();
 
 		for (DistMeasure distMeasure : distMeasures) {
 			distMeasuresStringList.add(distMeasure.toString());
 		}
 
-		cartiView.init(cartiModel.getOrderedObjList(), dims, maxK, matrixToShow,
+		view.init(model.getOrderedObjList(), dims, maxK, matrixToShow,
 				distMeasuresStringList);
-		cartiView.addButtonsListener(createButtonsListener());
-		cartiView.addSelOptionsListListener(createSelOptionsListListener());
-		cartiView.addCartiPanelListener(createCartiPanelListener());
-		cartiView.addClusterTableModelListener(createClusterTableModelListener());
-		cartiView.addSliderListener(createSliderListener());
-		cartiView.addDistOptionsBoxListener(createDistOptionsBoxListener());
+		view.addButtonsListener(createButtonsListener());
+		view.addSelOptionsListListener(createSelOptionsListListener());
+		view.addCartiPanelListener(createCartiPanelListener());
+		view.addClusterTableModelListener(createClusterTableModelListener());
+		view.addSliderListener(createSliderListener());
+		view.addDistOptionsBoxListener(createDistOptionsBoxListener());
 
-		cartiView.getFrame().pack();
-		cartiView.getFrame().setVisible(true);
+		view.getFrame().pack();
+		view.getFrame().setVisible(true);
 	}
 
 	public void orderSliderChanged() {
-		cartiModel.setOrderDim(cartiView.getOrderSliderVal());
+		model.setOrderDim(view.getOrderSliderVal());
 
-		if (cartiView.shouldSyncOrderSlider()) {
+		if (view.shouldSyncOrderSlider()) {
 			// need to update the selected distance measure id
-			cartiModel.setSelectedDistMeasureId(cartiView.getOrderSliderVal());
-			cartiView.updateSelectedDistMeasureId(cartiView.getOrderSliderVal());
+			model.setSelectedDistMeasureId(view.getOrderSliderVal());
+			view.updateSelectedDistMeasureId(view.getOrderSliderVal());
 		}
 
 		updateAfterOrderChange();
 	}
 
 	public void orderByObject(int objIx) {
-		cartiModel.setOrderByObj(objIx);
+		model.setOrderByObj(objIx);
 		updateAfterOrderChange();
 	}
 
 	public void updateAfterOrderChange() {
-		int[][] matrixToShow = cartiModel.getMatrixToShow();
-		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
-		Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
-		Set<Integer> selecteds = cartiModel.getSelecteds();
+		int[][] matrixToShow = model.getMatrixToShow();
+		Set<Integer> selectedLocs = model.getSelectedLocs();
+		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
+		Set<Integer> selecteds = model.getSelecteds();
 
-		cartiView.updateFigure(matrixToShow);
-		cartiView.updateFigureSelected(selectedLocs);
-		cartiView.updateFigureClustered(clusteredLocs);
-		cartiView.updateSelOptions(cartiModel.getOrderedObjList(), selecteds);
+		view.updateFigure(matrixToShow);
+		view.updateFigureSelected(selectedLocs);
+		view.updateFigureClustered(clusteredLocs);
+		view.updateSelOptions(model.getOrderedObjList(), selecteds);
 		updateDistribution(true);
 	}
 
 	public void kSliderChanged() {
-		int k = cartiView.getKSliderVal();
-		cartiModel.setK(k);
+		int k = view.getKSliderVal();
+		model.setK(k);
 
-		int[][] matrixToShow = cartiModel.getMatrixToShow();
-		Set<Integer> selecteds = cartiModel.getSelecteds();
-		int[] dimSupports = cartiModel.getSupports(selecteds);
-		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
+		int[][] matrixToShow = model.getMatrixToShow();
+		Set<Integer> selecteds = model.getSelecteds();
+		int[] dimSupports = model.getSupports(selecteds);
+		double[] standardDevs = model.getStandardDeviations(selecteds);
+		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
 
-		cartiView.updateFigure(matrixToShow);
-		cartiView.updateSelStats(cartiModel.getSelectedObjs(), dimSupports,
-				standardDevs, medAbsDevs);
-		cartiView.getMiningOptions().setMinSupVal((int) (k * 0.75));
+		view.updateFigure(matrixToShow);
+		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
+				medAbsDevs);
+		view.getMiningOptions().setMinSupVal((int) (k * 0.75));
 		updateDistribution(true);
 	}
 
 	public void manSelectedsClear() {
-		cartiModel.clearSelecteds();
+		model.clearSelecteds();
 
-		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
-		Set<Integer> selecteds = cartiModel.getSelecteds();
-		int[] dimSupports = cartiModel.getSupports(selecteds);
-		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
+		Set<Integer> selectedLocs = model.getSelectedLocs();
+		Set<Integer> selecteds = model.getSelecteds();
+		int[] dimSupports = model.getSupports(selecteds);
+		double[] standardDevs = model.getStandardDeviations(selecteds);
+		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
 
-		cartiView.updateFigureSelected(selectedLocs);
-		cartiView.updateSelOptions(cartiModel.getOrderedObjList(), selecteds);
-		cartiView.updateSelStats(cartiModel.getSelectedObjs(), dimSupports,
-				standardDevs, medAbsDevs);
+		view.updateFigureSelected(selectedLocs);
+		view.updateSelOptions(model.getOrderedObjList(), selecteds);
+		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
+				medAbsDevs);
 	}
 
 	public void manSelectedsChange(Set<Integer> toSelect) {
-		cartiModel.setSelecteds(toSelect);
+		model.setSelecteds(toSelect);
 
-		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
-		Set<Integer> selecteds = cartiModel.getSelecteds();
-		int[] dimSupports = cartiModel.getSupports(selecteds);
-		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
+		Set<Integer> selectedLocs = model.getSelectedLocs();
+		Set<Integer> selecteds = model.getSelecteds();
+		int[] dimSupports = model.getSupports(selecteds);
+		double[] standardDevs = model.getStandardDeviations(selecteds);
+		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
 
-		cartiView.updateFigureSelected(selectedLocs);
-		cartiView.updateSelStats(cartiModel.getSelectedObjs(), dimSupports,
-				standardDevs, medAbsDevs);
+		view.updateFigureSelected(selectedLocs);
+		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
+				medAbsDevs);
 	}
 
 	public void figureSelectedsChange(Set<Integer> locsToSelect) {
-		boolean select = cartiView.getSelectionOptions().selModeIsSelect();
-		boolean and = cartiView.getSelectionOptions().selModeIsAnd();
-		boolean or = cartiView.getSelectionOptions().selModeIsOr();
-		cartiModel.selectLocs(locsToSelect, select, and, or);
+		boolean select = view.getSelectionOptions().selModeIsSelect();
+		boolean and = view.getSelectionOptions().selModeIsAnd();
+		boolean or = view.getSelectionOptions().selModeIsOr();
+		model.selectLocs(locsToSelect, select, and, or);
 
-		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
-		Set<Integer> selecteds = cartiModel.getSelecteds();
-		int[] dimSupports = cartiModel.getSupports(selecteds);
-		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
+		Set<Integer> selectedLocs = model.getSelectedLocs();
+		Set<Integer> selecteds = model.getSelecteds();
+		int[] dimSupports = model.getSupports(selecteds);
+		double[] standardDevs = model.getStandardDeviations(selecteds);
+		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
 
-		cartiView.updateFigureSelected(selectedLocs);
-		cartiView.updateSelOptions(cartiModel.getOrderedObjList(), selecteds);
-		cartiView.updateSelStats(cartiModel.getSelectedObjs(), dimSupports,
-				standardDevs, medAbsDevs);
+		view.updateFigureSelected(selectedLocs);
+		view.updateSelOptions(model.getOrderedObjList(), selecteds);
+		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
+				medAbsDevs);
 	}
 
 	public void manFilteredsClear() {
-		cartiModel.clearFiltereds();
+		model.clearFiltereds();
 
-		int[][] matrixToShow = cartiModel.getMatrixToShow();
-		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
-		Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
-		Set<Integer> selecteds = cartiModel.getSelecteds();
+		int[][] matrixToShow = model.getMatrixToShow();
+		Set<Integer> selectedLocs = model.getSelectedLocs();
+		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
+		Set<Integer> selecteds = model.getSelecteds();
 
-		cartiView.clearFigureSavedLocs();
-		cartiView.updateFigure(matrixToShow);
-		cartiView.updateFigureSelected(selectedLocs);
-		cartiView.updateFigureClustered(clusteredLocs);
-		cartiView.updateSelOptions(cartiModel.getOrderedObjList(), selecteds);
+		view.clearFigureSavedLocs();
+		view.updateFigure(matrixToShow);
+		view.updateFigureSelected(selectedLocs);
+		view.updateFigureClustered(clusteredLocs);
+		view.updateSelOptions(model.getOrderedObjList(), selecteds);
 	}
 
 	/**
@@ -195,68 +195,67 @@ public class CartiController {
 	 */
 	public void filter(boolean filterOutSelected) {
 		if (filterOutSelected) {
-			cartiModel.filterSelecteds();
+			model.filterSelecteds();
 		} else {
-			cartiModel.filterNotSelecteds();
+			model.filterNotSelecteds();
 		}
 
-		int[][] matrixToShow = cartiModel.getMatrixToShow();
-		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
-		Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
-		Set<Integer> selecteds = cartiModel.getSelecteds();
-		int[] dimSupports = cartiModel.getSupports(selecteds);
-		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
-		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
-		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+		int[][] matrixToShow = model.getMatrixToShow();
+		Set<Integer> selectedLocs = model.getSelectedLocs();
+		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
+		Set<Integer> selecteds = model.getSelecteds();
+		int[] dimSupports = model.getSupports(selecteds);
+		double[] standardDevs = model.getStandardDeviations(selecteds);
+		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
+		Map<Integer, Cluster> clustersMap = model.getClustersMap();
+		Set<Integer> clustersToShow = model.getClustersToShow();
 
-		cartiView.clearFigureSavedLocs();
-		cartiView.updateFigure(matrixToShow);
-		cartiView.updateFigureSelected(selectedLocs);
-		cartiView.updateFigureClustered(clusteredLocs);
-		cartiView.updateSelOptions(cartiModel.getOrderedObjList(), selecteds);
-		cartiView.updateSelStats(cartiModel.getSelectedObjs(), dimSupports,
-				standardDevs, medAbsDevs);
-		cartiView.updateClusterInfo(clustersMap, clustersToShow);
+		view.clearFigureSavedLocs();
+		view.updateFigure(matrixToShow);
+		view.updateFigureSelected(selectedLocs);
+		view.updateFigureClustered(clusteredLocs);
+		view.updateSelOptions(model.getOrderedObjList(), selecteds);
+		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
+				medAbsDevs);
+		view.updateClusterInfo(clustersMap, clustersToShow);
 	}
 
 	public void undoFiltering() {
-		if (cartiModel.canUndoFiltering()) {
-			cartiModel.undoFiltering();
+		if (model.canUndoFiltering()) {
+			model.undoFiltering();
 
-			int[][] matrixToShow = cartiModel.getMatrixToShow();
-			Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
-			Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
-			Set<Integer> selecteds = cartiModel.getSelecteds();
-			int[] dimSupports = cartiModel.getSupports(selecteds);
-			double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-			int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
-			Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
-			Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+			int[][] matrixToShow = model.getMatrixToShow();
+			Set<Integer> selectedLocs = model.getSelectedLocs();
+			Set<Integer> clusteredLocs = model.getClustersToShowLocs();
+			Set<Integer> selecteds = model.getSelecteds();
+			int[] dimSupports = model.getSupports(selecteds);
+			double[] standardDevs = model.getStandardDeviations(selecteds);
+			int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
+			Map<Integer, Cluster> clustersMap = model.getClustersMap();
+			Set<Integer> clustersToShow = model.getClustersToShow();
 
-			cartiView.clearFigureSavedLocs();
-			cartiView.updateFigure(matrixToShow);
-			cartiView.updateFigureSelected(selectedLocs);
-			cartiView.updateFigureClustered(clusteredLocs);
-			cartiView.updateSelOptions(cartiModel.getOrderedObjList(), selecteds);
-			cartiView.updateSelStats(cartiModel.getSelectedObjs(), dimSupports,
-					standardDevs, medAbsDevs);
-			cartiView.updateClusterInfo(clustersMap, clustersToShow);
+			view.clearFigureSavedLocs();
+			view.updateFigure(matrixToShow);
+			view.updateFigureSelected(selectedLocs);
+			view.updateFigureClustered(clusteredLocs);
+			view.updateSelOptions(model.getOrderedObjList(), selecteds);
+			view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
+					medAbsDevs);
+			view.updateClusterInfo(clustersMap, clustersToShow);
 		}
 	}
 
 	public void clusterSelected() {
-		cartiModel.clusterSelecteds();
+		model.clusterSelecteds();
 
-		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
-		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+		Map<Integer, Cluster> clustersMap = model.getClustersMap();
+		Set<Integer> clustersToShow = model.getClustersToShow();
 
-		cartiView.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(clustersMap, clustersToShow);
 	}
 
 	public void addSelectedToClusters() {
-		Set<Integer> clusterIds = cartiView.getClusterInfo()
-				.getSelectedRowsClusterIds();
+		Set<Integer> clusterIds = view.getClusterInfo().getSelectedRowsClusterIds();
 
 		// if the user has not selected a cluster
 		if (clusterIds.isEmpty()) {
@@ -264,20 +263,20 @@ public class CartiController {
 		}
 
 		for (int id : clusterIds) {
-			cartiModel.addSelectedsToCluster(id);
+			model.addSelectedsToCluster(id);
 		}
 
-		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
-		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+		Map<Integer, Cluster> clustersMap = model.getClustersMap();
+		Set<Integer> clustersToShow = model.getClustersToShow();
 
-		cartiView.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(clustersMap, clustersToShow);
 
 		// only need to update the figure for clustereds if one of the clusters
 		// is visible
 		for (int id : clusterIds) {
-			if (cartiModel.clusterIsVisible(id)) {
-				Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
-				cartiView.updateFigureClustered(clusteredLocs);
+			if (model.clusterIsVisible(id)) {
+				Set<Integer> clusteredLocs = model.getClustersToShowLocs();
+				view.updateFigureClustered(clusteredLocs);
 				break;
 			}
 		}
@@ -289,8 +288,7 @@ public class CartiController {
 	 * @param removeSelecteds
 	 */
 	public void removeFromClusters(boolean removeSelecteds) {
-		Set<Integer> clusterIds = cartiView.getClusterInfo()
-				.getSelectedRowsClusterIds();
+		Set<Integer> clusterIds = view.getClusterInfo().getSelectedRowsClusterIds();
 
 		// if the user has not selected a cluster
 		if (clusterIds.isEmpty()) {
@@ -299,31 +297,30 @@ public class CartiController {
 
 		for (int id : clusterIds) {
 			if (removeSelecteds) {
-				cartiModel.removeSelectedsFromCluster(id);
+				model.removeSelectedsFromCluster(id);
 			} else {
-				cartiModel.removeFilteredsFromCluster(id);
+				model.removeFilteredsFromCluster(id);
 			}
 		}
 
-		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
-		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+		Map<Integer, Cluster> clustersMap = model.getClustersMap();
+		Set<Integer> clustersToShow = model.getClustersToShow();
 
-		cartiView.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(clustersMap, clustersToShow);
 
 		// only need to update the figure for clustereds if one of the clusters
 		// is visible
 		for (int id : clusterIds) {
-			if (cartiModel.clusterIsVisible(id)) {
-				Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
-				cartiView.updateFigureClustered(clusteredLocs);
+			if (model.clusterIsVisible(id)) {
+				Set<Integer> clusteredLocs = model.getClustersToShowLocs();
+				view.updateFigureClustered(clusteredLocs);
 				break;
 			}
 		}
 	}
 
 	public void deleteClusters() {
-		Set<Integer> clusterIds = cartiView.getClusterInfo()
-				.getSelectedRowsClusterIds();
+		Set<Integer> clusterIds = view.getClusterInfo().getSelectedRowsClusterIds();
 
 		// if the user has not selected a cluster
 		if (clusterIds.isEmpty()) {
@@ -332,90 +329,88 @@ public class CartiController {
 
 		boolean wasVisible = false;
 		for (int id : clusterIds) {
-			if (cartiModel.clusterIsVisible(id)) {
+			if (model.clusterIsVisible(id)) {
 				wasVisible = true;
 			}
-			cartiModel.deleteCluster(id);
+			model.deleteCluster(id);
 		}
 
-		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
-		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+		Map<Integer, Cluster> clustersMap = model.getClustersMap();
+		Set<Integer> clustersToShow = model.getClustersToShow();
 
-		cartiView.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(clustersMap, clustersToShow);
 
 		// only need to update the figure for clustereds if one of the clusters
 		// was visible
 		if (wasVisible) {
-			Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
-			cartiView.updateFigureClustered(clusteredLocs);
+			Set<Integer> clusteredLocs = model.getClustersToShowLocs();
+			view.updateFigureClustered(clusteredLocs);
 		}
 	}
 
 	public void selectClusters() {
-		Set<Integer> clusterIds = cartiView.getClusterInfo()
-				.getSelectedRowsClusterIds();
+		Set<Integer> clusterIds = view.getClusterInfo().getSelectedRowsClusterIds();
 
 		// if the user has not selected a cluster
 		if (clusterIds.isEmpty()) {
 			return;
 		}
 
-		cartiModel.selectClusters(clusterIds);
+		model.selectClusters(clusterIds);
 
-		Set<Integer> selectedLocs = cartiModel.getSelectedLocs();
-		Set<Integer> selecteds = cartiModel.getSelecteds();
-		int[] dimSupports = cartiModel.getSupports(selecteds);
-		double[] standardDevs = cartiModel.getStandardDeviations(selecteds);
-		int[] medAbsDevs = cartiModel.getLocsMedAbsDev(selecteds);
+		Set<Integer> selectedLocs = model.getSelectedLocs();
+		Set<Integer> selecteds = model.getSelecteds();
+		int[] dimSupports = model.getSupports(selecteds);
+		double[] standardDevs = model.getStandardDeviations(selecteds);
+		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
 
-		cartiView.updateFigureSelected(selectedLocs);
-		cartiView.updateSelOptions(cartiModel.getOrderedObjList(), selecteds);
-		cartiView.updateSelStats(cartiModel.getSelectedObjs(), dimSupports,
-				standardDevs, medAbsDevs);
+		view.updateFigureSelected(selectedLocs);
+		view.updateSelOptions(model.getOrderedObjList(), selecteds);
+		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
+				medAbsDevs);
 	}
 
 	public void showCluster(int clusterId) {
-		cartiModel.showCluster(clusterId);
+		model.showCluster(clusterId);
 
-		Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
+		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
 
-		cartiView.updateFigureClustered(clusteredLocs);
+		view.updateFigureClustered(clusteredLocs);
 	}
 
 	public void hideCluster(int clusterId) {
-		cartiModel.hideCluster(clusterId);
+		model.hideCluster(clusterId);
 
-		Set<Integer> clusteredLocs = cartiModel.getClustersToShowLocs();
+		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
 
-		cartiView.updateFigureClustered(clusteredLocs);
+		view.updateFigureClustered(clusteredLocs);
 	}
 
 	public void mineIMM() {
-		int minLen = cartiView.getMiningOptions().getMinLenVal();
+		int minLen = view.getMiningOptions().getMinLenVal();
 
 		if (minLen == -1) {
 			return;
 		}
 
-		int resultSize = cartiModel.mineItemsets(minLen);
+		int resultSize = model.mineItemsets(minLen);
 		if (resultSize == 0) {
-			cartiView.showInfoMessage("0 clusters found, try different k or minLen.",
+			view.showInfoMessage("0 clusters found, try different k or minLen.",
 					"Mining result");
 			return;
 		}
 
 		// update view
-		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
-		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+		Map<Integer, Cluster> clustersMap = model.getClustersMap();
+		Set<Integer> clustersToShow = model.getClustersToShow();
 
-		cartiView.updateClusterInfo(clustersMap, clustersToShow);
-		cartiView.showInfoMessage(resultSize + " cluster(s) found.",
-				"Mining result");
+		view.updateClusterInfo(clustersMap, clustersToShow);
+		view.showInfoMessage(resultSize + " cluster(s) found.", "Mining result");
 	}
 
 	public void mineRMM(boolean onlySelected) {
-		int minSup = cartiView.getMiningOptions().getMinSupVal();
-		int numOfItemSets = cartiView.getMiningOptions().getNumOfItemSetsVal();
+		int minSup = view.getMiningOptions().getMinSupVal();
+		int numOfItemSets = view.getMiningOptions().getNumOfItemSetsVal();
 
 		if ((minSup == -1) || (numOfItemSets == -1)) {
 			return;
@@ -424,9 +419,9 @@ public class CartiController {
 		// get the items
 		PlainItemDB items;
 		if (onlySelected) {
-			items = cartiModel.getSelectedProjDbOnlySelected();
+			items = model.getSelectedProjDbOnlySelected();
 		} else {
-			items = cartiModel.getSelectedProjDb();
+			items = model.getSelectedProjDb();
 		}
 
 		// do mining
@@ -434,39 +429,38 @@ public class CartiController {
 				numOfItemSets);
 
 		if (result.size() == 0) {
-			cartiView.showInfoMessage("0 clusters found, try different k or minSup.",
+			view.showInfoMessage("0 clusters found, try different k or minSup.",
 					"Mining result");
 			return;
 		}
 
 		// dims for which the cluster was made
-		DistMeasure measure = cartiModel.getSelectedDistMeasure();
+		DistMeasure measure = model.getSelectedDistMeasure();
 		Set<Integer> dims = measure.getDims();
 
 		// turn result into clusters and add to model
 		for (PlainItemSet itemSet : result) {
 			List<Obj> objects = new ArrayList<>();
 			for (PlainItem item : itemSet) {
-				objects.add(cartiModel.getObj(item.getId()));
+				objects.add(model.getObj(item.getId()));
 			}
 
 			Cluster cluster = new Cluster(objects, dims);
-			cartiModel.addCluster(cluster);
+			model.addCluster(cluster);
 		}
 
 		// update view
-		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
-		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+		Map<Integer, Cluster> clustersMap = model.getClustersMap();
+		Set<Integer> clustersToShow = model.getClustersToShow();
 
-		cartiView.updateClusterInfo(clustersMap, clustersToShow);
-		cartiView.showInfoMessage(result.size() + " cluster(s) found.",
-				"Mining result");
+		view.updateClusterInfo(clustersMap, clustersToShow);
+		view.showInfoMessage(result.size() + " cluster(s) found.", "Mining result");
 	}
 
 	public void addDistMeasure() {
-		boolean isEucl = cartiView.getDistanceOptions().distModeIsEuclidian();
-		boolean isCos = cartiView.getDistanceOptions().distModeIsCosine();
-		Set<Integer> dims = cartiView.getDistanceOptions().getSelectedDims();
+		boolean isEucl = view.getDistanceOptions().distModeIsEuclidian();
+		boolean isCos = view.getDistanceOptions().distModeIsCosine();
+		Set<Integer> dims = view.getDistanceOptions().getSelectedDims();
 
 		DistMeasure distMeasure;
 		if (isEucl) {
@@ -477,59 +471,59 @@ public class CartiController {
 			distMeasure = null;
 		}
 
-		cartiModel.addDistMeasure(distMeasure);
+		model.addDistMeasure(distMeasure);
 
-		cartiView.addDistMeasure(distMeasure.toString());
+		view.addDistMeasure(distMeasure.toString());
 	}
 
 	public void selectDistMeasure() {
-		int selectedDistMeasureId = cartiView.getDistanceOptions()
+		int selectedDistMeasureId = view.getDistanceOptions()
 				.getSelectedMeasureId();
-		int numDims = cartiModel.getNumDims();
+		int numDims = model.getNumDims();
 
-		if (cartiView.shouldSyncOrderSlider() && (selectedDistMeasureId < numDims)) {
+		if (view.shouldSyncOrderSlider() && (selectedDistMeasureId < numDims)) {
 			// need to change orderSlider, which will do all the necessary
 			// updates
-			cartiView.updateOrderSlider(selectedDistMeasureId);
+			view.updateOrderSlider(selectedDistMeasureId);
 		} else {
 			// need to update here
-			cartiModel.setSelectedDistMeasureId(selectedDistMeasureId);
+			model.setSelectedDistMeasureId(selectedDistMeasureId);
 
-			int[][] matrixToShow = cartiModel.getMatrixToShow();
+			int[][] matrixToShow = model.getMatrixToShow();
 
-			cartiView.updateFigure(matrixToShow);
+			view.updateFigure(matrixToShow);
 		}
 	}
 
 	public void getNoiseInSelDistMeas() {
-		int minSup = cartiView.getNoiseOptions().getMinSupVal();
+		int minSup = view.getNoiseOptions().getMinSupVal();
 
 		if (minSup == -1) {
 			return;
 		}
 
 		// calculate noise objects
-		List<Obj> noiseObjs = cartiModel.getNoiseObjsInSelDistMeas(minSup);
+		List<Obj> noiseObjs = model.getNoiseObjsInSelDistMeas(minSup);
 
 		processNoiseObjs(noiseObjs);
 	}
 
 	public void getNoiseInAllDistMeas() {
-		int minSup = cartiView.getNoiseOptions().getMinSupVal();
+		int minSup = view.getNoiseOptions().getMinSupVal();
 
 		if (minSup == -1) {
 			return;
 		}
 
 		// calculate noise objects
-		List<Obj> noiseObjs = cartiModel.getNoiseObjsInAllDistMeas(minSup);
+		List<Obj> noiseObjs = model.getNoiseObjsInAllDistMeas(minSup);
 
 		processNoiseObjs(noiseObjs);
 	}
 
 	private void processNoiseObjs(Collection<Obj> noiseObjs) {
 		if (noiseObjs.size() == 0) {
-			cartiView.showInfoMessage("0 noise objects found for given minSup.",
+			view.showInfoMessage("0 noise objects found for given minSup.",
 					"Noise result");
 			return;
 		}
@@ -537,26 +531,26 @@ public class CartiController {
 		// turn noise objects into a cluster
 		Set<Integer> dims = new HashSet<Integer>();
 		Cluster cluster = new Cluster(noiseObjs, dims);
-		cartiModel.addCluster(cluster);
+		model.addCluster(cluster);
 
 		// update view
-		Map<Integer, Cluster> clustersMap = cartiModel.getClustersMap();
-		Set<Integer> clustersToShow = cartiModel.getClustersToShow();
+		Map<Integer, Cluster> clustersMap = model.getClustersMap();
+		Set<Integer> clustersToShow = model.getClustersToShow();
 
-		cartiView.updateClusterInfo(clustersMap, clustersToShow);
-		cartiView.showInfoMessage(noiseObjs.size()
+		view.updateClusterInfo(clustersMap, clustersToShow);
+		view.showInfoMessage(noiseObjs.size()
 				+ " noise objects found, adding them as a cluster.", "Noise result");
 	}
 
 	public void findRelatedDims() {
-		int minSup = cartiView.getMiningOptions().getMinSupVal();
-		int numOfItemSets = cartiView.getMiningOptions().getNumOfItemSetsVal();
+		int minSup = view.getMiningOptions().getMinSupVal();
+		int numOfItemSets = view.getMiningOptions().getNumOfItemSetsVal();
 
 		// get related dims matrix
-		int[][] relatedDimsMatrix = cartiModel.createRelatedDimsMatrix(minSup,
+		int[][] relatedDimsMatrix = model.createRelatedDimsMatrix(minSup,
 				numOfItemSets);
 
-		cartiView.showRelatedDims(relatedDimsMatrix);
+		view.showRelatedDims(relatedDimsMatrix);
 	}
 
 	// LISTENERS
@@ -614,7 +608,7 @@ public class CartiController {
 	}
 
 	protected void updateDistribution(boolean reset) {
-		cartiView.updateDistribution(cartiModel.getDistribution(), reset);
+		view.updateDistribution(model.getDistribution(), reset);
 	}
 
 	/**
@@ -625,8 +619,8 @@ public class CartiController {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting() == false
-						&& (cartiView.selOptionsListenerShouldListen())) {
-					manSelectedsChange(cartiView.getSelectionOptions().getSelecteds());
+						&& (view.selOptionsListenerShouldListen())) {
+					manSelectedsChange(view.getSelectionOptions().getSelecteds());
 				}
 			}
 		};
@@ -665,8 +659,8 @@ public class CartiController {
 
 				// get which cell the click started in and ended at, make sure
 				// it is between 0 and cellCount
-				int cellCount = cartiView.getCartiPanel().getCellCount();
-				int[] cells = cartiView.getCartiPanel().getCells(x1, x2);
+				int cellCount = view.getCartiPanel().getCellCount();
+				int[] cells = view.getCartiPanel().getCells(x1, x2);
 				cells[0] = max(0, cells[0]);
 				cells[0] = min(cellCount, cells[0]);
 				cells[1] = max(0, cells[1]);
@@ -689,7 +683,7 @@ public class CartiController {
 
 				int x = e.getX();
 
-				int[] cells = cartiView.getCartiPanel().getCells(x, x);
+				int[] cells = view.getCartiPanel().getCells(x, x);
 
 				orderByObject(cells[0]);
 			}
@@ -717,7 +711,7 @@ public class CartiController {
 
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				if (cartiView.clusterInfoListenerShouldListen()) {
+				if (view.clusterInfoListenerShouldListen()) {
 					int row = e.getFirstRow();
 					ClusterInfo.ClusterTable table = (ClusterInfo.ClusterTable) e
 							.getSource();
@@ -749,9 +743,9 @@ public class CartiController {
 				// slider has stopped moving
 				if (!slider.getValueIsAdjusting()) {
 					slider.setToolTipText(Integer.toString(slider.getValue()));
-					if (slider == cartiView.getKSlider()) {
+					if (slider == view.getKSlider()) {
 						kSliderChanged();
-					} else if (slider == cartiView.getOrderSlider()) {
+					} else if (slider == view.getOrderSlider()) {
 						orderSliderChanged();
 					}
 				}
@@ -769,7 +763,7 @@ public class CartiController {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (cartiView.distOptionsListenerShouldListen()) {
+				if (view.distOptionsListenerShouldListen()) {
 					selectDistMeasure();
 				}
 			}
