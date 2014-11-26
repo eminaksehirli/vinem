@@ -2,12 +2,18 @@ package cart.controller;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -371,6 +378,44 @@ public class CartiController {
 				medAbsDevs);
 	}
 
+	private void saveClusters() {
+		Set<Integer> clusterIds = view.getClusterInfo().getSelectedRowsClusterIds();
+		if (clusterIds.isEmpty()) {
+			JOptionPane.showMessageDialog(null,
+					"Please select cluster to save by hightlighting them on the table.",
+					"No clusters selected", WARNING_MESSAGE);
+			return;
+		}
+		final boolean saveDim = view.getClusterInfo().saveDimCB.isSelected();
+		final boolean saveSize = view.getClusterInfo().saveSizeCB.isSelected();
+		File clusterFile;
+		try {
+			clusterFile = model.saveClusters(clusterIds, saveDim, saveSize);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null,
+					"Could not save the clusters: " + e.toString(),
+					"Problem while saving!", ERROR_MESSAGE);
+			e.printStackTrace();
+			return;
+		}
+		final String msg = "Selected clusters are saved to the file:"
+				+ clusterFile.getAbsolutePath();
+		int showDir = JOptionPane.showConfirmDialog(null, "<html>" + msg
+				+ "<br/>Do you want to open the file with the default editor?</html>",
+				"Clusters are saved", JOptionPane.YES_NO_OPTION, INFORMATION_MESSAGE);
+		if (showDir == 0) {
+			try {
+				Desktop.getDesktop().open(clusterFile);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null,
+						"Could not open the file: " + e.toString(),
+						"Problem while opening the file!", ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+		}
+		System.out.println(msg);
+	}
+
 	public void showCluster(Integer clusterId) {
 		model.showCluster(clusterId);
 
@@ -601,6 +646,8 @@ public class CartiController {
 					deleteClusters();
 				} else if (e.getActionCommand() == ClusterInfo.SELECT) {
 					selectClusters();
+				} else if (e.getActionCommand() == ClusterInfo.SAVECLUSTERS) {
+					saveClusters();
 				}
 			}
 		};

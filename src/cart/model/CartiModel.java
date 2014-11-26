@@ -2,7 +2,10 @@ package cart.model;
 
 import static cart.maximizer.MaximalMinerCombiner.getOrd2Id;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -883,5 +886,46 @@ public class CartiModel {
 			s.add(getObj(i));
 		}
 		return s;
+	}
+
+	public File saveClusters(Set<Integer> clusterIds, boolean saveDim,
+			boolean saveSize) throws IOException {
+		String filePrefix = "Clusters";
+		if (saveSize) {
+			filePrefix += "-size";
+		}
+		if (saveDim) {
+			filePrefix += "-dims";
+		}
+		File file = File.createTempFile(filePrefix + "-", ".txt");
+
+		PrintWriter pw = new PrintWriter(file);
+		for (Integer id : clusterIds) {
+			Cluster cl = clustersMap.get(id);
+			if (saveSize) {
+				pw.print(cl.getObjects().size() + ";");
+			}
+			if (saveDim) {
+				pw.print(toSpaceSeparated(cl.getDims()) + ";");
+			}
+			pw.println(toSpaceSeparated(cl.getObjects()));
+		}
+		pw.flush();
+		pw.close();
+		return file;
+	}
+
+	private static <E> String toSpaceSeparated(Iterable<E> col) {
+		Iterator<E> it = col.iterator();
+		if (!it.hasNext())
+			return "";
+
+		StringBuilder sb = new StringBuilder();
+		for (;;) {
+			sb.append(it.next());
+			if (!it.hasNext())
+				return sb.toString();
+			sb.append(' ');
+		}
 	}
 }

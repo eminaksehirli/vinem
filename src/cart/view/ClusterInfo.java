@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,6 +31,7 @@ public class ClusterInfo {
 	public final static String REMOVEFIL = "ClusterInfo.RemoveFil";
 	public final static String DELETE = "ClusterInfo.Delete";
 	public final static String SELECT = "ClusterInfo.Select";
+	public final static String SAVECLUSTERS = "ClusterInfo.Save";
 
 	private JPanel infoPanel;
 	private JTable table;
@@ -40,6 +42,9 @@ public class ClusterInfo {
 	private JButton removeFil;
 	private JButton delete;
 	private JButton select;
+	private JButton saveBt;
+	public JCheckBox saveSizeCB;
+	public JCheckBox saveDimCB;
 
 	public void init() {
 		// the main panel
@@ -81,6 +86,7 @@ public class ClusterInfo {
 		// add/remove/delete/select buttons
 		JPanel topButtonsPanel = CartiView.createHorizontalBoxPanel(600, 50);
 		JPanel bottomButtonsPanel = CartiView.createHorizontalBoxPanel(600, 50);
+		JPanel savePanel = CartiView.createHorizontalBoxPanel(600, 50);
 		add = new JButton("Add selecteds to cluster(s)");
 		add.setActionCommand(ADD);
 
@@ -96,6 +102,11 @@ public class ClusterInfo {
 		removeFil = new JButton("Remove filtereds from cluster(s)");
 		removeFil.setActionCommand(REMOVEFIL);
 
+		saveSizeCB = new JCheckBox("Save size(s)");
+		saveDimCB = new JCheckBox("Save dimension(s)");
+		saveBt = new JButton("Save cluster(s) to file");
+		saveBt.setActionCommand(SAVECLUSTERS);
+
 		topButtonsPanel.add(add);
 		topButtonsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		topButtonsPanel.add(delete);
@@ -106,8 +117,13 @@ public class ClusterInfo {
 		bottomButtonsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		bottomButtonsPanel.add(removeFil);
 
+		savePanel.add(saveSizeCB);
+		savePanel.add(saveDimCB);
+		savePanel.add(saveBt);
+
 		infoPanel.add(topButtonsPanel);
 		infoPanel.add(bottomButtonsPanel);
+		infoPanel.add(savePanel);
 	}
 
 	public void addButtonsListener(ActionListener buttonsListener) {
@@ -116,6 +132,7 @@ public class ClusterInfo {
 		removeFil.addActionListener(buttonsListener);
 		delete.addActionListener(buttonsListener);
 		select.addActionListener(buttonsListener);
+		saveBt.addActionListener(buttonsListener);
 	}
 
 	public void addTableModelListener(TableModelListener tableModelListener) {
