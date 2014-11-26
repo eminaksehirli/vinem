@@ -5,6 +5,7 @@ import static java.lang.Math.min;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -273,7 +274,7 @@ public class CartiController {
 
 		// only need to update the figure for clustereds if one of the clusters
 		// is visible
-		for (int id : clusterIds) {
+		for (Integer id : clusterIds) {
 			if (model.clusterIsVisible(id)) {
 				Set<Integer> clusteredLocs = model.getClustersToShowLocs();
 				view.updateFigureClustered(clusteredLocs);
@@ -295,7 +296,7 @@ public class CartiController {
 			return;
 		}
 
-		for (int id : clusterIds) {
+		for (Integer id : clusterIds) {
 			if (removeSelecteds) {
 				model.removeSelectedsFromCluster(id);
 			} else {
@@ -310,7 +311,7 @@ public class CartiController {
 
 		// only need to update the figure for clustereds if one of the clusters
 		// is visible
-		for (int id : clusterIds) {
+		for (Integer id : clusterIds) {
 			if (model.clusterIsVisible(id)) {
 				Set<Integer> clusteredLocs = model.getClustersToShowLocs();
 				view.updateFigureClustered(clusteredLocs);
@@ -328,7 +329,7 @@ public class CartiController {
 		}
 
 		boolean wasVisible = false;
-		for (int id : clusterIds) {
+		for (Integer id : clusterIds) {
 			if (model.clusterIsVisible(id)) {
 				wasVisible = true;
 			}
@@ -370,7 +371,7 @@ public class CartiController {
 				medAbsDevs);
 	}
 
-	public void showCluster(int clusterId) {
+	public void showCluster(Integer clusterId) {
 		model.showCluster(clusterId);
 
 		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
@@ -378,7 +379,7 @@ public class CartiController {
 		view.updateFigureClustered(clusteredLocs);
 	}
 
-	public void hideCluster(int clusterId) {
+	public void hideCluster(Integer clusterId) {
 		model.hideCluster(clusterId);
 
 		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
@@ -468,7 +469,7 @@ public class CartiController {
 		} else if (isCos) {
 			distMeasure = new CosineDistMeasure(dims);
 		} else {
-			distMeasure = null;
+			return;
 		}
 
 		model.addDistMeasure(distMeasure);
@@ -632,7 +633,7 @@ public class CartiController {
 	 * @return Listener for mouse licks in the cartiPanel figure.
 	 */
 	private MouseListener createCartiPanelListener() {
-		MouseListener listener = new MouseListener() {
+		MouseListener listener = new MouseAdapter() {
 
 			private int startX;
 
@@ -687,16 +688,6 @@ public class CartiController {
 
 				orderByObject(cells[0]);
 			}
-
-			// do nothing for these
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-
 		};
 
 		return listener;
@@ -716,7 +707,7 @@ public class CartiController {
 					ClusterInfo.ClusterTable table = (ClusterInfo.ClusterTable) e
 							.getSource();
 					boolean isVisible = (boolean) table.getValueAt(row, 0);
-					int clusterId = (int) table.getValueAt(row, 1);
+					Integer clusterId = (Integer) table.getValueAt(row, 1);
 
 					if (isVisible) {
 						showCluster(clusterId);

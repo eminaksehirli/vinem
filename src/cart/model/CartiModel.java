@@ -661,7 +661,7 @@ public class CartiModel {
 	public void selectClusters(Set<Integer> clusterIds) {
 		selecteds = new HashSet<Integer>();
 
-		for (int cid : clusterIds) {
+		for (Integer cid : clusterIds) {
 			for (Obj obj : clustersMap.get(cid).getObjects()) {
 				if (!filtereds.contains(obj.id)) {
 					// cluster might contain filtered ids
@@ -693,7 +693,7 @@ public class CartiModel {
 	 * 
 	 * @param clusterId
 	 */
-	public void removeSelectedsFromCluster(int clusterId) {
+	public void removeSelectedsFromCluster(Integer clusterId) {
 		clustersMap.get(clusterId).removeObjects(getSelectedObjs());
 	}
 
@@ -702,7 +702,7 @@ public class CartiModel {
 	 * 
 	 * @param clusterId
 	 */
-	public void removeFilteredsFromCluster(int clusterId) {
+	public void removeFilteredsFromCluster(Integer clusterId) {
 		clustersMap.get(clusterId).removeObjects(ids2Objs(filtereds));
 	}
 
@@ -721,7 +721,7 @@ public class CartiModel {
 	 * 
 	 * @param clusterId
 	 */
-	public void deleteCluster(int clusterId) {
+	public void deleteCluster(Integer clusterId) {
 		clustersMap.remove(clusterId);
 		clustersToShow.remove(clusterId);
 	}
@@ -731,7 +731,7 @@ public class CartiModel {
 	 * 
 	 * @param clusterId
 	 */
-	public void showCluster(int clusterId) {
+	public void showCluster(Integer clusterId) {
 		clustersToShow.add(clusterId);
 	}
 
@@ -740,7 +740,7 @@ public class CartiModel {
 	 * 
 	 * @param clusterId
 	 */
-	public void hideCluster(int clusterId) {
+	public void hideCluster(Integer clusterId) {
 		clustersToShow.remove(clusterId);
 	}
 
@@ -748,7 +748,7 @@ public class CartiModel {
 	 * @param clusterId
 	 * @return Whether a cluster is visible.
 	 */
-	public boolean clusterIsVisible(int clusterId) {
+	public boolean clusterIsVisible(Integer clusterId) {
 		return clustersToShow.contains(clusterId);
 	}
 

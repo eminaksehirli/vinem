@@ -49,6 +49,8 @@ public class ClusterInfo {
 		tableModel = new ClusterTable();
 
 		table = new JTable(tableModel) {
+			private static final long serialVersionUID = -12064308031584881L;
+
 			// make it so column widths automatically fit largest entry
 			@Override
 			public Component prepareRenderer(TableCellRenderer renderer, int row,
@@ -141,7 +143,7 @@ public class ClusterInfo {
 		Set<Integer> ids = new HashSet<Integer>();
 
 		for (int i = 0; i < rows.length; i++) {
-			ids.add((int) table.getValueAt(rows[i], 1));
+			ids.add((Integer) table.getValueAt(rows[i], 1));
 		}
 
 		return ids;
@@ -165,6 +167,8 @@ public class ClusterInfo {
 	}
 
 	public class ClusterTable extends AbstractTableModel {
+		private static final long serialVersionUID = -4881932448729382479L;
+
 		private String[] columnNames = { "Visible", "Cluster id", "Size", "#Dims",
 				"Dims", "Objects" };
 
@@ -195,7 +199,7 @@ public class ClusterInfo {
 		}
 
 		@Override
-		public Class getColumnClass(int c) {
+		public Class<?> getColumnClass(int c) {
 			return getValueAt(0, c).getClass();
 		}
 
@@ -204,9 +208,8 @@ public class ClusterInfo {
 		public boolean isCellEditable(int row, int col) {
 			if (col == 0) {
 				return true;
-			} else {
-				return false;
 			}
+			return false;
 		}
 
 		@Override
@@ -220,7 +223,7 @@ public class ClusterInfo {
 			data = new Object[clustersMap.size()][6];
 
 			int row = 0;
-			for (int clusterId : clustersMap.keySet()) {
+			for (Integer clusterId : clustersMap.keySet()) {
 				// Visible
 				if (clustersToShow.contains(clusterId)) {
 					data[row][0] = new Boolean(true);
@@ -229,15 +232,13 @@ public class ClusterInfo {
 				}
 
 				// Cluster id
-				data[row][1] = new Integer(clusterId);
+				data[row][1] = clusterId;
 
 				// Size
-				data[row][2] = new Integer(clustersMap.get(clusterId).getObjects()
-						.size());
+				data[row][2] = clustersMap.get(clusterId).getObjects().size();
 
 				// #Dims
-				Set<Integer> dims = new HashSet<>(clustersMap.get(clusterId)
-						.getDims());
+				Set<Integer> dims = new HashSet<>(clustersMap.get(clusterId).getDims());
 				data[row][3] = dims.size();
 
 				// Dims
