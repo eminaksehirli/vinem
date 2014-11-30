@@ -845,9 +845,15 @@ public class CartiModel {
 		return starts;
 	}
 
-	public int mineItemsets(int minLen) {
+	public int mineItemsets(boolean onlySelected, int minLen) {
 		// do mining
-		List<Freq> result = maximer.mineFor(getK(), minLen);
+		List<Freq> result;
+		if (onlySelected) {
+			result = maximer.mineFor(asArr(getSelectedObjs()), k, minLen,
+					selectedDistMeasureId);
+		} else {
+			result = maximer.mineFor(getK(), minLen);
+		}
 
 		// turn result into clusters and add to model
 		for (Freq freq : result) {
@@ -861,7 +867,6 @@ public class CartiModel {
 	}
 
 	public int mineRandomFreqs(boolean onlySelected, int minSup, int numOfItemSets) {
-
 		// get the items
 		PlainItemDB items;
 		if (onlySelected) {
@@ -917,6 +922,15 @@ public class CartiModel {
 			s.add(getObj(i));
 		}
 		return s;
+	}
+
+	private static int[] asArr(List<Obj> objs) {
+		int[] arr = new int[objs.size()];
+		int ix = 0;
+		for (Obj obj : objs) {
+			arr[ix++] = obj.id;
+		}
+		return arr;
 	}
 
 	public File saveClusters(Set<Integer> clusterIds, boolean saveDim,

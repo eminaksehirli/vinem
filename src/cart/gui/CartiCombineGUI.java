@@ -366,7 +366,7 @@ public class CartiCombineGUI {
 		}
 
 		Integer startDimIx = frame.orderSlider_1.getValue();
-		List<Freq> freqs = maximer.mineFor(arr, k, startDimIx);
+		List<Freq> freqs = maximer.mineFor(arr, k, (int) (k * 0.6), startDimIx);
 
 		for (Freq freq : freqs) {
 			addAsCluster(freq.freqDims, arr2Set(freq.freqSet));

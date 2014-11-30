@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 public class MineOptions {
 
 	public final static String MINEIMM = "MineOptions.MineIMM";
+	public final static String MINEIMMSEL = "MineOptions.MineIMMSEL";
 	public final static String MINERMM = "MineOptions.MineRMM";
 	public final static String MINERMMSEL = "MineOptions.MineRMMSEL";
 	public final static String FINDRELDIMS = "MineOptions.FindRelDims";
@@ -30,9 +31,9 @@ public class MineOptions {
 
 	private JPanel minePanel;
 	private JPanel cards;
-	private JButton mineIMMButton;
-	private JButton mineRMMButton;
-	private JButton mineRMMSelButton;
+	private JButton mineIMMBt;
+	private JButton mineRMMBt;
+	private JButton mineRMMSelBt;
 	private JButton findRelDimsButton;
 	private JTextField minLenField;
 	private JTextField minSupFieldRMM;
@@ -41,6 +42,7 @@ public class MineOptions {
 	private JTextField numOfItemSetsFieldRelDims;
 	private JComboBox<String> cb;
 	NoiseOptions noiseOpts;
+	private JButton mineIMMSelBt;
 
 	public MineOptions() {
 		// the main panel
@@ -138,18 +140,15 @@ public class MineOptions {
 		cardRMM.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add buttons for mining to card
-		mineRMMButton = new JButton("Mine");
-		mineRMMButton.setActionCommand(MINERMM);
-		mineRMMButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JPanel btPane = CartiView.createHorizontalBoxPanel(300, 50);
+		mineRMMBt = new JButton("Mine");
+		mineRMMBt.setActionCommand(MINERMM);
+		mineRMMSelBt = new JButton("Mine Selected");
+		mineRMMSelBt.setActionCommand(MINERMMSEL);
+		btPane.add(mineRMMBt);
+		btPane.add(mineRMMSelBt);
 
-		cardRMM.add(mineRMMButton);
-		cardRMM.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		mineRMMSelButton = new JButton("Mine selected");
-		mineRMMSelButton.setActionCommand(MINERMMSEL);
-		mineRMMSelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		cardRMM.add(mineRMMSelButton);
+		cardRMM.add(btPane);
 		return cardRMM;
 	}
 
@@ -166,19 +165,24 @@ public class MineOptions {
 
 		cardIMM.add(Box.createRigidArea(new Dimension(0, 10)));
 
-		// add button for mining to card
-		mineIMMButton = new JButton("Mine");
-		mineIMMButton.setActionCommand(MINEIMM);
-		mineIMMButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		// buttons for mining
+		JPanel btPane = CartiView.createHorizontalBoxPanel(300, 50);
+		mineIMMBt = new JButton("Mine");
+		mineIMMBt.setActionCommand(MINEIMM);
+		mineIMMSelBt = new JButton("Mine Selected");
+		mineIMMSelBt.setActionCommand(MINEIMMSEL);
+		btPane.add(mineIMMBt);
+		btPane.add(mineIMMSelBt);
 
-		cardIMM.add(mineIMMButton);
+		cardIMM.add(btPane);
 		return cardIMM;
 	}
 
 	public void addButtonsListener(ActionListener buttonsListener) {
-		mineIMMButton.addActionListener(buttonsListener);
-		mineRMMButton.addActionListener(buttonsListener);
-		mineRMMSelButton.addActionListener(buttonsListener);
+		mineIMMBt.addActionListener(buttonsListener);
+		mineIMMSelBt.addActionListener(buttonsListener);
+		mineRMMBt.addActionListener(buttonsListener);
+		mineRMMSelBt.addActionListener(buttonsListener);
 		findRelDimsButton.addActionListener(buttonsListener);
 		noiseOpts.addButtonsListener(buttonsListener);
 	}

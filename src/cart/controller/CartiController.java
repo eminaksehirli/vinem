@@ -428,14 +428,14 @@ public class CartiController {
 		view.updateFigureClustered(clusteredLocs);
 	}
 
-	public void mineIMM() {
+	public void mineIMM(boolean onlySelected) {
 		int minLen = view.getMiningOptions().getMinLenVal();
 
 		if (minLen == -1) {
 			return;
 		}
 
-		int resultSize = model.mineItemsets(minLen);
+		int resultSize = model.mineItemsets(onlySelected, minLen);
 		if (resultSize == 0) {
 			view.showInfoMessage("0 clusters found, try different k or minLen.",
 					"Mining result");
@@ -591,7 +591,9 @@ public class CartiController {
 				} else if (e.getActionCommand() == DistOptions.ADD) {
 					addDistMeasure();
 				} else if (e.getActionCommand() == MineOptions.MINEIMM) {
-					mineIMM();
+					mineIMM(false);
+				} else if (e.getActionCommand() == MineOptions.MINEIMMSEL) {
+					mineIMM(true);
 				} else if (e.getActionCommand() == MineOptions.MINERMM) {
 					mineRMM(false);
 				} else if (e.getActionCommand() == MineOptions.MINERMMSEL) {
