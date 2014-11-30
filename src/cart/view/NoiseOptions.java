@@ -26,6 +26,19 @@ public class NoiseOptions {
 	public NoiseOptions() {
 		// the main panel
 		noisePanel = CartiView.createVerticalBoxPanel(300, 150);
+		// add minSup textfield
+		JPanel minSupPanel = CartiView.createHorizontalBoxPanel(300, 40);
+		minSupPanel.add(new JLabel("minSup: "));
+		minSupPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		minSupField = new JTextField();
+		minSupField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+		minSupPanel.add(minSupField);
+		minSupPanel.setMaximumSize(new Dimension(300, 40));
+
+		noisePanel.add(minSupPanel);
+
+		noisePanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// add allMeas/selMeas buttons
 		allMeas = new JButton("Get noise over all measures");
@@ -39,19 +52,7 @@ public class NoiseOptions {
 		noisePanel.add(allMeas);
 		noisePanel.add(Box.createRigidArea(new Dimension(0, 5)));
 		noisePanel.add(selMeas);
-		noisePanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-		// add minSup textfield
-		JPanel minSupPanel = CartiView.createHorizontalBoxPanel(300, 40);
-		minSupPanel.add(new JLabel("minSup: "));
-		minSupPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		minSupField = new JTextField();
-		minSupField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-		minSupPanel.add(minSupField);
-		minSupPanel.setMaximumSize(new Dimension(300, 40));
-
-		noisePanel.add(minSupPanel);
 	}
 
 	public void addButtonsListener(ActionListener buttonsListener) {
@@ -68,20 +69,6 @@ public class NoiseOptions {
 	 *         not contain an integer larger than 0
 	 */
 	public int getMinSupVal() {
-		int minSup = -1;
-		try {
-			minSup = Integer.parseInt(minSupField.getText());
-		} catch (NumberFormatException e) {
-			minSup = -1;
-		}
-
-		if (minSup < 1) {
-			JOptionPane.showMessageDialog(new JFrame(),
-					"minSup  must be an integer larger than 0.", "error",
-					JOptionPane.ERROR_MESSAGE);
-			return -1;
-		}
-
-		return minSup;
+		return MineOptions.validateInt(minSupField.getText(), 0, "Minimum support");
 	}
 }

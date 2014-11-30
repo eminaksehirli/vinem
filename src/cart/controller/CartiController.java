@@ -30,16 +30,12 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import mime.plain.PlainItem;
-import mime.plain.PlainItemDB;
-import mime.plain.PlainItemSet;
 import cart.gui2.Cluster;
 import cart.gui2.CosineDistMeasure;
 import cart.gui2.DistMeasure;
 import cart.gui2.EuclidianDistMeasure;
 import cart.model.CartiModel;
 import cart.model.Obj;
-import cart.model.RandomMaximalMiner;
 import cart.view.CartiView;
 import cart.view.ClusterInfo;
 import cart.view.DistOptions;
@@ -462,37 +458,11 @@ public class CartiController {
 			return;
 		}
 
-		// get the items
-		PlainItemDB items;
-		if (onlySelected) {
-			items = model.getSelectedProjDbOnlySelected();
-		} else {
-			items = model.getSelectedProjDb();
-		}
-
-		// do mining
-		List<PlainItemSet> result = RandomMaximalMiner.runParallel(items, minSup,
-				numOfItemSets);
-
-		if (result.size() == 0) {
-			view.showInfoMessage("0 clusters found, try different k or minSup.",
+		int resultSize = model.mineRandomFreqs(onlySelected, minSup, numOfItemSets);
+		if (resultSize == 0) {
+			view.showInfoMessage("0 clusters found, try different k or minLen.",
 					"Mining result");
 			return;
-		}
-
-		// dims for which the cluster was made
-		DistMeasure measure = model.getSelectedDistMeasure();
-		Set<Integer> dims = measure.getDims();
-
-		// turn result into clusters and add to model
-		for (PlainItemSet itemSet : result) {
-			List<Obj> objects = new ArrayList<>();
-			for (PlainItem item : itemSet) {
-				objects.add(model.getObj(item.getId()));
-			}
-
-			Cluster cluster = new Cluster(objects, dims);
-			model.addCluster(cluster);
 		}
 
 		// update view
@@ -500,7 +470,7 @@ public class CartiController {
 		Set<Integer> clustersToShow = model.getClustersToShow();
 
 		view.updateClusterInfo(clustersMap, clustersToShow);
-		view.showInfoMessage(result.size() + " cluster(s) found.", "Mining result");
+		view.showInfoMessage(resultSize + " cluster(s) found.", "Mining result");
 	}
 
 	public void addDistMeasure() {

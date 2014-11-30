@@ -91,6 +91,22 @@ public class MineOptions {
 		JPanel cardRelDims = CartiView.createVerticalBoxPanel(300, 150);
 		cardRelDims.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+		// add minSup to card
+		JPanel minSupPane = CartiView.createPanelWithLabel("minSup");
+		minSupFieldRelDims = new JTextField();
+		minSupFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+		minSupPane.add(minSupFieldRelDims);
+		cardRelDims.add(minSupPane);
+
+		// add numOfItemSets to card
+		JPanel numOfItemSetsPanel2 = CartiView
+				.createPanelWithLabel("numOfItemSets");
+		numOfItemSetsFieldRelDims = new JTextField("2000");
+		numOfItemSetsFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+				25));
+		numOfItemSetsPanel2.add(numOfItemSetsFieldRelDims);
+		cardRelDims.add(numOfItemSetsPanel2);
+
 		// add button for finding rel dims
 		findRelDimsButton = new JButton("Find related dims");
 		findRelDimsButton.setActionCommand(FINDRELDIMS);
@@ -98,42 +114,12 @@ public class MineOptions {
 
 		cardRelDims.add(findRelDimsButton);
 		cardRelDims.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		// add minSup to card
-		JPanel minSupPanel2 = CartiView.createPanelWithLabel("minSup");
-		minSupFieldRelDims = new JTextField();
-		minSupFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-		minSupPanel2.add(minSupFieldRelDims);
-		cardRelDims.add(minSupPanel2);
-
-		// add numOfItemSets to card
-		JPanel numOfItemSetsPanel2 = CartiView.createPanelWithLabel("numOfItemSets");
-		numOfItemSetsFieldRelDims = new JTextField("2000");
-		numOfItemSetsFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-				25));
-		numOfItemSetsPanel2.add(numOfItemSetsFieldRelDims);
-		cardRelDims.add(numOfItemSetsPanel2);
 		return cardRelDims;
 	}
 
 	private JPanel createSamplingMinerCard() {
 		JPanel cardRMM = CartiView.createVerticalBoxPanel(300, 150);
 		cardRMM.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		// add buttons for mining to card
-		mineRMMButton = new JButton("Mine");
-		mineRMMButton.setActionCommand(MINERMM);
-		mineRMMButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		cardRMM.add(mineRMMButton);
-		cardRMM.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		mineRMMSelButton = new JButton("Mine selected");
-		mineRMMSelButton.setActionCommand(MINERMMSEL);
-		mineRMMSelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		cardRMM.add(mineRMMSelButton);
-		cardRMM.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add minSup to card
 		JPanel minSupPanel = CartiView.createPanelWithLabel("minSup");
@@ -148,6 +134,22 @@ public class MineOptions {
 		numOfItemSetsFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		numOfItemSetsPanel.add(numOfItemSetsFieldRMM);
 		cardRMM.add(numOfItemSetsPanel);
+
+		cardRMM.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		// add buttons for mining to card
+		mineRMMButton = new JButton("Mine");
+		mineRMMButton.setActionCommand(MINERMM);
+		mineRMMButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		cardRMM.add(mineRMMButton);
+		cardRMM.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		mineRMMSelButton = new JButton("Mine selected");
+		mineRMMSelButton.setActionCommand(MINERMMSEL);
+		mineRMMSelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		cardRMM.add(mineRMMSelButton);
 		return cardRMM;
 	}
 
@@ -155,20 +157,21 @@ public class MineOptions {
 		JPanel cardIMM = CartiView.createVerticalBoxPanel(300, 150);
 		cardIMM.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		// add button for mining to card
-		mineIMMButton = new JButton("Mine");
-		mineIMMButton.setActionCommand(MINEIMM);
-		mineIMMButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		cardIMM.add(mineIMMButton);
-		cardIMM.add(Box.createRigidArea(new Dimension(0, 10)));
-
 		// add minLen to card
 		JPanel minLenPanel = CartiView.createPanelWithLabel("minLen");
 		minLenField = new JTextField();
 		minLenField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minLenPanel.add(minLenField);
 		cardIMM.add(minLenPanel);
+
+		cardIMM.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		// add button for mining to card
+		mineIMMButton = new JButton("Mine");
+		mineIMMButton.setActionCommand(MINEIMM);
+		mineIMMButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		cardIMM.add(mineIMMButton);
 		return cardIMM;
 	}
 
@@ -189,21 +192,7 @@ public class MineOptions {
 	 *         not contain an integer larger than 1.
 	 */
 	public int getMinLenVal() {
-		int minLen = -1;
-		try {
-			minLen = Integer.parseInt(minLenField.getText());
-		} catch (NumberFormatException e) {
-			minLen = -1;
-		}
-
-		if (minLen < 2) {
-			JOptionPane.showMessageDialog(new JFrame(),
-					"minLen must be an integer larger than 1.", "error",
-					JOptionPane.ERROR_MESSAGE);
-			return -1;
-		}
-
-		return minLen;
+		return validateInt(minLenField.getText(), 1, "Minimum length");
 	}
 
 	/**
@@ -211,25 +200,14 @@ public class MineOptions {
 	 *         not contain an integer larger than 0
 	 */
 	public int getMinSupVal() {
-		int minSup = -1;
-		try {
-			if (cb.getSelectedItem().toString().equals(RMMCARD)) {
-				minSup = Integer.parseInt(minSupFieldRMM.getText());
-			} else if (cb.getSelectedItem().toString().equals(RELDIMSCARD)) {
-				minSup = Integer.parseInt(minSupFieldRelDims.getText());
-			}
-		} catch (NumberFormatException e) {
-			minSup = -1;
+		String text = "";
+		if (cb.getSelectedItem().toString().equals(RMMCARD)) {
+			text = minSupFieldRMM.getText();
+		} else if (cb.getSelectedItem().toString().equals(RELDIMSCARD)) {
+			text = minSupFieldRelDims.getText();
 		}
 
-		if (minSup < 1) {
-			JOptionPane.showMessageDialog(new JFrame(),
-					"minSup  must be an integer larger than 0.", "error",
-					JOptionPane.ERROR_MESSAGE);
-			return -1;
-		}
-
-		return minSup;
+		return validateInt(text, 1, "Minimum support");
 	}
 
 	/**
@@ -237,25 +215,14 @@ public class MineOptions {
 	 *         does not contain an integer larger than 0
 	 */
 	public int getNumOfItemSetsVal() {
-		int numOfItemSets = -1;
-		try {
-			if (cb.getSelectedItem().toString().equals(RMMCARD)) {
-				numOfItemSets = Integer.parseInt(numOfItemSetsFieldRMM.getText());
-			} else if (cb.getSelectedItem().toString().equals(RELDIMSCARD)) {
-				numOfItemSets = Integer.parseInt(numOfItemSetsFieldRelDims.getText());
-			}
-		} catch (NumberFormatException e) {
-			numOfItemSets = -1;
+		String text = "";
+		if (cb.getSelectedItem().toString().equals(RMMCARD)) {
+			text = numOfItemSetsFieldRMM.getText();
+		} else if (cb.getSelectedItem().toString().equals(RELDIMSCARD)) {
+			text = numOfItemSetsFieldRelDims.getText();
 		}
 
-		if (numOfItemSets < 1) {
-			JOptionPane.showMessageDialog(new JFrame(),
-					"numOfItemSets must be an integer larger than 0.", "error",
-					JOptionPane.ERROR_MESSAGE);
-			return -1;
-		}
-
-		return numOfItemSets;
+		return validateInt(text, 0, "Number of itemsets");
 	}
 
 	/**
@@ -266,5 +233,20 @@ public class MineOptions {
 	public void setMinSupVal(int minSup) {
 		minSupFieldRMM.setText(Integer.toString(minSup));
 		minSupFieldRelDims.setText(Integer.toString(minSup));
+	}
+
+	static int validateInt(final String text, final int min, String varName) {
+		int val = -1;
+		try {
+			val = Integer.parseInt(text);
+		} catch (NumberFormatException e) {
+			val = -1;
+		}
+		if (val <= min) {
+			JOptionPane.showMessageDialog(new JFrame(), varName
+					+ " must be an integer larger than " + min + ".", "error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		return val;
 	}
 }

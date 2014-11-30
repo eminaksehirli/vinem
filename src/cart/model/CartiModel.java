@@ -860,6 +860,37 @@ public class CartiModel {
 		return result.size();
 	}
 
+	public int mineRandomFreqs(boolean onlySelected, int minSup, int numOfItemSets) {
+
+		// get the items
+		PlainItemDB items;
+		if (onlySelected) {
+			items = getSelectedProjDbOnlySelected();
+		} else {
+			items = getSelectedProjDb();
+		}
+
+		// do mining
+		List<PlainItemSet> result = RandomMaximalMiner.runParallel(items, minSup,
+				numOfItemSets);
+
+		// dims for which the cluster was made
+		DistMeasure measure = getSelectedDistMeasure();
+		Set<Integer> dims = measure.getDims();
+
+		// turn result into clusters and add to model
+		for (PlainItemSet itemSet : result) {
+			List<Obj> objs = new ArrayList<>();
+			for (PlainItem item : itemSet) {
+				objs.add(getObj(item.getId()));
+			}
+
+			addCluster(new Cluster(objs, dims));
+		}
+
+		return result.size();
+	}
+
 	public Obj getObj(final int id) {
 		return objects[id];
 	}
