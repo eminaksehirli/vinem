@@ -901,8 +901,10 @@ public class CartiModel {
 		}
 
 		// do mining
-		List<PlainItemSet> result = RandomMaximalMiner.runParallel(items, minSup,
-				numOfItemSets);
+		List<PlainItemSet> rawResult = RandomMaximalMiner.runParallel(items,
+				minSup, numOfItemSets);
+		// Remove the duplicates
+		Set<PlainItemSet> result = new HashSet<>(rawResult);
 
 		// dims for which the cluster was made
 		DistMeasure measure = getSelectedDistMeasure();
