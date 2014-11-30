@@ -12,7 +12,6 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -27,6 +26,7 @@ public class MineOptions {
 	final static String IMMCARD = "ItemSetMaximalMiner";
 	final static String RMMCARD = "RandomMaximalMiner";
 	final static String RELDIMSCARD = "Find related dims";
+	final static String NOISECARD = "Find outliers";
 
 	private JPanel minePanel;
 	private JPanel cards;
@@ -40,25 +40,24 @@ public class MineOptions {
 	private JTextField minSupFieldRelDims;
 	private JTextField numOfItemSetsFieldRelDims;
 	private JComboBox<String> cb;
+	NoiseOptions noiseOpts;
 
-	public void init() {
+	public MineOptions() {
 		// the main panel
 		minePanel = CartiView.createVerticalBoxPanel(300, 200);
 		minePanel.setBorder(BorderFactory.createTitledBorder("Mining"));
 
 		// the combo box for selecting the miner
-		String comboBoxItems[] = { IMMCARD, RMMCARD, RELDIMSCARD };
+		String comboBoxItems[] = { IMMCARD, RMMCARD, RELDIMSCARD, NOISECARD };
 		cb = new JComboBox<String>(comboBoxItems);
 		cb.setEditable(false);
 		cb.addItemListener(new ItemListener() {
-
 			@Override
 			public void itemStateChanged(ItemEvent evt) {
 				// switch card
 				CardLayout cl = (CardLayout) (cards.getLayout());
 				cl.show(cards, (String) evt.getItem());
 			}
-
 		});
 		cb.setAlignmentX(Component.CENTER_ALIGNMENT);
 		cb.setPreferredSize(new Dimension(300, 30));
@@ -66,26 +65,58 @@ public class MineOptions {
 		minePanel.add(cb);
 
 		// Create the cards
-		// IMM card
-		JPanel cardIMM = CartiView.createVerticalBoxPanel(300, 150);
-		cardIMM.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JPanel cardIMM = createFastMinerCard();
+		JPanel cardRMM = createSamplingMinerCard();
+		JPanel cardRelDims = createFindRelevantDimsCard();
+		JPanel noiseCard = createNoiseDimsCard();
 
-		// add button for mining to card
-		mineIMMButton = new JButton("Mine");
-		mineIMMButton.setActionCommand(MINEIMM);
-		mineIMMButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		// Create the panel that contains the cards
+		cards = new JPanel(new CardLayout());
+		cards.add(cardIMM, IMMCARD);
+		cards.add(cardRMM, RMMCARD);
+		cards.add(cardRelDims, RELDIMSCARD);
+		cards.add(noiseCard, NOISECARD);
+		cards.setAlignmentX(Component.CENTER_ALIGNMENT);
+		cards.setMaximumSize(new Dimension(300, 150));
 
-		cardIMM.add(mineIMMButton);
-		cardIMM.add(Box.createRigidArea(new Dimension(0, 10)));
+		minePanel.add(cards);
+	}
 
-		// add minLen to card
-		JPanel minLenPanel = createPanelWithLabel("minLen");
-		minLenField = new JTextField();
-		minLenField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-		minLenPanel.add(minLenField);
-		cardIMM.add(minLenPanel);
+	private JPanel createNoiseDimsCard() {
+		noiseOpts = new NoiseOptions();
+		return noiseOpts.getPanel();
+	}
 
-		// RMM card
+	private JPanel createFindRelevantDimsCard() {
+		JPanel cardRelDims = CartiView.createVerticalBoxPanel(300, 150);
+		cardRelDims.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		// add button for finding rel dims
+		findRelDimsButton = new JButton("Find related dims");
+		findRelDimsButton.setActionCommand(FINDRELDIMS);
+		findRelDimsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		cardRelDims.add(findRelDimsButton);
+		cardRelDims.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		// add minSup to card
+		JPanel minSupPanel2 = CartiView.createPanelWithLabel("minSup");
+		minSupFieldRelDims = new JTextField();
+		minSupFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+		minSupPanel2.add(minSupFieldRelDims);
+		cardRelDims.add(minSupPanel2);
+
+		// add numOfItemSets to card
+		JPanel numOfItemSetsPanel2 = CartiView.createPanelWithLabel("numOfItemSets");
+		numOfItemSetsFieldRelDims = new JTextField("2000");
+		numOfItemSetsFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+				25));
+		numOfItemSetsPanel2.add(numOfItemSetsFieldRelDims);
+		cardRelDims.add(numOfItemSetsPanel2);
+		return cardRelDims;
+	}
+
+	private JPanel createSamplingMinerCard() {
 		JPanel cardRMM = CartiView.createVerticalBoxPanel(300, 150);
 		cardRMM.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -105,64 +136,40 @@ public class MineOptions {
 		cardRMM.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add minSup to card
-		JPanel minSupPanel = createPanelWithLabel("minSup");
+		JPanel minSupPanel = CartiView.createPanelWithLabel("minSup");
 		minSupFieldRMM = new JTextField();
 		minSupFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minSupPanel.add(minSupFieldRMM);
 		cardRMM.add(minSupPanel);
 
 		// add numOfItemSets to card
-		JPanel numOfItemSetsPanel = createPanelWithLabel("numOfItemSets");
+		JPanel numOfItemSetsPanel = CartiView.createPanelWithLabel("numOfItemSets");
 		numOfItemSetsFieldRMM = new JTextField();
 		numOfItemSetsFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		numOfItemSetsPanel.add(numOfItemSetsFieldRMM);
 		cardRMM.add(numOfItemSetsPanel);
-
-		// RELDIMS card
-		JPanel cardRelDims = CartiView.createVerticalBoxPanel(300, 150);
-		cardRelDims.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		// add button for finding rel dims
-		findRelDimsButton = new JButton("Find related dims");
-		findRelDimsButton.setActionCommand(FINDRELDIMS);
-		findRelDimsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		cardRelDims.add(findRelDimsButton);
-		cardRelDims.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		// add minSup to card
-		JPanel minSupPanel2 = createPanelWithLabel("minSup");
-		minSupFieldRelDims = new JTextField();
-		minSupFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-		minSupPanel2.add(minSupFieldRelDims);
-		cardRelDims.add(minSupPanel2);
-
-		// add numOfItemSets to card
-		JPanel numOfItemSetsPanel2 = createPanelWithLabel("numOfItemSets");
-		numOfItemSetsFieldRelDims = new JTextField("2000");
-		numOfItemSetsFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-				25));
-		numOfItemSetsPanel2.add(numOfItemSetsFieldRelDims);
-		cardRelDims.add(numOfItemSetsPanel2);
-
-		// Create the panel that contains the cards
-		cards = new JPanel(new CardLayout());
-		cards.add(cardIMM, IMMCARD);
-		cards.add(cardRMM, RMMCARD);
-		cards.add(cardRelDims, RELDIMSCARD);
-		cards.setAlignmentX(Component.CENTER_ALIGNMENT);
-		cards.setMaximumSize(new Dimension(300, 150));
-
-		minePanel.add(cards);
+		return cardRMM;
 	}
 
-	private JPanel createPanelWithLabel(String labelString) {
-		JPanel panel = CartiView.createHorizontalBoxPanel(300, 40);
-		JLabel label = new JLabel(labelString + ": ");
-		panel.add(label);
+	private JPanel createFastMinerCard() {
+		JPanel cardIMM = CartiView.createVerticalBoxPanel(300, 150);
+		cardIMM.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		panel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		return panel;
+		// add button for mining to card
+		mineIMMButton = new JButton("Mine");
+		mineIMMButton.setActionCommand(MINEIMM);
+		mineIMMButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		cardIMM.add(mineIMMButton);
+		cardIMM.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		// add minLen to card
+		JPanel minLenPanel = CartiView.createPanelWithLabel("minLen");
+		minLenField = new JTextField();
+		minLenField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+		minLenPanel.add(minLenField);
+		cardIMM.add(minLenPanel);
+		return cardIMM;
 	}
 
 	public void addButtonsListener(ActionListener buttonsListener) {
@@ -170,6 +177,7 @@ public class MineOptions {
 		mineRMMButton.addActionListener(buttonsListener);
 		mineRMMSelButton.addActionListener(buttonsListener);
 		findRelDimsButton.addActionListener(buttonsListener);
+		noiseOpts.addButtonsListener(buttonsListener);
 	}
 
 	public JPanel getPanel() {

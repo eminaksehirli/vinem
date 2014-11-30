@@ -23,10 +23,9 @@ public class NoiseOptions {
 	private JButton selMeas;
 	private JTextField minSupField;
 
-	public void init() {
+	public NoiseOptions() {
 		// the main panel
 		noisePanel = CartiView.createVerticalBoxPanel(300, 150);
-		noisePanel.setBorder(BorderFactory.createTitledBorder("Noise"));
 
 		// add allMeas/selMeas buttons
 		allMeas = new JButton("Get noise over all measures");

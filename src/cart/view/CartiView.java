@@ -53,7 +53,6 @@ public class CartiView {
 	private FilterOptions filteringOptions;
 	private MineOptions miningOptions;
 	private DistOptions distanceOptions;
-	private NoiseOptions noiseOptions;
 	private Stats selectedsStats;
 	private JDialog selectedsStatsDialog;
 	private ClusterInfo clusterInfo;
@@ -172,16 +171,8 @@ public class CartiView {
 
 		// add the mining options panel
 		miningOptions = new MineOptions();
-		miningOptions.init();
 
 		controlsPanelRight.add(miningOptions.getPanel());
-		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		// add the noise options panel
-		noiseOptions = new NoiseOptions();
-		noiseOptions.init();
-
-		controlsPanelRight.add(noiseOptions.getPanel());
 		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add left and right controls panels to main controls panel
@@ -225,7 +216,6 @@ public class CartiView {
 		clusterInfo.addButtonsListener(buttonsListener);
 		distanceOptions.addButtonsListener(buttonsListener);
 		miningOptions.addButtonsListener(buttonsListener);
-		noiseOptions.addButtonsListener(buttonsListener);
 	}
 
 	public void addSelOptionsListListener(
@@ -249,23 +239,6 @@ public class CartiView {
 
 	public void addDistOptionsBoxListener(ActionListener distOptionsBoxListener) {
 		distanceOptions.addBoxListener(distOptionsBoxListener);
-	}
-
-	// creates a slider with given minimum/maximum values
-	private JSlider createSlider(int min, int max) {
-		JSlider slider = new JSlider(min, max) {
-			@Override
-			public Point getToolTipLocation(MouseEvent event) {
-				return new Point(event.getX() + 15, event.getY());
-			}
-		};
-		slider.setValue(min);
-		// slider.setMajorTickSpacing(((max / 10) / 10) * 10);
-		slider.setMajorTickSpacing(max / 5);
-		slider.setPaintLabels(true);
-		slider.setPaintTicks(true);
-		slider.setToolTipText(Integer.toString(slider.getValue()));
-		return slider;
 	}
 
 	/**
@@ -445,7 +418,7 @@ public class CartiView {
 	}
 
 	public NoiseOptions getNoiseOptions() {
-		return noiseOptions;
+		return getMiningOptions().noiseOpts;
 	}
 
 	public boolean distOptionsListenerShouldListen() {
@@ -463,5 +436,33 @@ public class CartiView {
 		}
 		theFrame.validate();
 		theFrame.repaint();
+	}
+
+	static JPanel createPanelWithLabel(String labelString) {
+		JPanel panel = createHorizontalBoxPanel(300, 40);
+		JLabel label = new JLabel(labelString + ": ");
+		panel.add(label);
+
+		panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		return panel;
+	}
+
+	// creates a slider with given minimum/maximum values
+	private static JSlider createSlider(int min, int max) {
+		JSlider slider = new JSlider(min, max) {
+			private static final long serialVersionUID = -6440732335999151699L;
+
+			@Override
+			public Point getToolTipLocation(MouseEvent event) {
+				return new Point(event.getX() + 15, event.getY());
+			}
+		};
+		slider.setValue(min);
+		// slider.setMajorTickSpacing(((max / 10) / 10) * 10);
+		slider.setMajorTickSpacing(max / 5);
+		slider.setPaintLabels(true);
+		slider.setPaintTicks(true);
+		slider.setToolTipText(Integer.toString(slider.getValue()));
+		return slider;
 	}
 }
