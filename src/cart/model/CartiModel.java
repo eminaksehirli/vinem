@@ -1,6 +1,7 @@
 package cart.model;
 
 import static cart.maximizer.MaximalMinerCombiner.getOrd2Id;
+import static java.util.Collections.singleton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -272,11 +273,30 @@ public class CartiModel {
 	 * @return The object ids of each object with a support < minSup in the
 	 *         selected distMeasure.
 	 */
-	public List<Obj> getNoiseObjsInSelDistMeas(int minSup) {
+	public int findNoiseObjsInSelDistMeas(int minSup) {
+		return findNoiseIn(selectedDistMeasureId, minSup);
+	}
+
+	/**
+	 * @param minSup
+	 *          the minSup threshold
+	 * @return
+	 * @return The object ids of each object with a support < minSup in the
+	 *         selected distMeasure.
+	 */
+	public int findNoiseObjsInEachProj(int minSup) {
+		int total = 0;
+		for (int measureId = 0; measureId < distMeasures.size(); measureId++) {
+			total += findNoiseIn(measureId, minSup);
+		}
+		return total;
+	}
+
+	private int findNoiseIn(final int measureId, int minSup) {
 		List<Obj> noiseObjects = new ArrayList<>();
 
 		List<PlainItemDB> pDbs = cartiDb.getProjDbs();
-		PlainItemDB pDb = pDbs.get(selectedDistMeasureId);
+		PlainItemDB pDb = pDbs.get(measureId);
 
 		// loop over each item
 		for (PlainItem item : pDb) {
@@ -286,7 +306,10 @@ public class CartiModel {
 			}
 		}
 
-		return noiseObjects;
+		if (!noiseObjects.isEmpty()) {
+			addCluster(new Cluster(noiseObjects, singleton(measureId)));
+		}
+		return noiseObjects.size();
 	}
 
 	/**
@@ -295,8 +318,8 @@ public class CartiModel {
 	 * @return The object ids of each object with a support < minSup in every
 	 *         distMeasure.
 	 */
-	public List<Obj> getNoiseObjsInAllDistMeas(int minSup) {
-		Set<Integer> noiseObjects = new HashSet<Integer>();
+	public int findNoiseGlobally(int minSup) {
+		Set<Integer> noiseObjects = new HashSet<>();
 
 		// add each object to noiseObjects to remove them later
 		List<PlainItemDB> pDbs = cartiDb.getProjDbs();
@@ -315,7 +338,9 @@ public class CartiModel {
 			}
 		}
 
-		return ids2Objs(noiseObjects);
+		addCluster(new Cluster(ids2Objs(noiseObjects), new HashSet<Integer>()));
+
+		return noiseObjects.size();
 	}
 
 	/**

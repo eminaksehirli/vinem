@@ -1,5 +1,7 @@
 package cart.view;
 
+import static java.awt.Component.CENTER_ALIGNMENT;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
@@ -17,19 +19,21 @@ public class NoiseOptions {
 
 	public final static String ALLMEAS = "NoiseOptions.allMeas";
 	public final static String SELMEAS = "NoiseOptions.selMeas";
+	public final static String EACHMEAS = "NoiseOptions.eachMeas";
 
 	private JPanel noisePanel;
 	private JButton allMeas;
 	private JButton selMeas;
+	private JButton eachMeas;
 	private JTextField minSupField;
 
 	public NoiseOptions() {
 		// the main panel
-		noisePanel = CartiView.createVerticalBoxPanel(300, 150);
+		noisePanel = CartiView.createVerticalBoxPanel(350, 150);
 		// add minSup textfield
 		JPanel minSupPanel = CartiView.createHorizontalBoxPanel(300, 40);
 		minSupPanel.add(new JLabel("minSup: "));
-		minSupPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		minSupPanel.setAlignmentX(CENTER_ALIGNMENT);
 
 		minSupField = new JTextField();
 		minSupField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
@@ -41,23 +45,25 @@ public class NoiseOptions {
 		noisePanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// add allMeas/selMeas buttons
-		allMeas = new JButton("Get noise over all measures");
-		allMeas.setActionCommand(ALLMEAS);
-		allMeas.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		selMeas = new JButton("Get noise for selected measure");
+		JPanel btPane = CartiView.createVerticalBoxPanel(300, 100);
+		btPane.add(new JLabel("Find the outliers..."));
+		selMeas = new JButton("in the selected measure");
 		selMeas.setActionCommand(SELMEAS);
-		selMeas.setAlignmentX(Component.CENTER_ALIGNMENT);
+		eachMeas = new JButton("in each measure");
+		eachMeas.setActionCommand(EACHMEAS);
+		allMeas = new JButton("globally");
+		allMeas.setActionCommand(ALLMEAS);
+		btPane.add(selMeas);
+		btPane.add(eachMeas);
+		btPane.add(allMeas);
 
-		noisePanel.add(allMeas);
-		noisePanel.add(Box.createRigidArea(new Dimension(0, 5)));
-		noisePanel.add(selMeas);
-
+		noisePanel.add(btPane);
 	}
 
 	public void addButtonsListener(ActionListener buttonsListener) {
 		allMeas.addActionListener(buttonsListener);
 		selMeas.addActionListener(buttonsListener);
+		eachMeas.addActionListener(buttonsListener);
 	}
 
 	public JPanel getPanel() {

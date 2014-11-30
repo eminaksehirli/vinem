@@ -15,7 +15,6 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,6 @@ import cart.gui2.CosineDistMeasure;
 import cart.gui2.DistMeasure;
 import cart.gui2.EuclidianDistMeasure;
 import cart.model.CartiModel;
-import cart.model.Obj;
 import cart.view.CartiView;
 import cart.view.ClusterInfo;
 import cart.view.DistOptions;
@@ -511,7 +509,19 @@ public class CartiController {
 		}
 	}
 
-	public void getNoiseInSelDistMeas() {
+	public void findNoiseInSelectedMeasure() {
+		int minSup = view.getNoiseOptions().getMinSupVal();
+
+		if (minSup == -1) {
+			return;
+		}
+
+		int noiseObjs = model.findNoiseObjsInSelDistMeas(minSup);
+
+		afterFindingNoise(noiseObjs);
+	}
+
+	public void findNoiseInEachMeasure() {
 		int minSup = view.getNoiseOptions().getMinSupVal();
 
 		if (minSup == -1) {
@@ -519,12 +529,12 @@ public class CartiController {
 		}
 
 		// calculate noise objects
-		List<Obj> noiseObjs = model.getNoiseObjsInSelDistMeas(minSup);
+		int noiseObjs = model.findNoiseObjsInEachProj(minSup);
 
-		processNoiseObjs(noiseObjs);
+		afterFindingNoise(noiseObjs);
 	}
 
-	public void getNoiseInAllDistMeas() {
+	public void findNoiseGlobally() {
 		int minSup = view.getNoiseOptions().getMinSupVal();
 
 		if (minSup == -1) {
@@ -532,30 +542,25 @@ public class CartiController {
 		}
 
 		// calculate noise objects
-		List<Obj> noiseObjs = model.getNoiseObjsInAllDistMeas(minSup);
+		int noiseObjs = model.findNoiseGlobally(minSup);
 
-		processNoiseObjs(noiseObjs);
+		afterFindingNoise(noiseObjs);
 	}
 
-	private void processNoiseObjs(Collection<Obj> noiseObjs) {
-		if (noiseObjs.size() == 0) {
-			view.showInfoMessage("0 noise objects found for given minSup.",
-					"Noise result");
+	private void afterFindingNoise(int numOfNoiseObjs) {
+		if (numOfNoiseObjs == 0) {
+			view.showInfoMessage("Could not find any outliers for the given minSup.",
+					"No outliers found");
 			return;
 		}
-
-		// turn noise objects into a cluster
-		Set<Integer> dims = new HashSet<Integer>();
-		Cluster cluster = new Cluster(noiseObjs, dims);
-		model.addCluster(cluster);
 
 		// update view
 		Map<Integer, Cluster> clustersMap = model.getClustersMap();
 		Set<Integer> clustersToShow = model.getClustersToShow();
 
 		view.updateClusterInfo(clustersMap, clustersToShow);
-		view.showInfoMessage(noiseObjs.size()
-				+ " noise objects found, adding them as a cluster.", "Noise result");
+		view.showInfoMessage(numOfNoiseObjs
+				+ " outliers found, adding them as cluster(s).", "Outliers found");
 	}
 
 	public void findRelatedDims() {
@@ -601,9 +606,11 @@ public class CartiController {
 				} else if (e.getActionCommand() == MineOptions.FINDRELDIMS) {
 					findRelatedDims();
 				} else if (e.getActionCommand() == NoiseOptions.SELMEAS) {
-					getNoiseInSelDistMeas();
+					findNoiseInSelectedMeasure();
+				} else if (e.getActionCommand() == NoiseOptions.EACHMEAS) {
+					findNoiseInEachMeasure();
 				} else if (e.getActionCommand() == NoiseOptions.ALLMEAS) {
-					getNoiseInAllDistMeas();
+					findNoiseGlobally();
 				} else if (e.getActionCommand() == CartiView.CLUSTER) {
 					clusterSelected();
 				} else if (e.getActionCommand() == CartiView.SHOWDIST) {
@@ -649,7 +656,7 @@ public class CartiController {
 	}
 
 	/**
-	 * @return Listener for mouse licks in the cartiPanel figure.
+	 * @return Listener for mouse clicks in the cartiPanel figure.
 	 */
 	private MouseListener createCartiPanelListener() {
 		MouseListener listener = new MouseAdapter() {
