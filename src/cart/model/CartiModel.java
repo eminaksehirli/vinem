@@ -26,7 +26,7 @@ import mime.plain.PlainItemDB;
 import mime.plain.PlainItemSet;
 import cart.cartifier.Pair;
 import cart.gui2.Cluster;
-import cart.gui2.DistMeasure;
+import cart.gui2.Dissimilarity;
 import cart.gui2.OneDimDistMeasure;
 import cart.io.InputFile;
 import cart.maximizer.Freq;
@@ -57,7 +57,7 @@ public class CartiModel {
 	private int[][] objId2LocMaps;
 	private int[][] loc2ObjIdMaps;
 	private Stack<Memento> savedStates;
-	private List<DistMeasure> distMeasures;
+	private List<Dissimilarity> dissimilarities;
 	private int selectedDistMeasureId;
 	private ArrayList<double[]> data;
 	private int[] byObjId2LocMap;
@@ -78,7 +78,7 @@ public class CartiModel {
 		this.savedStates = new Stack<Memento>();
 		this.clustersMap = new TreeMap<Integer, Cluster>();
 		this.clustersToShow = new HashSet<Integer>();
-		this.distMeasures = new ArrayList<DistMeasure>();
+		this.dissimilarities = new ArrayList<Dissimilarity>();
 		this.selectedDistMeasureId = 0;
 
 		maximer = new ItemsetMaximalMiner(inputFile);
@@ -120,7 +120,7 @@ public class CartiModel {
 			dims.add(i);
 			Set<Integer> dimToAdd = new HashSet<Integer>();
 			dimToAdd.add(i);
-			distMeasures.add(new OneDimDistMeasure(dimToAdd));
+			dissimilarities.add(new OneDimDistMeasure(dimToAdd));
 		}
 		dims = Collections.unmodifiableSet(dims);
 
@@ -153,11 +153,11 @@ public class CartiModel {
 	}
 
 	private void updateCartiDb() {
-		cartiDb = new MyCartifyDbInMemory(data, k, distMeasures);
+		cartiDb = new MyCartifyDbInMemory(data, k, dissimilarities);
 		cartiDb.cartify();
 	}
 
-	private void addDistMeasureToCartiDb(DistMeasure measure) {
+	private void addDistMeasureToCartiDb(Dissimilarity measure) {
 		cartiDb.addDistMeasure(measure);
 	}
 
@@ -234,12 +234,12 @@ public class CartiModel {
 		return orderedObjs;
 	}
 
-	public List<DistMeasure> getDistMeasures() {
-		return distMeasures;
+	public List<Dissimilarity> getDistMeasures() {
+		return dissimilarities;
 	}
 
-	public DistMeasure getSelectedDistMeasure() {
-		return distMeasures.get(selectedDistMeasureId);
+	public Dissimilarity getSelectedDistMeasure() {
+		return dissimilarities.get(selectedDistMeasureId);
 	}
 
 	/**
@@ -286,7 +286,7 @@ public class CartiModel {
 	 */
 	public int findNoiseObjsInEachProj(int minSup) {
 		int total = 0;
-		for (int measureId = 0; measureId < distMeasures.size(); measureId++) {
+		for (int measureId = 0; measureId < dissimilarities.size(); measureId++) {
 			total += findNoiseIn(measureId, minSup);
 		}
 		return total;
@@ -796,7 +796,7 @@ public class CartiModel {
 	public void setOrderByObj(int objIx) {
 		int objId = loc2ObjId()[objIx];
 		System.out.println("Order by object " + objId);
-		DistMeasure dm = getSelectedDistMeasure();
+		Dissimilarity dm = getSelectedDistMeasure();
 		MyCartifierInMemory cartifier = new MyCartifierInMemory(data);
 		Pair[] carts = cartifier.cartOf(objId, dm);
 
@@ -814,9 +814,9 @@ public class CartiModel {
 		this.selectedDistMeasureId = selectedDistMeasureId;
 	}
 
-	public void addDistMeasure(DistMeasure distMeasure) {
-		distMeasures.add(distMeasure);
-		addDistMeasureToCartiDb(distMeasure);
+	public void addDistMeasure(Dissimilarity dissimilarity) {
+		dissimilarities.add(dissimilarity);
+		addDistMeasureToCartiDb(dissimilarity);
 	}
 
 	private int[] objId2Loc(int dimId) {
@@ -882,8 +882,7 @@ public class CartiModel {
 
 		// turn result into clusters and add to model
 		for (Freq freq : result) {
-			Cluster cluster = new Cluster(arr2Set(freq.freqSet),
-					new HashSet<Integer>(freq.freqDims));
+			Cluster cluster = new Cluster(arr2ObjSet(freq.freqSet), freq.freqDims);
 
 			addCluster(cluster);
 		}
@@ -907,8 +906,8 @@ public class CartiModel {
 		Set<PlainItemSet> result = new HashSet<>(rawResult);
 
 		// dims for which the cluster was made
-		DistMeasure measure = getSelectedDistMeasure();
-		Set<Integer> dims = measure.getDims();
+		Dissimilarity measure = getSelectedDistMeasure();
+		int[] measureDims = measure.getDims();
 
 		// turn result into clusters and add to model
 		for (PlainItemSet itemSet : result) {
@@ -917,7 +916,7 @@ public class CartiModel {
 				objs.add(getObj(item.getId()));
 			}
 
-			addCluster(new Cluster(objs, dims));
+			addCluster(new Cluster(objs, measureDims));
 		}
 
 		return result.size();
@@ -943,7 +942,7 @@ public class CartiModel {
 		return selectedItems;
 	}
 
-	private Set<Obj> arr2Set(final int[] arr) {
+	private Set<Obj> arr2ObjSet(final int[] arr) {
 		Set<Obj> s = new HashSet<>(arr.length);
 		for (int i : arr) {
 			s.add(getObj(i));

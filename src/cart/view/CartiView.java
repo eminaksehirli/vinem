@@ -34,6 +34,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 
 import cart.gui2.Cluster;
+import cart.gui2.Dissimilarity;
 import cart.model.Obj;
 
 public class CartiView {
@@ -74,7 +75,7 @@ public class CartiView {
 	}
 
 	public void init(List<Obj> orderedObjs, Set<Integer> dims, int maxK,
-			int[][] matrixToShow, List<String> distMeasures) {
+			int[][] matrixToShow, List<Dissimilarity> distMeasures) {
 		// visualPanel contains the visual representation
 		JPanel visualPanel = createVerticalBoxPanel(700, 700);
 		// controlsPanel contains the buttons/sliders/...
@@ -163,8 +164,7 @@ public class CartiView {
 
 		// CONTROLS PANEL RIGHT
 		// add the distance measure options panel
-		distanceOptions = new DistOptions();
-		distanceOptions.init(dims, distMeasures);
+		distanceOptions = new DistOptions(dims, distMeasures);
 
 		controlsPanelRight.add(distanceOptions.getPanel());
 		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 10)));

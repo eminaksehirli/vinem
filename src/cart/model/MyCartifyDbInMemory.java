@@ -13,14 +13,14 @@ import java.util.concurrent.TimeUnit;
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
 import cart.cartifier.CartifierInMemory;
-import cart.gui2.DistMeasure;
+import cart.gui2.Dissimilarity;
 import cart.gui2.OneDimDistMeasure;
 
 public class MyCartifyDbInMemory {
 
 	private int k;
 
-	private List<DistMeasure> distMeasures;
+	private List<Dissimilarity> dissimilarities;
 	private List<double[]> originalDatabase;
 
 	private List<PlainItemDB> projectedDbs;
@@ -29,10 +29,10 @@ public class MyCartifyDbInMemory {
 	private PrintWriter log;
 
 	public MyCartifyDbInMemory(List<double[]> data, int k,
-			List<DistMeasure> distMeasures) {
+			List<Dissimilarity> dissimilarities) {
 		originalDatabase = data;
 		this.k = k;
-		this.distMeasures = new ArrayList<DistMeasure>(distMeasures);
+		this.dissimilarities = new ArrayList<Dissimilarity>(dissimilarities);
 		try {
 			log = new PrintWriter(File.createTempFile("cartify-log-", ".txt"));
 		} catch (IOException e) {
@@ -49,12 +49,12 @@ public class MyCartifyDbInMemory {
 		}
 	}
 
-	public void addDistMeasure(DistMeasure measure) {
-		distMeasures.add(measure);
+	public void addDistMeasure(Dissimilarity measure) {
+		dissimilarities.add(measure);
 		projectedDbs.add(null); // space to be set
 
 		ExecutorService executor = Executors.newFixedThreadPool(4);
-		executor.execute(new RunnableImplementation(distMeasures.size() - 1));
+		executor.execute(new RunnableImplementation(dissimilarities.size() - 1));
 		try {
 			executor.shutdown();
 			executor.awaitTermination(1000, TimeUnit.MINUTES);
@@ -65,19 +65,19 @@ public class MyCartifyDbInMemory {
 	}
 
 	private final class RunnableImplementation implements Runnable {
-		private DistMeasure distMeasure;
+		private Dissimilarity dissimilarity;
 		private int distMeasureIx;
 
 		private RunnableImplementation(int distMeasureIx) {
 			this.distMeasureIx = distMeasureIx;
-			this.distMeasure = distMeasures.get(distMeasureIx);
+			this.dissimilarity = dissimilarities.get(distMeasureIx);
 		}
 
 		@Override
 		public void run() {
 			log("Creating cart for distMeasure #" + distMeasureIx);
 
-			if (distMeasure.getClass().equals(OneDimDistMeasure.class)) {
+			if (dissimilarity.getClass().equals(OneDimDistMeasure.class)) {
 				// use carti-bander Cartifier for 1-dimensional dist measures
 				CartifierInMemory cartifier = new CartifierInMemory(originalDatabase);
 				int[] dimension = { distMeasureIx };
@@ -87,7 +87,7 @@ public class MyCartifyDbInMemory {
 				// use MyCartifier for other dist measures
 				MyCartifierInMemory cartifier = new MyCartifierInMemory(
 						originalDatabase);
-				cartifier.cartifyNumeric(distMeasure, k);
+				cartifier.cartifyNumeric(dissimilarity, k);
 				projectedDbs.set(distMeasureIx, cartifier.itemDb);
 			}
 		}
@@ -99,15 +99,15 @@ public class MyCartifyDbInMemory {
 	}
 
 	private void createCarts() {
-		projectedDbs = new ArrayList<PlainItemDB>(distMeasures.size());
+		projectedDbs = new ArrayList<PlainItemDB>(dissimilarities.size());
 		// make space for the projectedDbs to be set
-		while (projectedDbs.size() < distMeasures.size()) {
+		while (projectedDbs.size() < dissimilarities.size()) {
 			projectedDbs.add(null);
 		}
 
 		ExecutorService executor = Executors.newFixedThreadPool(4);
 
-		for (int i = 0; i < distMeasures.size(); i++) {
+		for (int i = 0; i < dissimilarities.size(); i++) {
 			executor.execute(new RunnableImplementation(i));
 		}
 

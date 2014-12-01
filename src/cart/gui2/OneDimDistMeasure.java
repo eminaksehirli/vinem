@@ -2,7 +2,7 @@ package cart.gui2;
 
 import java.util.Set;
 
-public class OneDimDistMeasure extends DistMeasure {
+public class OneDimDistMeasure extends Dissimilarity {
 
 	public OneDimDistMeasure(Set<Integer> dims) {
 		super(dims);
@@ -13,7 +13,7 @@ public class OneDimDistMeasure extends DistMeasure {
 	}
 
 	@Override
-	public double calculateDistance(double[] object1, double[] object2) {
+	public double between(double[] object1, double[] object2) {
 		double distance = 0;
 
 		for (int d : dims) {
@@ -24,8 +24,8 @@ public class OneDimDistMeasure extends DistMeasure {
 	}
 
 	@Override
-	public String toString() {
-		return "1 dimensional: " + dims;
+	public String getName() {
+		return "1 dimensional";
 	}
 
 }

@@ -14,7 +14,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +29,9 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import cart.gui2.Cluster;
-import cart.gui2.CosineDistMeasure;
-import cart.gui2.DistMeasure;
-import cart.gui2.EuclidianDistMeasure;
+import cart.gui2.CosineDistance;
+import cart.gui2.Dissimilarity;
+import cart.gui2.EuclidianDistance;
 import cart.model.CartiModel;
 import cart.view.CartiView;
 import cart.view.ClusterInfo;
@@ -61,15 +60,10 @@ public class CartiController {
 		int maxK = model.getNumObjects();
 		Set<Integer> dims = model.getDims();
 		int[][] matrixToShow = model.getMatrixToShow();
-		List<DistMeasure> distMeasures = model.getDistMeasures();
-		List<String> distMeasuresStringList = new ArrayList<String>();
-
-		for (DistMeasure distMeasure : distMeasures) {
-			distMeasuresStringList.add(distMeasure.toString());
-		}
+		List<Dissimilarity> dissimilarities = model.getDistMeasures();
 
 		view.init(model.getOrderedObjList(), dims, maxK, matrixToShow,
-				distMeasuresStringList);
+				dissimilarities);
 		view.addButtonsListener(createButtonsListener());
 		view.addSelOptionsListListener(createSelOptionsListListener());
 		view.addCartiPanelListener(createCartiPanelListener());
@@ -474,20 +468,20 @@ public class CartiController {
 	public void addDistMeasure() {
 		boolean isEucl = view.getDistanceOptions().distModeIsEuclidian();
 		boolean isCos = view.getDistanceOptions().distModeIsCosine();
-		Set<Integer> dims = view.getDistanceOptions().getSelectedDims();
+		List<Integer> dims = view.getDistanceOptions().getSelectedDims();
 
-		DistMeasure distMeasure;
+		Dissimilarity dissimilarity;
 		if (isEucl) {
-			distMeasure = new EuclidianDistMeasure(dims);
+			dissimilarity = new EuclidianDistance(dims);
 		} else if (isCos) {
-			distMeasure = new CosineDistMeasure(dims);
+			dissimilarity = new CosineDistance(dims);
 		} else {
 			return;
 		}
 
-		model.addDistMeasure(distMeasure);
+		model.addDistMeasure(dissimilarity);
 
-		view.addDistMeasure(distMeasure.toString());
+		view.addDistMeasure(dissimilarity.toString());
 	}
 
 	public void selectDistMeasure() {

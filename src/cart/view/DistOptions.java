@@ -3,7 +3,6 @@ package cart.view;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 
+import cart.gui2.Dissimilarity;
+
 public class DistOptions {
 
 	public final static String ADD = "DistOptions.Add";
@@ -31,7 +32,7 @@ public class DistOptions {
 	private JComboBox<String> cBox;
 	private DefaultComboBoxModel<String> cBoxModel;
 
-	public void init(Set<Integer> dimList, List<String> distMeasures) {
+	public DistOptions(Set<Integer> dimList, List<Dissimilarity> distMeasures) {
 		// the main panel
 		distPanel = CartiView.createVerticalBoxPanel(300, 240);
 		distPanel.setBorder(BorderFactory.createTitledBorder("Distance measures"));
@@ -53,7 +54,7 @@ public class DistOptions {
 
 		// list of dimensions
 		DefaultListModel<Integer> listModel = new DefaultListModel<Integer>();
-		for (int dim : dimList) {
+		for (Integer dim : dimList) {
 			listModel.addElement(dim);
 		}
 		list = new JList<Integer>(listModel);
@@ -73,8 +74,8 @@ public class DistOptions {
 
 		// add measure combo box
 		cBoxModel = new DefaultComboBoxModel<String>();
-		for (String distMeasure : distMeasures) {
-			cBoxModel.addElement(distMeasure);
+		for (Dissimilarity distMeasure : distMeasures) {
+			cBoxModel.addElement(distMeasure.toString());
 		}
 		cBox = new JComboBox<String>(cBoxModel);
 		cBox.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -104,10 +105,8 @@ public class DistOptions {
 	 * @return Set containing the dimensions which were selected by the user (by
 	 *         clicking on them in the list)
 	 */
-	public Set<Integer> getSelectedDims() {
-		Set<Integer> dims = new HashSet<Integer>(list.getSelectedValuesList());
-
-		return dims;
+	public List<Integer> getSelectedDims() {
+		return list.getSelectedValuesList();
 	}
 
 	public boolean distModeIsEuclidian() {

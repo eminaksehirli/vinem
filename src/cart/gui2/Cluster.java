@@ -1,7 +1,9 @@
 package cart.gui2;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import cart.model.Obj;
@@ -9,16 +11,24 @@ import cart.model.Obj;
 public class Cluster {
 
 	private Set<Obj> objects;
-	private Set<Integer> dims;
+	private List<Integer> dims;
 
-	public Cluster(Collection<Obj> objects, Set<Integer> dims) {
+	public Cluster(Collection<Obj> objects, Collection<Integer> dims) {
 		this.objects = new HashSet<>(objects);
-		this.dims = new HashSet<>(dims);
+		this.dims = new ArrayList<>(dims);
+	}
+
+	public Cluster(List<Obj> objects, int[] dims2) {
+		this.objects = new HashSet<>(objects);
+		dims = new ArrayList<>(dims2.length);
+		for (int i = 0; i < dims2.length; i++) {
+			dims.add(i);
+		}
 	}
 
 	public Cluster(Cluster cluster) {
 		this.objects = new HashSet<>(cluster.getObjects());
-		this.dims = new HashSet<>(cluster.getDims());
+		this.dims = new ArrayList<>(cluster.getDims());
 	}
 
 	public void addObjects(Collection<Obj> toAdd) {
@@ -33,7 +43,7 @@ public class Cluster {
 		return objects;
 	}
 
-	public Set<Integer> getDims() {
+	public List<Integer> getDims() {
 		return dims;
 	}
 }
