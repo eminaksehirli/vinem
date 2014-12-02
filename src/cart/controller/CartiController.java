@@ -42,7 +42,8 @@ import cart.view.NoiseOptions;
 import cart.view.SelOptions;
 
 /**
- * @author Detlev, Aksehirli
+ * @author Detlev
+ * @author Aksehirli
  * 
  */
 public class CartiController {
@@ -63,12 +64,12 @@ public class CartiController {
 		List<Dissimilarity> dissimilarities = model.getDistMeasures();
 
 		view.init(model.getOrderedObjList(), dims, maxK, matrixToShow,
-				dissimilarities);
+				dissimilarities, model.getMaxEps());
 		view.addButtonsListener(createButtonsListener());
 		view.addSelOptionsListListener(createSelOptionsListListener());
 		view.addCartiPanelListener(createCartiPanelListener());
 		view.addClusterTableModelListener(createClusterTableModelListener());
-		view.addSliderListener(createSliderListener());
+		addSliderListeners();
 		view.addDistOptionsBoxListener(createDistOptionsBoxListener());
 
 		view.getFrame().pack();
@@ -109,16 +110,26 @@ public class CartiController {
 		int k = view.getKSliderVal();
 		model.setK(k);
 
-		int[][] matrixToShow = model.getMatrixToShow();
+		afterCartDbChange();
+	}
+
+	public void epsSliderChanged() {
+		double eps = view.getEpsSliderVal();
+		model.setEps(eps);
+
+		afterCartDbChange();
+	}
+
+	protected void afterCartDbChange() {
 		Set<Integer> selecteds = model.getSelecteds();
 		int[] dimSupports = model.getSupports(selecteds);
 		double[] standardDevs = model.getStandardDeviations(selecteds);
 		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
 
-		view.updateFigure(matrixToShow);
+		view.updateFigure(model.getMatrixToShow());
 		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
 				medAbsDevs);
-		view.getMiningOptions().setMinSupVal((int) (k * 0.75));
+		view.getMiningOptions().setMinSupVal(model.getDefaultMinSup());
 		updateDistribution(true);
 	}
 
@@ -568,13 +579,33 @@ public class CartiController {
 		view.showRelatedDims(relatedDimsMatrix);
 	}
 
+	private void addSliderListeners() {
+		view.getKSlider().addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				kSliderChanged();
+			}
+		});
+		view.getEpsSlider().addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				epsSliderChanged();
+			}
+		});
+		view.getOrderSlider().addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				orderSliderChanged();
+			}
+		});
+	}
+
 	// LISTENERS
 	/**
 	 * @return Listener to listen to all buttons in the view.
 	 */
 	private ActionListener createButtonsListener() {
 		ActionListener listener = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand() == SelOptions.CLEAR) {
@@ -621,11 +652,20 @@ public class CartiController {
 					selectClusters();
 				} else if (e.getActionCommand() == ClusterInfo.SAVECLUSTERS) {
 					saveClusters();
+				} else if (e.getActionCommand() == CartiView.CARTIFIER_CHANGE) {
+					changeCartifier();
 				}
 			}
 		};
 
 		return listener;
+	}
+
+	private void changeCartifier() {
+		Neighborhood neigh = view.selectedNeighborhood();
+		model.switchCartifier(neigh);
+
+		afterCartDbChange();
 	}
 
 	protected void updateDistribution(boolean reset) {
@@ -753,7 +793,6 @@ public class CartiController {
 
 				// slider has stopped moving
 				if (!slider.getValueIsAdjusting()) {
-					slider.setToolTipText(Integer.toString(slider.getValue()));
 					if (slider == view.getKSlider()) {
 						kSliderChanged();
 					} else if (slider == view.getOrderSlider()) {

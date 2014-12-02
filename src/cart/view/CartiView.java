@@ -1,9 +1,11 @@
 package cart.view;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -17,6 +19,7 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -34,6 +37,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 
 import cart.cartifier.Dissimilarity;
+import cart.controller.Neighborhood;
 import cart.gui2.Cluster;
 import cart.model.Obj;
 
@@ -41,6 +45,7 @@ public class CartiView {
 
 	public final static String CLUSTER = "CartiView.Cluster";
 	public final static String SHOWDIST = "CartiView.ShowDist";
+	public static final String CARTIFIER_CHANGE = "CartiView.CartifierChange";
 
 	private JFrame theFrame;
 	private JDialog controlsDialog;
@@ -48,6 +53,7 @@ public class CartiView {
 	private JSlider orderSlider;
 	private JCheckBox syncOrderSlider;
 	private JSlider kSlider;
+	private JSlider epsSlider;
 	private JButton clusterButton;
 	private CartiPanel cartiPanel;
 	private SelOptions selectionOptions;
@@ -59,6 +65,9 @@ public class CartiView {
 	private ClusterInfo clusterInfo;
 	private JDialog clusterInfoDialog;
 	private JToggleButton showDistButton;
+	private JToggleButton knnButton;
+	private JToggleButton radiusButton;
+	private JPanel sliderCards;
 
 	// prevents the selection options list listener from listening while updating
 	private boolean selOptionsListenerShouldListen;
@@ -75,7 +84,7 @@ public class CartiView {
 	}
 
 	public void init(List<Obj> orderedObjs, Set<Integer> dims, int maxK,
-			int[][] matrixToShow, List<Dissimilarity> distMeasures) {
+			int[][] matrixToShow, List<Dissimilarity> distMeasures, int maxEps) {
 		// visualPanel contains the visual representation
 		JPanel visualPanel = createVerticalBoxPanel(700, 700);
 		// controlsPanel contains the buttons/sliders/...
@@ -120,23 +129,37 @@ public class CartiView {
 		controlsPanelLeft.add(midButtons);
 		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 
-		// add slider for k
-		JLabel kSliderLabel = new JLabel("k");
-		kSliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		controlsPanelLeft.add(kSliderLabel);
-		kSlider = createSlider(1, maxK);
-		kSlider.addMouseWheelListener(new MouseWheelListener() {
-
+		JPanel sliderPane = createVerticalBoxPanel(300, 150);
+		JPanel sliderSelectors = new JPanel();
+		ButtonGroup bg = new ButtonGroup();
+		knnButton = new JToggleButton("kNN", null, true);
+		radiusButton = new JToggleButton("radius", null, false);
+		knnButton.setActionCommand(CARTIFIER_CHANGE);
+		radiusButton.setActionCommand(CARTIFIER_CHANGE);
+		bg.add(knnButton);
+		bg.add(radiusButton);
+		sliderSelectors.add(knnButton);
+		sliderSelectors.add(radiusButton);
+		sliderPane.add(sliderSelectors);
+		final ActionListener l = new ActionListener() {
 			@Override
-			public void mouseWheelMoved(MouseWheelEvent e) {
-				int change = -e.getWheelRotation();
-				final JSlider s = JSlider.class.cast(e.getSource());
-				s.setValue(s.getValue() + change);
+			public void actionPerformed(ActionEvent e) {
+				changeCartifier();
 			}
+		};
+		knnButton.addActionListener(l);
+		radiusButton.addActionListener(l);
 
-		});
-		controlsPanelLeft.add(kSlider);
-		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 20)));
+		sliderCards = new JPanel(new CardLayout());
+		JPanel knnCard = createKNNCard(maxK);
+		JPanel radiusCard = createRadiusCard(maxEps);
+
+		sliderCards.add(knnCard, Neighborhood.KNN.name);
+		sliderCards.add(radiusCard, Neighborhood.Radius.name);
+
+		sliderPane.add(sliderCards);
+		// controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 20)));
+		controlsPanelLeft.add(sliderPane);
 
 		// add slider for order_1
 		JLabel order_1SliderLabel = new JLabel("order");
@@ -144,16 +167,6 @@ public class CartiView {
 		controlsPanelLeft.add(order_1SliderLabel);
 		orderSlider = createSlider(0, dims.size() - 1);
 		orderSlider.setMinorTickSpacing(1);
-		orderSlider.addMouseWheelListener(new MouseWheelListener() {
-
-			@Override
-			public void mouseWheelMoved(MouseWheelEvent e) {
-				int change = -e.getWheelRotation();
-				final JSlider s = JSlider.class.cast(e.getSource());
-				s.setValue(s.getValue() + change);
-			}
-
-		});
 		controlsPanelLeft.add(orderSlider);
 
 		// add checkbox for syncing order_1 with distanceOptions
@@ -208,6 +221,42 @@ public class CartiView {
 		distOptionsListenerShouldListen = true;
 	}
 
+	protected void changeCartifier() {
+		Neighborhood cardToShow = selectedNeighborhood();
+		System.out.println("KNN selected");
+		System.out.println("Radius selected!");
+		CardLayout cl = (CardLayout) (sliderCards.getLayout());
+		cl.show(sliderCards, cardToShow.name);
+	}
+
+	public Neighborhood selectedNeighborhood() {
+		if (knnButton.isSelected()) {
+			return Neighborhood.KNN;
+		} else {
+			return Neighborhood.Radius;
+		}
+	}
+
+	protected JPanel createKNNCard(int maxK) {
+		JPanel knnCard = createVerticalBoxPanel(300, 100);
+		JLabel kSliderLabel = new JLabel("k");
+		kSliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		knnCard.add(kSliderLabel);
+		kSlider = createSlider(1, maxK);
+		knnCard.add(kSlider);
+		return knnCard;
+	}
+
+	protected JPanel createRadiusCard(int maxEps) {
+		JPanel knnCard = createVerticalBoxPanel(300, 100);
+		JLabel label = new JLabel("eps");
+		label.setAlignmentX(Component.CENTER_ALIGNMENT);
+		knnCard.add(label);
+		epsSlider = createSlider(1, maxEps);
+		knnCard.add(epsSlider);
+		return knnCard;
+	}
+
 	public void addButtonsListener(ActionListener buttonsListener) {
 		clusterButton.addActionListener(buttonsListener);
 		showDistButton.addActionListener(buttonsListener);
@@ -216,6 +265,8 @@ public class CartiView {
 		clusterInfo.addButtonsListener(buttonsListener);
 		distanceOptions.addButtonsListener(buttonsListener);
 		miningOptions.addButtonsListener(buttonsListener);
+		knnButton.addActionListener(buttonsListener);
+		radiusButton.addActionListener(buttonsListener);
 	}
 
 	public void addSelOptionsListListener(
@@ -230,11 +281,6 @@ public class CartiView {
 	public void addClusterTableModelListener(
 			TableModelListener clusterTableModelListener) {
 		clusterInfo.addTableModelListener(clusterTableModelListener);
-	}
-
-	public void addSliderListener(ChangeListener sliderListener) {
-		kSlider.addChangeListener(sliderListener);
-		orderSlider.addChangeListener(sliderListener);
 	}
 
 	public void addDistOptionsBoxListener(ActionListener distOptionsBoxListener) {
@@ -377,6 +423,10 @@ public class CartiView {
 		return kSlider.getValue();
 	}
 
+	public int getEpsSliderVal() {
+		return epsSlider.getValue();
+	}
+
 	public ClusterInfo getClusterInfo() {
 		return clusterInfo;
 	}
@@ -399,6 +449,10 @@ public class CartiView {
 
 	public JSlider getKSlider() {
 		return kSlider;
+	}
+
+	public JSlider getEpsSlider() {
+		return epsSlider;
 	}
 
 	public JSlider getOrderSlider() {
@@ -447,6 +501,15 @@ public class CartiView {
 		return panel;
 	}
 
+	private final static class SliderWheelListener implements MouseWheelListener {
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent e) {
+			int change = -e.getWheelRotation();
+			final JSlider s = JSlider.class.cast(e.getSource());
+			s.setValue(s.getValue() + change);
+		}
+	}
+
 	// creates a slider with given minimum/maximum values
 	private static JSlider createSlider(int min, int max) {
 		JSlider slider = new JSlider(min, max) {
@@ -463,6 +526,18 @@ public class CartiView {
 		slider.setPaintLabels(true);
 		slider.setPaintTicks(true);
 		slider.setToolTipText(Integer.toString(slider.getValue()));
+		slider.addMouseWheelListener(new SliderWheelListener());
+		final ChangeListener toolTipSetter = new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider slider = (JSlider) e.getSource();
+				if (!slider.getValueIsAdjusting()) {
+					slider.setToolTipText(Integer.toString(slider.getValue()));
+				}
+			}
+		};
+		slider.addChangeListener(toolTipSetter);
+
 		return slider;
 	}
 }

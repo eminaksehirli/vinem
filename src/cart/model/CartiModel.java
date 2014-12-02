@@ -24,10 +24,13 @@ import java.util.TreeSet;
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
 import mime.plain.PlainItemSet;
+import cart.cartifier.CartifyDb;
 import cart.cartifier.CartifyKNNDb;
+import cart.cartifier.CartifyRadiusDb;
 import cart.cartifier.Dissimilarity;
 import cart.cartifier.OneDimDissimilarity;
 import cart.cartifier.Pair;
+import cart.controller.Neighborhood;
 import cart.gui2.Cluster;
 import cart.io.InputFile;
 import cart.maximizer.Freq;
@@ -51,7 +54,7 @@ public class CartiModel {
 	private int clusterIdCount;
 	private Set<Integer> dims;
 	private Pair[][] origData;
-	private CartifyKNNDb cartiDb;
+	private CartifyDb cartiDb;
 	private Set<Integer> filtereds;
 	private Set<Integer> selecteds;
 	private Map<Integer, Cluster> clustersMap;
@@ -69,6 +72,9 @@ public class CartiModel {
 	public String[] columnNames;
 	public String[] rowNames;
 	private Obj[] objects;
+	private Neighborhood neighborhood = Neighborhood.KNN;
+	private double eps;
+	private double maxEps = -1;
 
 	public CartiModel(InputFile inputFile) {
 		this.inputFile = inputFile;
@@ -153,8 +159,19 @@ public class CartiModel {
 	}
 
 	private void updateCartiDb() {
-		cartiDb = new CartifyKNNDb(inputFile, dissimilarities, k);
+		cartiDb = newCartiDb();
 		cartiDb.cartify();
+	}
+
+	private CartifyDb newCartiDb() {
+		switch (neighborhood) {
+		case KNN:
+			return new CartifyKNNDb(inputFile, dissimilarities, k);
+		case Radius:
+			return new CartifyRadiusDb(inputFile, dissimilarities, eps);
+		default:
+			return cartiDb;
+		}
 	}
 
 	private void addDistMeasureToCartiDb(Dissimilarity measure) {
@@ -784,6 +801,11 @@ public class CartiModel {
 		updateCartiDb();
 	}
 
+	public void setEps(double eps) {
+		this.eps = eps;
+		updateCartiDb();
+	}
+
 	public int getK() {
 		return k;
 	}
@@ -1006,5 +1028,29 @@ public class CartiModel {
 				return sb.toString();
 			sb.append(' ');
 		}
+	}
+
+	public void switchCartifier(Neighborhood neigh) {
+		this.neighborhood = neigh;
+		updateCartiDb();
+	}
+
+	public int getDefaultMinSup() {
+		return (int) (k * 0.75);
+	}
+
+	public int getMaxEps() {
+		if (maxEps < 0) {
+			double max = -1;
+			for (double[] row : data) {
+				for (double cell : row) {
+					if (cell > max) {
+						max = cell;
+					}
+				}
+			}
+			maxEps = max;
+		}
+		return (int) maxEps;
 	}
 }
