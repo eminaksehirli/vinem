@@ -28,10 +28,10 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import cart.cartifier.CosineDistance;
+import cart.cartifier.Dissimilarity;
+import cart.cartifier.EuclidianDistance;
 import cart.gui2.Cluster;
-import cart.gui2.CosineDistance;
-import cart.gui2.Dissimilarity;
-import cart.gui2.EuclidianDistance;
 import cart.model.CartiModel;
 import cart.view.CartiView;
 import cart.view.ClusterInfo;

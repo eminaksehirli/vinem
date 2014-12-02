@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 
-import cart.gui2.Dissimilarity;
+import cart.cartifier.Dissimilarity;
 
 public class DistOptions {
 

@@ -24,10 +24,11 @@ import java.util.TreeSet;
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
 import mime.plain.PlainItemSet;
+import cart.cartifier.CartifyKNNDb;
+import cart.cartifier.Dissimilarity;
+import cart.cartifier.OneDimDissimilarity;
 import cart.cartifier.Pair;
 import cart.gui2.Cluster;
-import cart.gui2.Dissimilarity;
-import cart.gui2.OneDimDistMeasure;
 import cart.io.InputFile;
 import cart.maximizer.Freq;
 import cart.maximizer.ItemsetMaximalMiner;
@@ -37,7 +38,8 @@ import cart.maximizer.OneDCartifier;
 /**
  * The main model class.
  * 
- * @author Detlev, Aksehirli
+ * @author Detlev
+ * @author Aksehirli
  * 
  */
 
@@ -49,7 +51,7 @@ public class CartiModel {
 	private int clusterIdCount;
 	private Set<Integer> dims;
 	private Pair[][] origData;
-	private MyCartifyDbInMemory cartiDb;
+	private CartifyKNNDb cartiDb;
 	private Set<Integer> filtereds;
 	private Set<Integer> selecteds;
 	private Map<Integer, Cluster> clustersMap;
@@ -118,9 +120,7 @@ public class CartiModel {
 		dims = new TreeSet<Integer>();
 		for (int i = 0; i < numDims; i++) {
 			dims.add(i);
-			Set<Integer> dimToAdd = new HashSet<Integer>();
-			dimToAdd.add(i);
-			dissimilarities.add(new OneDimDistMeasure(dimToAdd));
+			dissimilarities.add(new OneDimDissimilarity(i));
 		}
 		dims = Collections.unmodifiableSet(dims);
 
@@ -153,12 +153,12 @@ public class CartiModel {
 	}
 
 	private void updateCartiDb() {
-		cartiDb = new MyCartifyDbInMemory(data, k, dissimilarities);
+		cartiDb = new CartifyKNNDb(inputFile, dissimilarities, k);
 		cartiDb.cartify();
 	}
 
 	private void addDistMeasureToCartiDb(Dissimilarity measure) {
-		cartiDb.addDistMeasure(measure);
+		cartiDb.addMeasure(measure);
 	}
 
 	/**
@@ -187,8 +187,8 @@ public class CartiModel {
 		int[][] matrixToShow = new int[numObjects - filtereds.size()][numObjects
 				- filtereds.size()];
 
-		List<PlainItemDB> pDbs = cartiDb.getProjDbs();
-		PlainItemDB pDb = pDbs.get(selectedDistMeasureId);
+		PlainItemDB[] pDbs = cartiDb.getProjDbs();
+		PlainItemDB pDb = pDbs[selectedDistMeasureId];
 
 		// loop over each item
 		for (PlainItem item : pDb) {
@@ -246,7 +246,7 @@ public class CartiModel {
 	 * @return The projection db for the selected dist measure.
 	 */
 	public PlainItemDB getSelectedProjDb() {
-		return cartiDb.getProjDbs().get(selectedDistMeasureId);
+		return cartiDb.getProjDbs()[selectedDistMeasureId];
 	}
 
 	/**
@@ -254,7 +254,7 @@ public class CartiModel {
 	 *         for the selected dist measure.
 	 */
 	public PlainItemDB getSelectedProjDbOnlySelected() {
-		PlainItemDB db = cartiDb.getProjDbs().get(selectedDistMeasureId);
+		PlainItemDB db = getSelectedProjDb();
 
 		PlainItemDB onlySelected = new PlainItemDB();
 
@@ -295,8 +295,7 @@ public class CartiModel {
 	private int findNoiseIn(final int measureId, int minSup) {
 		List<Obj> noiseObjects = new ArrayList<>();
 
-		List<PlainItemDB> pDbs = cartiDb.getProjDbs();
-		PlainItemDB pDb = pDbs.get(measureId);
+		PlainItemDB pDb = getSelectedProjDb();
 
 		// loop over each item
 		for (PlainItem item : pDb) {
@@ -322,8 +321,8 @@ public class CartiModel {
 		Set<Integer> noiseObjects = new HashSet<>();
 
 		// add each object to noiseObjects to remove them later
-		List<PlainItemDB> pDbs = cartiDb.getProjDbs();
-		for (PlainItem item : pDbs.get(0)) {
+		PlainItemDB[] pDbs = cartiDb.getProjDbs();
+		for (PlainItem item : pDbs[0]) {
 			if (!filtereds.contains(item.getId())) {
 				noiseObjects.add(item.getId());
 			}
@@ -360,16 +359,16 @@ public class CartiModel {
 			return new int[0];
 		}
 
-		List<PlainItemDB> dbs = cartiDb.getProjDbs();
-		int[] dimSupports = new int[dbs.size()];
+		PlainItemDB[] dbs = cartiDb.getProjDbs();
+		int[] dimSupports = new int[dbs.length];
 
-		for (int dimIx = 0; dimIx < dbs.size(); dimIx++) {
+		for (int dimIx = 0; dimIx < dbs.length; dimIx++) {
 			Iterator<Integer> it = objIds.iterator();
 			Integer obj = it.next();
-			BitSet tids = (BitSet) dbs.get(dimIx).get(obj).getTIDs().clone();
+			BitSet tids = (BitSet) dbs[dimIx].get(obj).getTIDs().clone();
 			while (it.hasNext()) {
 				obj = it.next();
-				tids.and(dbs.get(dimIx).get(obj).getTIDs());
+				tids.and(dbs[dimIx].get(obj).getTIDs());
 			}
 
 			dimSupports[dimIx] = tids.cardinality();
@@ -502,7 +501,7 @@ public class CartiModel {
 		int[][] relatedDimsMatrix = new int[numDims][numDims];
 
 		for (int i = 0; i < numDims; i++) {
-			PlainItemDB pDb = cartiDb.getProjDbs().get(i);
+			PlainItemDB pDb = cartiDb.getProjDbs()[i];
 			List<PlainItemSet> result = RandomMiner.runParallel(pDb, minSup,
 					numItemSets, itemSetSize);
 
@@ -536,7 +535,7 @@ public class CartiModel {
 	 * @return The support of a given PlainItemSet in a given dimension.
 	 */
 	private int getSupportInDim(PlainItemSet set, int dim) {
-		PlainItemDB pDb = cartiDb.getProjDbs().get(dim);
+		PlainItemDB pDb = cartiDb.getProjDbs()[dim];
 
 		Iterator<PlainItem> it = set.iterator();
 		PlainItem item = it.next();
@@ -797,12 +796,12 @@ public class CartiModel {
 		int objId = loc2ObjId()[objIx];
 		System.out.println("Order by object " + objId);
 		Dissimilarity dm = getSelectedDistMeasure();
-		MyCartifierInMemory cartifier = new MyCartifierInMemory(data);
-		Pair[] carts = cartifier.cartOf(objId, dm);
+		// MyCartifierInMemory cartifier = new MyCartifierInMemory(data);
+		Pair[] order = orderBy(objId, dm);
 
 		this.orderDim = dims.size() * 2;
 
-		this.byObjId2LocMap = MaximalMinerCombiner.getId2Ord(carts);
+		this.byObjId2LocMap = MaximalMinerCombiner.getId2Ord(order);
 		this.byObjLoc2IdMap = new int[byObjId2LocMap.length];
 
 		for (int i = 0; i < byObjId2LocMap.length; i++) {
@@ -817,20 +816,6 @@ public class CartiModel {
 	public void addDistMeasure(Dissimilarity dissimilarity) {
 		dissimilarities.add(dissimilarity);
 		addDistMeasureToCartiDb(dissimilarity);
-	}
-
-	private int[] objId2Loc(int dimId) {
-		if (dimId > dims.size()) {
-			return byObjId2LocMap;
-		}
-		return objId2LocMaps[dimId];
-	}
-
-	private int[] loc2ObjId() {
-		if (orderDim > dims.size()) {
-			return byObjLoc2IdMap;
-		}
-		return loc2ObjIdMaps[orderDim];
 	}
 
 	/**
@@ -856,8 +841,7 @@ public class CartiModel {
 	}
 
 	public int[] getDistribution() {
-		List<PlainItemDB> pDbs = cartiDb.getProjDbs();
-		PlainItemDB pDb = pDbs.get(selectedDistMeasureId);
+		PlainItemDB pDb = getSelectedProjDb();
 		int size = pDb.size() - filtereds.size();
 		int[] starts = new int[size];
 
@@ -924,6 +908,30 @@ public class CartiModel {
 
 	public Obj getObj(final int id) {
 		return objects[id];
+	}
+
+	private Pair[] orderBy(int objId, Dissimilarity dm) {
+		Pair[] cart = new Pair[data.size()];
+		for (int j = 0; j < data.size(); j++) {
+			double distance = dm.between(data.get(objId), data.get(j));
+			cart[j] = new Pair(distance, j);
+		}
+		Arrays.sort(cart);
+		return cart;
+	}
+
+	private int[] objId2Loc(int dimId) {
+		if (dimId > dims.size()) {
+			return byObjId2LocMap;
+		}
+		return objId2LocMaps[dimId];
+	}
+
+	private int[] loc2ObjId() {
+		if (orderDim > dims.size()) {
+			return byObjLoc2IdMap;
+		}
+		return loc2ObjIdMaps[orderDim];
 	}
 
 	private static String[] rangeAsArr(int r) {

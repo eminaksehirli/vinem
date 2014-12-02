@@ -45,7 +45,7 @@ import javax.swing.table.AbstractTableModel;
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
 import mime.tool.Utils;
-import cart.cartifier.CartifyDbInMemory;
+import cart.cartifier.CartifyKNNDb;
 import cart.cartifier.Pair;
 import cart.gui.CartPane.Layer;
 import cart.io.InputFile;
@@ -80,7 +80,7 @@ public class CartiCombineGUI {
 	private ItemsetMaximalMiner maximer;
 	private TableModel clusterTableModel;
 	private int[] selectedClusterRows;
-	private CartifyDbInMemory cartiDb;
+	private CartifyKNNDb cartiDb;
 
 	public static void main(String[] args) {
 		try {
@@ -430,7 +430,7 @@ public class CartiCombineGUI {
 	private void updateCarts() {
 		k = frame.kSlider.getValue();
 
-		cartiDb = new CartifyDbInMemory(inputFile, k);
+		cartiDb = CartifyKNNDb.perDim(inputFile, k);
 		cartiDb.cartify();
 
 		mat = new int[dims.length][][];

@@ -33,8 +33,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 
+import cart.cartifier.Dissimilarity;
 import cart.gui2.Cluster;
-import cart.gui2.Dissimilarity;
 import cart.model.Obj;
 
 public class CartiView {
