@@ -22,9 +22,9 @@ public class FilterOptions {
 	private JButton filterNotSel;
 	private JButton clear;
 
-	public void init() {
+	public FilterOptions() {
 		// the main panel
-		optionsPanel = CartiView.createVerticalBoxPanel(300, 100);
+		optionsPanel = CartiView.createVerticalBoxPanel(300, 130);
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("Filtering"));
 
 		// top two buttons

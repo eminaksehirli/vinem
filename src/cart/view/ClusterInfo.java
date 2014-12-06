@@ -46,7 +46,7 @@ public class ClusterInfo {
 	public JCheckBox saveSizeCB;
 	public JCheckBox saveDimCB;
 
-	public void init() {
+	public ClusterInfo() {
 		// the main panel
 		infoPanel = CartiView.createVerticalBoxPanel(600, 350);
 

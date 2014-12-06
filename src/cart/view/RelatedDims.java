@@ -24,7 +24,7 @@ public class RelatedDims {
 	private JTable table;
 	private JSlider slider;
 
-	public void init(int[][] relatedDimsMatrix) {
+	public RelatedDims(int[][] relatedDimsMatrix) {
 		// the main panel
 		relatedDimsPanel = new JPanel();
 		relatedDimsPanel

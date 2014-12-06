@@ -18,14 +18,17 @@ import javax.swing.JTextField;
 
 public class MineOptions {
 
+	private static final String T_MinLen = "Min-Length";
+	private static final String T_NumOfItemsets = "# of itemsets";
+	private static final String T_MinSup = "Min-Support";
 	public final static String MINEIMM = "MineOptions.MineIMM";
 	public final static String MINEIMMSEL = "MineOptions.MineIMMSEL";
 	public final static String MINERMM = "MineOptions.MineRMM";
 	public final static String MINERMMSEL = "MineOptions.MineRMMSEL";
 	public final static String FINDRELDIMS = "MineOptions.FindRelDims";
 
-	final static String IMMCARD = "ItemSetMaximalMiner";
-	final static String RMMCARD = "RandomMaximalMiner";
+	final static String IMMCARD = "Fast Miner";
+	final static String RMMCARD = "Sampling Miner";
 	final static String RELDIMSCARD = "Find related dims";
 	final static String NOISECARD = "Find outliers";
 
@@ -94,7 +97,7 @@ public class MineOptions {
 		cardRelDims.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// add minSup to card
-		JPanel minSupPane = CartiView.createPanelWithLabel("minSup");
+		JPanel minSupPane = CartiView.createPanelWithLabel(T_MinSup);
 		minSupFieldRelDims = new JTextField();
 		minSupFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minSupPane.add(minSupFieldRelDims);
@@ -102,7 +105,7 @@ public class MineOptions {
 
 		// add numOfItemSets to card
 		JPanel numOfItemSetsPanel2 = CartiView
-				.createPanelWithLabel("numOfItemSets");
+				.createPanelWithLabel(T_NumOfItemsets);
 		numOfItemSetsFieldRelDims = new JTextField("2000");
 		numOfItemSetsFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE,
 				25));
@@ -124,15 +127,15 @@ public class MineOptions {
 		cardRMM.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// add minSup to card
-		JPanel minSupPanel = CartiView.createPanelWithLabel("minSup");
+		JPanel minSupPanel = CartiView.createPanelWithLabel(T_MinSup);
 		minSupFieldRMM = new JTextField();
 		minSupFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minSupPanel.add(minSupFieldRMM);
 		cardRMM.add(minSupPanel);
 
 		// add numOfItemSets to card
-		JPanel numOfItemSetsPanel = CartiView.createPanelWithLabel("numOfItemSets");
-		numOfItemSetsFieldRMM = new JTextField();
+		JPanel numOfItemSetsPanel = CartiView.createPanelWithLabel(T_NumOfItemsets);
+		numOfItemSetsFieldRMM = new JTextField("100");
 		numOfItemSetsFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		numOfItemSetsPanel.add(numOfItemSetsFieldRMM);
 		cardRMM.add(numOfItemSetsPanel);
@@ -157,7 +160,7 @@ public class MineOptions {
 		cardIMM.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// add minLen to card
-		JPanel minLenPanel = CartiView.createPanelWithLabel("minLen");
+		JPanel minLenPanel = CartiView.createPanelWithLabel(T_MinLen);
 		minLenField = new JTextField();
 		minLenField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minLenPanel.add(minLenField);

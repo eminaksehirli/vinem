@@ -1053,4 +1053,8 @@ public class CartiModel {
 		}
 		return (int) maxEps;
 	}
+
+	public InputFile getInputFile() {
+		return inputFile;
+	}
 }

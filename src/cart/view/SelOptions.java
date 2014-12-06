@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -22,14 +23,16 @@ import cart.model.Obj;
 public class SelOptions {
 
 	public final static String CLEAR = "SelOptions.Clear";
+	public final static String CLUSTER = "SelOptions.Cluster";
 
 	private JPanel optionsPanel;
 	private JList<Obj> list;
 	private DefaultListModel<Obj> listModel;
-	private JButton clear;
+	private JButton clearBt;
 	private JRadioButton modeSelect;
 	private JRadioButton modeAnd;
 	private JRadioButton modeOr;
+	private JButton clusterBt;
 
 	public SelOptions(List<Obj> orderedObjs) {
 		// the main panel
@@ -43,16 +46,25 @@ public class SelOptions {
 		}
 		list = new JList<>(listModel);
 		JScrollPane listPane = new JScrollPane(list);
-		listPane.setPreferredSize(new Dimension(200, 200));
+		listPane.setPreferredSize(new Dimension(200, 100));
 		listPane.setMaximumSize(new Dimension(200, 200));
 		listPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		optionsPanel.add(listPane);
 
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+
+		// add button for clustering
+		clusterBt = new JButton("Cluster selected");
+		clusterBt.setActionCommand(CLUSTER);
+		buttonPane.add(clusterBt);
+
 		// add clear button
-		clear = new JButton("Clear Selection");
-		clear.setActionCommand(CLEAR);
-		clear.setAlignmentX(Component.CENTER_ALIGNMENT);
-		optionsPanel.add(clear);
+		clearBt = new JButton("Clear Selection");
+		clearBt.setActionCommand(CLEAR);
+		clearBt.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPane.add(clearBt);
+		optionsPanel.add(buttonPane);
 
 		// add radio buttons
 		JPanel selModePanel = CartiView.createHorizontalBoxPanel(300, 50);
@@ -71,7 +83,8 @@ public class SelOptions {
 	}
 
 	public void addButtonsListener(ActionListener buttonListener) {
-		clear.addActionListener(buttonListener);
+		clearBt.addActionListener(buttonListener);
+		clusterBt.addActionListener(buttonListener);
 	}
 
 	public void addListSelectionListener(ListSelectionListener listListener) {

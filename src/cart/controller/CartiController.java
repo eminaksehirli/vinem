@@ -1,5 +1,6 @@
 package cart.controller;
 
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -12,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -19,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -33,6 +35,7 @@ import cart.cartifier.Dissimilarity;
 import cart.cartifier.EuclidianDistance;
 import cart.gui2.Cluster;
 import cart.model.CartiModel;
+import cart.view.CartiPanel;
 import cart.view.CartiView;
 import cart.view.ClusterInfo;
 import cart.view.DistOptions;
@@ -399,12 +402,42 @@ public class CartiController {
 		}
 		final String msg = "Selected clusters are saved to the file:"
 				+ clusterFile.getAbsolutePath();
-		int showDir = JOptionPane.showConfirmDialog(null, "<html>" + msg
+		showConfirmSaveFile(clusterFile, msg, "Clusters are saved");
+		System.out.println(msg);
+	}
+
+	private void saveMatrix() {
+		System.out.println("Will save!");
+		int w = view.getCartiPanel().getWidth() - CartiPanel.TickSize;
+		int h = view.getCartiPanel().getHeight() - CartiPanel.TickSize;
+		BufferedImage img = new BufferedImage(w, h, TYPE_INT_RGB);
+		view.getCartiPanel().paintComponent(img.createGraphics());
+		File file;
+		try {
+			final String measure = model.getSelectedDistMeasure().toString()
+					.replace(" ", "_");
+			file = File.createTempFile("NeighMat-" + model.getInputFile().baseName()
+					+ "-" + measure + "-", ".png");
+			ImageIO.write(img, "png", file);
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+					"Could not save the file:" + e.getMessage()
+							+ " Check console for details.", "Cannot save", ERROR_MESSAGE);
+			return;
+		}
+		showConfirmSaveFile(file, "Neighborhood matrix is saved to the File:"
+				+ file.getAbsolutePath(), "Matrix saved");
+	}
+
+	private static void showConfirmSaveFile(File savedFile, final String msg,
+			final String dialogTitle) {
+		int openFile = JOptionPane.showConfirmDialog(null, "<html>" + msg
 				+ "<br/>Do you want to open the file with the default editor?</html>",
-				"Clusters are saved", JOptionPane.YES_NO_OPTION, INFORMATION_MESSAGE);
-		if (showDir == 0) {
+				dialogTitle, JOptionPane.YES_NO_OPTION, INFORMATION_MESSAGE);
+		if (openFile == 0) {
 			try {
-				Desktop.getDesktop().open(clusterFile);
+				Desktop.getDesktop().open(savedFile);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null,
 						"Could not open the file: " + e.toString(),
@@ -412,7 +445,6 @@ public class CartiController {
 				e.printStackTrace();
 			}
 		}
-		System.out.println(msg);
 	}
 
 	public void showCluster(Integer clusterId) {
@@ -636,7 +668,7 @@ public class CartiController {
 					findNoiseInEachMeasure();
 				} else if (e.getActionCommand() == NoiseOptions.ALLMEAS) {
 					findNoiseGlobally();
-				} else if (e.getActionCommand() == CartiView.CLUSTER) {
+				} else if (e.getActionCommand() == SelOptions.CLUSTER) {
 					clusterSelected();
 				} else if (e.getActionCommand() == CartiView.SHOWDIST) {
 					updateDistribution(false);
@@ -654,6 +686,8 @@ public class CartiController {
 					saveClusters();
 				} else if (e.getActionCommand() == CartiView.CARTIFIER_CHANGE) {
 					changeCartifier();
+				} else if (e.getActionCommand() == CartiView.SAVE_MATRIX) {
+					saveMatrix();
 				}
 			}
 		};
@@ -773,30 +807,6 @@ public class CartiController {
 						showCluster(clusterId);
 					} else {
 						hideCluster(clusterId);
-					}
-				}
-			}
-		};
-
-		return listener;
-	}
-
-	/**
-	 * @return Listener for changes in the sliders.
-	 */
-	private ChangeListener createSliderListener() {
-		ChangeListener listener = new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				JSlider slider = (JSlider) e.getSource();
-
-				// slider has stopped moving
-				if (!slider.getValueIsAdjusting()) {
-					if (slider == view.getKSlider()) {
-						kSliderChanged();
-					} else if (slider == view.getOrderSlider()) {
-						orderSliderChanged();
 					}
 				}
 			}

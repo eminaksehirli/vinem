@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.swing.JPanel;
 
 public class CartiPanel extends JPanel {
+	public static final int TickSize = 15;
 	private static final long serialVersionUID = 6585392843171261529L;
 	private int cellHeight;
 	private int cellWidth;
@@ -27,7 +28,8 @@ public class CartiPanel extends JPanel {
 		this.matrix = matrix;
 		createImage();
 
-		setMinimumSize(new Dimension(matrix.length + 15, matrix[0].length + 15));
+		setMinimumSize(new Dimension(matrix.length + TickSize, matrix[0].length
+				+ TickSize));
 		cellWidth = 10;
 		cellHeight = 10;
 		selectedLocs = new HashSet<Integer>();
@@ -105,7 +107,7 @@ public class CartiPanel extends JPanel {
 		if (matrix.length == 0) {
 			return new Dimension(600, 600);
 		}
-		return new Dimension(matrix[0].length + 15, matrix.length + 15);
+		return new Dimension(matrix[0].length + TickSize, matrix.length + TickSize);
 	}
 
 	@Override
@@ -133,15 +135,17 @@ public class CartiPanel extends JPanel {
 		// add horizontal indication lines
 		for (int i = 0; i < matrix[0].length; i += 100) {
 			g.setColor(Color.BLACK);
-			g.drawLine(i * cellWidth, matrix.length * cellHeight, i * cellWidth,
-					(matrix.length * cellHeight) + 15);
+			int startX = i * cellWidth;
+			int startY = matrix.length * cellHeight;
+			g.drawLine(startX, startY, startX, startY + TickSize);
 		}
 
 		// add vertical indication lines
 		for (int i = 0; i < matrix.length; i += 100) {
 			g.setColor(Color.BLACK);
-			g.drawLine(matrix[0].length * cellWidth, i * cellHeight,
-					(matrix[0].length * cellWidth) + 15, i * cellHeight);
+			int startX = matrix[0].length * cellWidth;
+			int startY = i * cellHeight;
+			g.drawLine(startX, startY, startX + TickSize, startY);
 		}
 	}
 

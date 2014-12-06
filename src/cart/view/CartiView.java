@@ -43,9 +43,9 @@ import cart.model.Obj;
 
 public class CartiView {
 
-	public final static String CLUSTER = "CartiView.Cluster";
 	public final static String SHOWDIST = "CartiView.ShowDist";
 	public static final String CARTIFIER_CHANGE = "CartiView.CartifierChange";
+	public static final String SAVE_MATRIX = "CartiView.SaveMatrix";
 
 	private JFrame theFrame;
 	private JDialog controlsDialog;
@@ -54,7 +54,6 @@ public class CartiView {
 	private JCheckBox syncOrderSlider;
 	private JSlider kSlider;
 	private JSlider epsSlider;
-	private JButton clusterButton;
 	private CartiPanel cartiPanel;
 	private SelOptions selectionOptions;
 	private FilterOptions filteringOptions;
@@ -76,19 +75,20 @@ public class CartiView {
 	// prevents the distance options box listener from listening while updating
 	private boolean distOptionsListenerShouldListen;
 	private boolean showingDist;
+	private JPanel controlsPanel;
+	private JPanel visualPanel;
+	private JButton saveMatrixButton;
 
 	public CartiView() {
-		theFrame = new JFrame("Carti");
+		theFrame = new JFrame("Visual Interactive Neighborhood Miner");
 		theFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		theFrame.setLayout(new BorderLayout(10, 10));
 	}
 
 	public void init(List<Obj> orderedObjs, Set<Integer> dims, int maxK,
 			int[][] matrixToShow, List<Dissimilarity> distMeasures, int maxEps) {
-		// visualPanel contains the visual representation
-		JPanel visualPanel = createVerticalBoxPanel(700, 700);
-		// controlsPanel contains the buttons/sliders/...
-		JPanel controlsPanel = createHorizontalBoxPanel(600, 700);
+		visualPanel = createVerticalBoxPanel(700, 700);
+		controlsPanel = createHorizontalBoxPanel(600, 650);
 		JPanel controlsPanelLeft = createVerticalBoxPanel(300, 700);
 		JPanel controlsPanelRight = createVerticalBoxPanel(300, 700);
 
@@ -109,71 +109,33 @@ public class CartiView {
 
 		// add the filtering options panel
 		filteringOptions = new FilterOptions();
-		filteringOptions.init();
 
 		controlsPanelLeft.add(filteringOptions.getPanel());
 		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 
-		// add button for clustering
-		clusterButton = new JButton("Cluster selected");
-		clusterButton.setActionCommand(CLUSTER);
+		JPanel neighborhoodPane = createNeighborhoodPane(maxK, maxEps);
 
-		showDistButton = new JToggleButton("Show Distribution");
-		showDistButton.setActionCommand(SHOWDIST);
-
-		JPanel midButtons = new JPanel();
-		midButtons.add(clusterButton);
-		midButtons.add(showDistButton);
-		midButtons.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		controlsPanelLeft.add(midButtons);
+		neighborhoodPane.add(sliderCards);
+		// controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 20)));
+		controlsPanelLeft.add(neighborhoodPane);
 		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 
-		JPanel sliderPane = createVerticalBoxPanel(300, 150);
-		JPanel sliderSelectors = new JPanel();
-		ButtonGroup bg = new ButtonGroup();
-		knnButton = new JToggleButton("kNN", null, true);
-		radiusButton = new JToggleButton("radius", null, false);
-		knnButton.setActionCommand(CARTIFIER_CHANGE);
-		radiusButton.setActionCommand(CARTIFIER_CHANGE);
-		bg.add(knnButton);
-		bg.add(radiusButton);
-		sliderSelectors.add(knnButton);
-		sliderSelectors.add(radiusButton);
-		sliderPane.add(sliderSelectors);
-		final ActionListener l = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				changeCartifier();
-			}
-		};
-		knnButton.addActionListener(l);
-		radiusButton.addActionListener(l);
-
-		sliderCards = new JPanel(new CardLayout());
-		JPanel knnCard = createKNNCard(maxK);
-		JPanel radiusCard = createRadiusCard(maxEps);
-
-		sliderCards.add(knnCard, Neighborhood.KNN.name);
-		sliderCards.add(radiusCard, Neighborhood.Radius.name);
-
-		sliderPane.add(sliderCards);
-		// controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 20)));
-		controlsPanelLeft.add(sliderPane);
-
+		JPanel orderPane = createVerticalBoxPanel(300, 120);
+		orderPane.setBorder(BorderFactory.createTitledBorder("Dimension Order"));
 		// add slider for order_1
-		JLabel order_1SliderLabel = new JLabel("order");
-		order_1SliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		controlsPanelLeft.add(order_1SliderLabel);
+		// JLabel orderSliderLabel = new JLabel("order");
+		// orderSliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		// orderPane.add(orderSliderLabel);
 		orderSlider = createSlider(0, dims.size() - 1);
 		orderSlider.setMinorTickSpacing(1);
-		controlsPanelLeft.add(orderSlider);
+		orderPane.add(orderSlider);
 
 		// add checkbox for syncing order_1 with distanceOptions
-		syncOrderSlider = new JCheckBox("sync with distance measures", true);
+		syncOrderSlider = new JCheckBox("Sync with distance measure", true);
 		syncOrderSlider.setAlignmentX(Component.CENTER_ALIGNMENT);
-		controlsPanelLeft.add(syncOrderSlider);
-		controlsPanelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
+		orderPane.add(syncOrderSlider);
+		orderPane.add(Box.createRigidArea(new Dimension(0, 10)));
+		controlsPanelLeft.add(orderPane);
 
 		// CONTROLS PANEL RIGHT
 		// add the distance measure options panel
@@ -186,6 +148,22 @@ public class CartiView {
 		miningOptions = new MineOptions();
 
 		controlsPanelRight.add(miningOptions.getPanel());
+		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		showDistButton = new JToggleButton("Show Distribution");
+		showDistButton.setActionCommand(SHOWDIST);
+
+		saveMatrixButton = new JButton("Save Matrix");
+		saveMatrixButton.setActionCommand(SAVE_MATRIX);
+
+		JPanel miscButtons = createVerticalBoxPanel(150, 100);
+		miscButtons.setBorder(BorderFactory.createTitledBorder("Tools"));
+
+		miscButtons.add(showDistButton);
+		miscButtons.add(saveMatrixButton);
+		miscButtons.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		controlsPanelRight.add(miscButtons);
 		controlsPanelRight.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add left and right controls panels to main controls panel
@@ -211,7 +189,6 @@ public class CartiView {
 
 		// initialise cluster info dialog
 		clusterInfo = new ClusterInfo();
-		clusterInfo.init();
 		clusterInfoDialog = new JDialog(theFrame, "Clusters info");
 		clusterInfoDialog.add(clusterInfo.getInfoPanel());
 
@@ -221,10 +198,41 @@ public class CartiView {
 		distOptionsListenerShouldListen = true;
 	}
 
+	private JPanel createNeighborhoodPane(int maxK, int maxEps) {
+		JPanel neighborhoodPane = createVerticalBoxPanel(300, 150);
+		neighborhoodPane
+				.setBorder(BorderFactory.createTitledBorder("Neighborhood"));
+		JPanel sliderSelectors = new JPanel();
+		ButtonGroup bg = new ButtonGroup();
+		knnButton = new JToggleButton("kNN", null, true);
+		radiusButton = new JToggleButton("radius", null, false);
+		knnButton.setActionCommand(CARTIFIER_CHANGE);
+		radiusButton.setActionCommand(CARTIFIER_CHANGE);
+		bg.add(knnButton);
+		bg.add(radiusButton);
+		sliderSelectors.add(knnButton);
+		sliderSelectors.add(radiusButton);
+		neighborhoodPane.add(sliderSelectors);
+		final ActionListener l = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				changeCartifier();
+			}
+		};
+		knnButton.addActionListener(l);
+		radiusButton.addActionListener(l);
+
+		sliderCards = new JPanel(new CardLayout());
+		JPanel knnCard = createKNNCard(maxK);
+		JPanel radiusCard = createRadiusCard(maxEps);
+
+		sliderCards.add(knnCard, Neighborhood.KNN.name);
+		sliderCards.add(radiusCard, Neighborhood.Radius.name);
+		return neighborhoodPane;
+	}
+
 	protected void changeCartifier() {
 		Neighborhood cardToShow = selectedNeighborhood();
-		System.out.println("KNN selected");
-		System.out.println("Radius selected!");
 		CardLayout cl = (CardLayout) (sliderCards.getLayout());
 		cl.show(sliderCards, cardToShow.name);
 	}
@@ -232,9 +240,8 @@ public class CartiView {
 	public Neighborhood selectedNeighborhood() {
 		if (knnButton.isSelected()) {
 			return Neighborhood.KNN;
-		} else {
-			return Neighborhood.Radius;
 		}
+		return Neighborhood.Radius;
 	}
 
 	protected JPanel createKNNCard(int maxK) {
@@ -258,8 +265,8 @@ public class CartiView {
 	}
 
 	public void addButtonsListener(ActionListener buttonsListener) {
-		clusterButton.addActionListener(buttonsListener);
 		showDistButton.addActionListener(buttonsListener);
+		saveMatrixButton.addActionListener(buttonsListener);
 		selectionOptions.addButtonsListener(buttonsListener);
 		filteringOptions.addButtonsListener(buttonsListener);
 		clusterInfo.addButtonsListener(buttonsListener);
@@ -402,8 +409,7 @@ public class CartiView {
 	}
 
 	public void showRelatedDims(int[][] relatedDimsMatrix) {
-		RelatedDims relatedDims = new RelatedDims();
-		relatedDims.init(relatedDimsMatrix);
+		RelatedDims relatedDims = new RelatedDims(relatedDimsMatrix);
 
 		JDialog relatedDimsDialog = new JDialog(theFrame, "Related dims");
 		relatedDimsDialog.add(relatedDims.getRelatedDimsPanel());
@@ -441,6 +447,10 @@ public class CartiView {
 
 	public CartiPanel getCartiPanel() {
 		return cartiPanel;
+	}
+
+	public JPanel getControlsPanel() {
+		return controlsPanel;
 	}
 
 	public boolean clusterInfoListenerShouldListen() {
