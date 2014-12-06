@@ -360,10 +360,10 @@ public class CartiModel {
 	}
 
 	/**
-	 * @param objIds
 	 * @return The support in each 1d dimension of a given set of object Ids.
 	 */
-	public int[] getSupports(Set<Integer> objIds) {
+	public int[] getSupportOfSel() {
+		Set<Integer> objIds = getSelecteds();
 		for (int id : objIds) {
 			if (filtereds.contains(id)) {
 				System.err
@@ -395,11 +395,11 @@ public class CartiModel {
 	}
 
 	/**
-	 * @param objIds
 	 * @return The standard deviation in each 1d dimension of a given set of
 	 *         object Ids.
 	 */
-	public double[] getStandardDeviations(Set<Integer> objIds) {
+	public double[] getStDevOfSel() {
+		Set<Integer> objIds = getSelecteds();
 		for (int id : objIds) {
 			if (filtereds.contains(id)) {
 				System.err
@@ -447,11 +447,11 @@ public class CartiModel {
 	}
 
 	/**
-	 * @param objIds
 	 * @return The median absoluate deviation in each 1d dimension of a given set
 	 *         of object Ids.
 	 */
-	public int[] getLocsMedAbsDev(Set<Integer> objIds) {
+	public int[] getMedAbsDevOfSel() {
+		Set<Integer> objIds = getSelecteds();
 		for (int id : objIds) {
 			if (filtereds.contains(id)) {
 				System.err
@@ -678,7 +678,7 @@ public class CartiModel {
 		return clustersMap;
 	}
 
-	public Set<Integer> getClustersToShowLocs() {
+	public Set<Integer> getLocsOfClustersToShow() {
 		Set<Integer> locs = new HashSet<Integer>();
 
 		for (int clusterId : clustersToShow) {

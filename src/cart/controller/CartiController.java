@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -33,7 +32,6 @@ import javax.swing.event.TableModelListener;
 import cart.cartifier.CosineDistance;
 import cart.cartifier.Dissimilarity;
 import cart.cartifier.EuclidianDistance;
-import cart.gui2.Cluster;
 import cart.model.CartiModel;
 import cart.view.CartiPanel;
 import cart.view.CartiView;
@@ -79,7 +77,7 @@ public class CartiController {
 		view.getFrame().setVisible(true);
 	}
 
-	public void orderSliderChanged() {
+	private void orderSliderChanged() {
 		model.setOrderDim(view.getOrderSliderVal());
 
 		if (view.shouldSyncOrderSlider()) {
@@ -87,115 +85,72 @@ public class CartiController {
 			model.setSelectedDistMeasureId(view.getOrderSliderVal());
 			view.updateSelectedDistMeasureId(view.getOrderSliderVal());
 		}
-
 		updateAfterOrderChange();
 	}
 
-	public void orderByObject(int objIx) {
+	private void orderByObject(int objIx) {
 		model.setOrderByObj(objIx);
 		updateAfterOrderChange();
 	}
 
-	public void updateAfterOrderChange() {
-		int[][] matrixToShow = model.getMatrixToShow();
-		Set<Integer> selectedLocs = model.getSelectedLocs();
-		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
-		Set<Integer> selecteds = model.getSelecteds();
-
-		view.updateFigure(matrixToShow);
-		view.updateFigureSelected(selectedLocs);
-		view.updateFigureClustered(clusteredLocs);
-		view.updateSelOptions(model.getOrderedObjList(), selecteds);
+	private void updateAfterOrderChange() {
+		view.updateFigure(model.getMatrixToShow());
+		view.updateFigureSelected(model.getSelectedLocs());
+		view.updateFigureClustered(model.getLocsOfClustersToShow());
+		view.updateSelOptions(model.getOrderedObjList(), model.getSelecteds());
 		updateDistribution(true);
 	}
 
-	public void kSliderChanged() {
+	private void kSliderChanged() {
 		int k = view.getKSliderVal();
 		model.setK(k);
-
 		afterCartDbChange();
 	}
 
-	public void epsSliderChanged() {
+	private void epsSliderChanged() {
 		double eps = view.getEpsSliderVal();
 		model.setEps(eps);
-
 		afterCartDbChange();
 	}
 
-	protected void afterCartDbChange() {
-		Set<Integer> selecteds = model.getSelecteds();
-		int[] dimSupports = model.getSupports(selecteds);
-		double[] standardDevs = model.getStandardDeviations(selecteds);
-		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
-
+	private void afterCartDbChange() {
 		view.updateFigure(model.getMatrixToShow());
-		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
-				medAbsDevs);
+		view.updateSelStats(model.getSelectedObjs(), model.getSupportOfSel(),
+				model.getStDevOfSel(), model.getMedAbsDevOfSel());
 		view.getMiningOptions().setMinSupVal(model.getDefaultMinSup());
 		updateDistribution(true);
 	}
 
-	public void manSelectedsClear() {
+	private void manSelectedsClear() {
 		model.clearSelecteds();
-
-		Set<Integer> selectedLocs = model.getSelectedLocs();
-		Set<Integer> selecteds = model.getSelecteds();
-		int[] dimSupports = model.getSupports(selecteds);
-		double[] standardDevs = model.getStandardDeviations(selecteds);
-		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
-
-		view.updateFigureSelected(selectedLocs);
-		view.updateSelOptions(model.getOrderedObjList(), selecteds);
-		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
-				medAbsDevs);
+		updateViewSelection();
 	}
 
-	public void manSelectedsChange(Set<Integer> toSelect) {
+	private void manSelectedsChange(Set<Integer> toSelect) {
 		model.setSelecteds(toSelect);
 
-		Set<Integer> selectedLocs = model.getSelectedLocs();
-		Set<Integer> selecteds = model.getSelecteds();
-		int[] dimSupports = model.getSupports(selecteds);
-		double[] standardDevs = model.getStandardDeviations(selecteds);
-		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
-
-		view.updateFigureSelected(selectedLocs);
-		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
-				medAbsDevs);
+		view.updateFigureSelected(model.getSelectedLocs());
+		view.updateSelStats(model.getSelectedObjs(), model.getSupportOfSel(),
+				model.getStDevOfSel(), model.getMedAbsDevOfSel());
 	}
 
-	public void figureSelectedsChange(Set<Integer> locsToSelect) {
+	private void figureSelectedsChange(Set<Integer> locsToSelect) {
 		boolean select = view.getSelectionOptions().selModeIsSelect();
 		boolean and = view.getSelectionOptions().selModeIsAnd();
 		boolean or = view.getSelectionOptions().selModeIsOr();
 		model.selectLocs(locsToSelect, select, and, or);
 
-		Set<Integer> selectedLocs = model.getSelectedLocs();
-		Set<Integer> selecteds = model.getSelecteds();
-		int[] dimSupports = model.getSupports(selecteds);
-		double[] standardDevs = model.getStandardDeviations(selecteds);
-		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
-
-		view.updateFigureSelected(selectedLocs);
-		view.updateSelOptions(model.getOrderedObjList(), selecteds);
-		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
-				medAbsDevs);
+		updateViewSelection();
 	}
 
-	public void manFilteredsClear() {
+	private void manFilteredsClear() {
 		model.clearFiltereds();
 
-		int[][] matrixToShow = model.getMatrixToShow();
-		Set<Integer> selectedLocs = model.getSelectedLocs();
-		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
-		Set<Integer> selecteds = model.getSelecteds();
-
 		view.clearFigureSavedLocs();
-		view.updateFigure(matrixToShow);
-		view.updateFigureSelected(selectedLocs);
-		view.updateFigureClustered(clusteredLocs);
-		view.updateSelOptions(model.getOrderedObjList(), selecteds);
+		view.updateFigure(model.getMatrixToShow());
+		view.updateFigureClustered(model.getLocsOfClustersToShow());
+		view.updateFigureSelected(model.getSelectedLocs());
+		view.updateSelOptions(model.getOrderedObjList(), model.getSelecteds());
 	}
 
 	/**
@@ -203,68 +158,37 @@ public class CartiController {
 	 * 
 	 * @param filterOutSelected
 	 */
-	public void filter(boolean filterOutSelected) {
+	private void filter(boolean filterOutSelected) {
 		if (filterOutSelected) {
 			model.filterSelecteds();
 		} else {
 			model.filterNotSelecteds();
 		}
-
-		int[][] matrixToShow = model.getMatrixToShow();
-		Set<Integer> selectedLocs = model.getSelectedLocs();
-		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
-		Set<Integer> selecteds = model.getSelecteds();
-		int[] dimSupports = model.getSupports(selecteds);
-		double[] standardDevs = model.getStandardDeviations(selecteds);
-		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
-		Map<Integer, Cluster> clustersMap = model.getClustersMap();
-		Set<Integer> clustersToShow = model.getClustersToShow();
-
-		view.clearFigureSavedLocs();
-		view.updateFigure(matrixToShow);
-		view.updateFigureSelected(selectedLocs);
-		view.updateFigureClustered(clusteredLocs);
-		view.updateSelOptions(model.getOrderedObjList(), selecteds);
-		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
-				medAbsDevs);
-		view.updateClusterInfo(clustersMap, clustersToShow);
+		afterFilterChange();
 	}
 
-	public void undoFiltering() {
-		if (model.canUndoFiltering()) {
-			model.undoFiltering();
-
-			int[][] matrixToShow = model.getMatrixToShow();
-			Set<Integer> selectedLocs = model.getSelectedLocs();
-			Set<Integer> clusteredLocs = model.getClustersToShowLocs();
-			Set<Integer> selecteds = model.getSelecteds();
-			int[] dimSupports = model.getSupports(selecteds);
-			double[] standardDevs = model.getStandardDeviations(selecteds);
-			int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
-			Map<Integer, Cluster> clustersMap = model.getClustersMap();
-			Set<Integer> clustersToShow = model.getClustersToShow();
-
-			view.clearFigureSavedLocs();
-			view.updateFigure(matrixToShow);
-			view.updateFigureSelected(selectedLocs);
-			view.updateFigureClustered(clusteredLocs);
-			view.updateSelOptions(model.getOrderedObjList(), selecteds);
-			view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
-					medAbsDevs);
-			view.updateClusterInfo(clustersMap, clustersToShow);
+	private void undoFiltering() {
+		if (!model.canUndoFiltering()) {
+			return;
 		}
+		model.undoFiltering();
+		afterFilterChange();
 	}
 
-	public void clusterSelected() {
+	private void afterFilterChange() {
+		view.clearFigureSavedLocs();
+		view.updateFigure(model.getMatrixToShow());
+		view.updateFigureClustered(model.getLocsOfClustersToShow());
+		view.updateClusterInfo(model.getClustersMap(), model.getClustersToShow());
+		updateViewSelection();
+	}
+
+	private void clusterSelected() {
 		model.clusterSelecteds();
-
-		Map<Integer, Cluster> clustersMap = model.getClustersMap();
-		Set<Integer> clustersToShow = model.getClustersToShow();
-
-		view.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(model.getClustersMap(), model.getClustersToShow());
 	}
 
-	public void addSelectedToClusters() {
+	private void addSelectedToClusters() {
 		Set<Integer> clusterIds = view.getClusterInfo().getSelectedRowsClusterIds();
 
 		// if the user has not selected a cluster
@@ -276,17 +200,13 @@ public class CartiController {
 			model.addSelectedsToCluster(id);
 		}
 
-		Map<Integer, Cluster> clustersMap = model.getClustersMap();
-		Set<Integer> clustersToShow = model.getClustersToShow();
-
-		view.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(model.getClustersMap(), model.getClustersToShow());
 
 		// only need to update the figure for clustereds if one of the clusters
 		// is visible
 		for (Integer id : clusterIds) {
 			if (model.clusterIsVisible(id)) {
-				Set<Integer> clusteredLocs = model.getClustersToShowLocs();
-				view.updateFigureClustered(clusteredLocs);
+				view.updateFigureClustered(model.getLocsOfClustersToShow());
 				break;
 			}
 		}
@@ -297,7 +217,7 @@ public class CartiController {
 	 * 
 	 * @param removeSelecteds
 	 */
-	public void removeFromClusters(boolean removeSelecteds) {
+	private void removeFromClusters(boolean removeSelecteds) {
 		Set<Integer> clusterIds = view.getClusterInfo().getSelectedRowsClusterIds();
 
 		// if the user has not selected a cluster
@@ -313,23 +233,19 @@ public class CartiController {
 			}
 		}
 
-		Map<Integer, Cluster> clustersMap = model.getClustersMap();
-		Set<Integer> clustersToShow = model.getClustersToShow();
-
-		view.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(model.getClustersMap(), model.getClustersToShow());
 
 		// only need to update the figure for clustereds if one of the clusters
 		// is visible
 		for (Integer id : clusterIds) {
 			if (model.clusterIsVisible(id)) {
-				Set<Integer> clusteredLocs = model.getClustersToShowLocs();
-				view.updateFigureClustered(clusteredLocs);
+				view.updateFigureClustered(model.getLocsOfClustersToShow());
 				break;
 			}
 		}
 	}
 
-	public void deleteClusters() {
+	private void deleteClusters() {
 		Set<Integer> clusterIds = view.getClusterInfo().getSelectedRowsClusterIds();
 
 		// if the user has not selected a cluster
@@ -345,20 +261,16 @@ public class CartiController {
 			model.deleteCluster(id);
 		}
 
-		Map<Integer, Cluster> clustersMap = model.getClustersMap();
-		Set<Integer> clustersToShow = model.getClustersToShow();
-
-		view.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(model.getClustersMap(), model.getClustersToShow());
 
 		// only need to update the figure for clustereds if one of the clusters
 		// was visible
 		if (wasVisible) {
-			Set<Integer> clusteredLocs = model.getClustersToShowLocs();
-			view.updateFigureClustered(clusteredLocs);
+			view.updateFigureClustered(model.getLocsOfClustersToShow());
 		}
 	}
 
-	public void selectClusters() {
+	private void selectClusters() {
 		Set<Integer> clusterIds = view.getClusterInfo().getSelectedRowsClusterIds();
 
 		// if the user has not selected a cluster
@@ -368,16 +280,14 @@ public class CartiController {
 
 		model.selectClusters(clusterIds);
 
-		Set<Integer> selectedLocs = model.getSelectedLocs();
-		Set<Integer> selecteds = model.getSelecteds();
-		int[] dimSupports = model.getSupports(selecteds);
-		double[] standardDevs = model.getStandardDeviations(selecteds);
-		int[] medAbsDevs = model.getLocsMedAbsDev(selecteds);
+		updateViewSelection();
+	}
 
-		view.updateFigureSelected(selectedLocs);
-		view.updateSelOptions(model.getOrderedObjList(), selecteds);
-		view.updateSelStats(model.getSelectedObjs(), dimSupports, standardDevs,
-				medAbsDevs);
+	private void updateViewSelection() {
+		view.updateFigureSelected(model.getSelectedLocs());
+		view.updateSelOptions(model.getOrderedObjList(), model.getSelecteds());
+		view.updateSelStats(model.getSelectedObjs(), model.getSupportOfSel(),
+				model.getStDevOfSel(), model.getMedAbsDevOfSel());
 	}
 
 	private void saveClusters() {
@@ -447,23 +357,23 @@ public class CartiController {
 		}
 	}
 
-	public void showCluster(Integer clusterId) {
+	private void showCluster(Integer clusterId) {
 		model.showCluster(clusterId);
 
-		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
+		Set<Integer> clusteredLocs = model.getLocsOfClustersToShow();
 
 		view.updateFigureClustered(clusteredLocs);
 	}
 
-	public void hideCluster(Integer clusterId) {
+	private void hideCluster(Integer clusterId) {
 		model.hideCluster(clusterId);
 
-		Set<Integer> clusteredLocs = model.getClustersToShowLocs();
+		Set<Integer> clusteredLocs = model.getLocsOfClustersToShow();
 
 		view.updateFigureClustered(clusteredLocs);
 	}
 
-	public void mineIMM(boolean onlySelected) {
+	private void mineIMM(boolean onlySelected) {
 		int minLen = view.getMiningOptions().getMinLenVal();
 
 		if (minLen == -1) {
@@ -478,14 +388,11 @@ public class CartiController {
 		}
 
 		// update view
-		Map<Integer, Cluster> clustersMap = model.getClustersMap();
-		Set<Integer> clustersToShow = model.getClustersToShow();
-
-		view.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(model.getClustersMap(), model.getClustersToShow());
 		view.showInfoMessage(resultSize + " cluster(s) found.", "Mining result");
 	}
 
-	public void mineRMM(boolean onlySelected) {
+	private void mineRMM(boolean onlySelected) {
 		int minSup = view.getMiningOptions().getMinSupVal();
 		int numOfItemSets = view.getMiningOptions().getNumOfItemSetsVal();
 
@@ -501,14 +408,11 @@ public class CartiController {
 		}
 
 		// update view
-		Map<Integer, Cluster> clustersMap = model.getClustersMap();
-		Set<Integer> clustersToShow = model.getClustersToShow();
-
-		view.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(model.getClustersMap(), model.getClustersToShow());
 		view.showInfoMessage(resultSize + " cluster(s) found.", "Mining result");
 	}
 
-	public void addDistMeasure() {
+	private void addDistMeasure() {
 		boolean isEucl = view.getDistanceOptions().distModeIsEuclidian();
 		boolean isCos = view.getDistanceOptions().distModeIsCosine();
 		List<Integer> dims = view.getDistanceOptions().getSelectedDims();
@@ -523,11 +427,10 @@ public class CartiController {
 		}
 
 		model.addDistMeasure(dissimilarity);
-
 		view.addDistMeasure(dissimilarity.toString());
 	}
 
-	public void selectDistMeasure() {
+	private void selectDistMeasure() {
 		int selectedDistMeasureId = view.getDistanceOptions()
 				.getSelectedMeasureId();
 		int numDims = model.getNumDims();
@@ -546,39 +449,34 @@ public class CartiController {
 		}
 	}
 
-	public void findNoiseInSelectedMeasure() {
+	private void findNoiseInSelectedMeasure() {
 		int minSup = view.getNoiseOptions().getMinSupVal();
 
 		if (minSup == -1) {
 			return;
 		}
-
 		int noiseObjs = model.findNoiseObjsInSelDistMeas(minSup);
 
 		afterFindingNoise(noiseObjs);
 	}
 
-	public void findNoiseInEachMeasure() {
+	private void findNoiseInEachMeasure() {
 		int minSup = view.getNoiseOptions().getMinSupVal();
 
 		if (minSup == -1) {
 			return;
 		}
-
-		// calculate noise objects
 		int noiseObjs = model.findNoiseObjsInEachProj(minSup);
 
 		afterFindingNoise(noiseObjs);
 	}
 
-	public void findNoiseGlobally() {
+	private void findNoiseGlobally() {
 		int minSup = view.getNoiseOptions().getMinSupVal();
 
 		if (minSup == -1) {
 			return;
 		}
-
-		// calculate noise objects
 		int noiseObjs = model.findNoiseGlobally(minSup);
 
 		afterFindingNoise(noiseObjs);
@@ -592,15 +490,12 @@ public class CartiController {
 		}
 
 		// update view
-		Map<Integer, Cluster> clustersMap = model.getClustersMap();
-		Set<Integer> clustersToShow = model.getClustersToShow();
-
-		view.updateClusterInfo(clustersMap, clustersToShow);
+		view.updateClusterInfo(model.getClustersMap(), model.getClustersToShow());
 		view.showInfoMessage(numOfNoiseObjs
 				+ " outliers found, adding them as cluster(s).", "Outliers found");
 	}
 
-	public void findRelatedDims() {
+	private void findRelatedDims() {
 		int minSup = view.getMiningOptions().getMinSupVal();
 		int numOfItemSets = view.getMiningOptions().getNumOfItemSetsVal();
 
