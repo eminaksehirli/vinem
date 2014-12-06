@@ -242,6 +242,14 @@ public class MineOptions {
 		minSupFieldRelDims.setText(Integer.toString(minSup));
 	}
 
+	public void setMinLenVal(int minLen) {
+		minLenField.setText(Integer.toString(minLen));
+	}
+
+	public void setNoiseThreshold(int minSup) {
+		noiseOpts.setMinsupVal(Integer.toString(minSup));
+	}
+
 	static int validateInt(final String text, final int min, String varName) {
 		int val = -1;
 		try {

@@ -117,8 +117,14 @@ public class CartiController {
 		view.updateFigure(model.getMatrixToShow());
 		view.updateSelStats(model.getSelectedObjs(), model.getSupportOfSel(),
 				model.getStDevOfSel(), model.getMedAbsDevOfSel());
-		view.getMiningOptions().setMinSupVal(model.getDefaultMinSup());
+		setDefaultParameters();
 		updateDistribution(true);
+	}
+
+	private void setDefaultParameters() {
+		view.getMiningOptions().setMinLenVal(model.getDefaultMinLen());
+		view.getMiningOptions().setMinSupVal(model.getDefaultMinSup());
+		view.getMiningOptions().setNoiseThreshold(model.getDefaultNoiseSup());
 	}
 
 	private void manSelectedsClear() {

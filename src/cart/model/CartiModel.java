@@ -1039,6 +1039,14 @@ public class CartiModel {
 		return (int) (k * 0.75);
 	}
 
+	public int getDefaultMinLen() {
+		return (int) (k * 0.5);
+	}
+
+	public int getDefaultNoiseSup() {
+		return (int) (k * 0.3);
+	}
+
 	public int getMaxEps() {
 		if (maxEps < 0) {
 			double max = -1;

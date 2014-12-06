@@ -77,4 +77,8 @@ public class NoiseOptions {
 	public int getMinSupVal() {
 		return MineOptions.validateInt(minSupField.getText(), 0, "Minimum support");
 	}
+
+	public void setMinsupVal(String minSup) {
+		minSupField.setText(minSup);
+	}
 }
