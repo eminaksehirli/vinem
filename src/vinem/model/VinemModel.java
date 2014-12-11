@@ -22,7 +22,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import vinem.controller.Neighborhood;
-import vinem.gui.Cluster;
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
 import mime.plain.PlainItemSet;

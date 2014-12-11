@@ -37,7 +37,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 
 import vinem.controller.Neighborhood;
-import vinem.gui.Cluster;
+import vinem.model.Cluster;
 import vinem.model.Obj;
 import cart.cartifier.Dissimilarity;
 
