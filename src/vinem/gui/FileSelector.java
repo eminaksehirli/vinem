@@ -33,7 +33,7 @@ import com.google.common.base.Joiner;
 public class FileSelector {
 	private static final String Input_File_Sep = "||";
 	private static final String Recent_Key = "recent-files";
-	private static final String Pref_Key = "be.adrem.cartiliner";
+	private static final String Pref_Key = "vinem.files";
 
 	private FileSelectorFrame frame;
 	private List<InputFile> filesList = new ArrayList<>();
