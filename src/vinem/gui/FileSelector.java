@@ -238,6 +238,15 @@ public class FileSelector {
 
 	private void saveRecents() {
 		Preferences pref = Preferences.userRoot().node(Pref_Key);
+		if (filesList.isEmpty()) {
+			try {
+				pref.removeNode();
+			} catch (BackingStoreException e) {
+				System.err.println("Cannot remove the recent file history!");
+				e.printStackTrace();
+			}
+			return;
+		}
 
 		Joiner j = Joiner.on(Input_File_Sep);
 		String str = j.join(filesList);
