@@ -1,4 +1,4 @@
-package cart.view;
+package vinem.view;
 
 import static java.awt.Component.CENTER_ALIGNMENT;
 

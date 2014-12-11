@@ -1,4 +1,4 @@
-package cart.view;
+package vinem.view;
 
 import java.awt.Component;
 import java.awt.Dimension;

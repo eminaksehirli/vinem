@@ -1,4 +1,4 @@
-package cart.gui2;
+package vinem.gui;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;

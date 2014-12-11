@@ -1,4 +1,4 @@
-package cart.gui2;
+package vinem.gui;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import cart.model.Obj;
+import vinem.model.Obj;
 
 public class Cluster {
 

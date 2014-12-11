@@ -1,4 +1,4 @@
-package cart.controller;
+package vinem.controller;
 
 public enum Neighborhood {
 	KNN("k-NN"), Radius("eps-N");

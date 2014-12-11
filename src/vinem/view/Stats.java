@@ -1,4 +1,4 @@
-package cart.view;
+package vinem.view;
 
 import java.awt.FlowLayout;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.table.AbstractTableModel;
 
-import cart.model.Obj;
+import vinem.model.Obj;
 
 public class Stats {
 

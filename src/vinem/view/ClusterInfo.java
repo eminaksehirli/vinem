@@ -1,4 +1,4 @@
-package cart.view;
+package vinem.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -21,8 +21,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import cart.gui2.Cluster;
-import cart.model.Obj;
+import vinem.gui.Cluster;
+import vinem.model.Obj;
 
 public class ClusterInfo {
 

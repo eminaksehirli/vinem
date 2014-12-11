@@ -1,4 +1,4 @@
-package cart.model;
+package vinem.model;
 
 import static cart.maximizer.MaximalMinerCombiner.getOrd2Id;
 import static java.util.Collections.singleton;
@@ -21,6 +21,8 @@ import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import vinem.controller.Neighborhood;
+import vinem.gui.Cluster;
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
 import mime.plain.PlainItemSet;
@@ -30,8 +32,6 @@ import cart.cartifier.CartifyRadiusDb;
 import cart.cartifier.Dissimilarity;
 import cart.cartifier.OneDimDissimilarity;
 import cart.cartifier.Pair;
-import cart.controller.Neighborhood;
-import cart.gui2.Cluster;
 import cart.io.InputFile;
 import cart.maximizer.Freq;
 import cart.maximizer.ItemsetMaximalMiner;

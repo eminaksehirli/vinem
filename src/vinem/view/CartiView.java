@@ -1,4 +1,4 @@
-package cart.view;
+package vinem.view;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -36,10 +36,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 
+import vinem.controller.Neighborhood;
+import vinem.gui.Cluster;
+import vinem.model.Obj;
 import cart.cartifier.Dissimilarity;
-import cart.controller.Neighborhood;
-import cart.gui2.Cluster;
-import cart.model.Obj;
 
 public class CartiView {
 

@@ -1,4 +1,4 @@
-package cart.gui2;
+package vinem.gui;
 
 import static java.lang.Integer.parseInt;
 
@@ -24,9 +24,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import cart.controller.CartiController;
-import cart.model.CartiModel;
-import cart.view.CartiView;
+import vinem.controller.CartiController;
+import vinem.model.CartiModel;
+import vinem.view.CartiView;
 
 import com.google.common.base.Joiner;
 

@@ -1,4 +1,4 @@
-package cart.model;
+package vinem.model;
 
 public class Obj {
 	public int id;

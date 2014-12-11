@@ -1,4 +1,4 @@
-package cart.view;
+package vinem.view;
 
 import java.awt.Color;
 import java.awt.Component;

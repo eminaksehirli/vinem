@@ -1,6 +1,6 @@
-package cart.gui2;
+package vinem.gui;
 
-import static cart.view.CartiView.createHorizontalBoxPanel;
+import static vinem.view.CartiView.createHorizontalBoxPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import cart.view.CartiView;
+import vinem.view.CartiView;
 
 public class FileSelectorFrame extends JFrame {
 	private static final long serialVersionUID = 3599962945189307089L;

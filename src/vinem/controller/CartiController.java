@@ -1,4 +1,4 @@
-package cart.controller;
+package vinem.controller;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static java.lang.Math.max;
@@ -29,18 +29,18 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import vinem.model.CartiModel;
+import vinem.view.CartiPanel;
+import vinem.view.CartiView;
+import vinem.view.ClusterInfo;
+import vinem.view.DistOptions;
+import vinem.view.FilterOptions;
+import vinem.view.MineOptions;
+import vinem.view.NoiseOptions;
+import vinem.view.SelOptions;
 import cart.cartifier.CosineDistance;
 import cart.cartifier.Dissimilarity;
 import cart.cartifier.EuclidianDistance;
-import cart.model.CartiModel;
-import cart.view.CartiPanel;
-import cart.view.CartiView;
-import cart.view.ClusterInfo;
-import cart.view.DistOptions;
-import cart.view.FilterOptions;
-import cart.view.MineOptions;
-import cart.view.NoiseOptions;
-import cart.view.SelOptions;
 
 /**
  * @author Detlev

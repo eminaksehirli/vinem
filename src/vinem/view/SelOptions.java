@@ -1,4 +1,4 @@
-package cart.view;
+package vinem.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -18,7 +18,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionListener;
 
-import cart.model.Obj;
+import vinem.model.Obj;
 
 public class SelOptions {
 
