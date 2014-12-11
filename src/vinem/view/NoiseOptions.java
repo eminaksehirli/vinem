@@ -1,17 +1,11 @@
 package vinem.view;
 
-import static java.awt.Component.CENTER_ALIGNMENT;
-
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -31,10 +25,7 @@ public class NoiseOptions {
 		// the main panel
 		noisePanel = VinemView.createVerticalBoxPanel(350, 150);
 		// add minSup textfield
-		JPanel minSupPanel = VinemView.createHorizontalBoxPanel(300, 40);
-		minSupPanel.add(new JLabel("minSup: "));
-		minSupPanel.setAlignmentX(CENTER_ALIGNMENT);
-
+		JPanel minSupPanel =VinemView.createPanelWithLabel(MineOptions.T_MinSup);
 		minSupField = new JTextField();
 		minSupField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minSupPanel.add(minSupField);

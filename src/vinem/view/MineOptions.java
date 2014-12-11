@@ -20,7 +20,7 @@ public class MineOptions {
 
 	private static final String T_MinLen = "Min-Length";
 	private static final String T_NumOfItemsets = "# of itemsets";
-	private static final String T_MinSup = "Min-Support";
+	static final String T_MinSup = "Min-Support";
 	public final static String MINEIMM = "MineOptions.MineIMM";
 	public final static String MINEIMMSEL = "MineOptions.MineIMMSEL";
 	public final static String MINERMM = "MineOptions.MineRMM";
