@@ -46,7 +46,7 @@ import cart.maximizer.OneDCartifier;
  * 
  */
 
-public class CartiModel {
+public class VinemModel {
 	private int numObjects;
 	private int numDims;
 	private int k;
@@ -76,7 +76,7 @@ public class CartiModel {
 	private double eps;
 	private double maxEps = -1;
 
-	public CartiModel(InputFile inputFile) {
+	public VinemModel(InputFile inputFile) {
 		this.inputFile = inputFile;
 		this.k = 1;
 		this.orderDim = 0;

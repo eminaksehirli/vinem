@@ -29,9 +29,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import vinem.model.CartiModel;
-import vinem.view.CartiPanel;
-import vinem.view.CartiView;
+import vinem.model.VinemModel;
+import vinem.view.VinemPanel;
+import vinem.view.VinemView;
 import vinem.view.ClusterInfo;
 import vinem.view.DistOptions;
 import vinem.view.FilterOptions;
@@ -47,13 +47,13 @@ import cart.cartifier.EuclidianDistance;
  * @author Aksehirli
  * 
  */
-public class CartiController {
-	private CartiModel model;
-	private CartiView view;
+public class VinemController {
+	private VinemModel model;
+	private VinemView view;
 
-	public CartiController(CartiModel cartiModel, CartiView cartiView) {
-		this.model = cartiModel;
-		this.view = cartiView;
+	public VinemController(VinemModel vinemModel, VinemView vinemView) {
+		this.model = vinemModel;
+		this.view = vinemView;
 	}
 
 	public void run() {
@@ -324,8 +324,8 @@ public class CartiController {
 
 	private void saveMatrix() {
 		System.out.println("Will save!");
-		int w = view.getCartiPanel().getWidth() - CartiPanel.TickSize;
-		int h = view.getCartiPanel().getHeight() - CartiPanel.TickSize;
+		int w = view.getCartiPanel().getWidth() - VinemPanel.TickSize;
+		int h = view.getCartiPanel().getHeight() - VinemPanel.TickSize;
 		BufferedImage img = new BufferedImage(w, h, TYPE_INT_RGB);
 		view.getCartiPanel().paintComponent(img.createGraphics());
 		File file;
@@ -571,7 +571,7 @@ public class CartiController {
 					findNoiseGlobally();
 				} else if (e.getActionCommand() == SelOptions.CLUSTER) {
 					clusterSelected();
-				} else if (e.getActionCommand() == CartiView.SHOWDIST) {
+				} else if (e.getActionCommand() == VinemView.SHOWDIST) {
 					updateDistribution(false);
 				} else if (e.getActionCommand() == ClusterInfo.ADD) {
 					addSelectedToClusters();
@@ -585,9 +585,9 @@ public class CartiController {
 					selectClusters();
 				} else if (e.getActionCommand() == ClusterInfo.SAVECLUSTERS) {
 					saveClusters();
-				} else if (e.getActionCommand() == CartiView.CARTIFIER_CHANGE) {
+				} else if (e.getActionCommand() == VinemView.CARTIFIER_CHANGE) {
 					changeCartifier();
-				} else if (e.getActionCommand() == CartiView.SAVE_MATRIX) {
+				} else if (e.getActionCommand() == VinemView.SAVE_MATRIX) {
 					saveMatrix();
 				}
 			}

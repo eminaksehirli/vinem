@@ -29,9 +29,9 @@ public class NoiseOptions {
 
 	public NoiseOptions() {
 		// the main panel
-		noisePanel = CartiView.createVerticalBoxPanel(350, 150);
+		noisePanel = VinemView.createVerticalBoxPanel(350, 150);
 		// add minSup textfield
-		JPanel minSupPanel = CartiView.createHorizontalBoxPanel(300, 40);
+		JPanel minSupPanel = VinemView.createHorizontalBoxPanel(300, 40);
 		minSupPanel.add(new JLabel("minSup: "));
 		minSupPanel.setAlignmentX(CENTER_ALIGNMENT);
 
@@ -45,7 +45,7 @@ public class NoiseOptions {
 		noisePanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// add allMeas/selMeas buttons
-		JPanel btPane = CartiView.createVerticalBoxPanel(300, 100);
+		JPanel btPane = VinemView.createVerticalBoxPanel(300, 100);
 		btPane.add(new JLabel("Find the outliers..."));
 		selMeas = new JButton("in the selected measure");
 		selMeas.setActionCommand(SELMEAS);

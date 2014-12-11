@@ -34,14 +34,14 @@ public class DistOptions {
 
 	public DistOptions(Set<Integer> dimList, List<Dissimilarity> distMeasures) {
 		// the main panel
-		distPanel = CartiView.createVerticalBoxPanel(300, 240);
+		distPanel = VinemView.createVerticalBoxPanel(300, 240);
 		distPanel.setBorder(BorderFactory.createTitledBorder("Distance measures"));
 
 		// panel containing radio buttons, dim list, add button
-		JPanel topPanel = CartiView.createHorizontalBoxPanel(300, 200);
+		JPanel topPanel = VinemView.createHorizontalBoxPanel(300, 200);
 
 		// distance mode radio buttons
-		JPanel distModePanel = CartiView.createVerticalBoxPanel(100, 200);
+		JPanel distModePanel = VinemView.createVerticalBoxPanel(100, 200);
 		ButtonGroup distButtons = new ButtonGroup();
 		distEucl = new JRadioButton("Euclidian", true);
 		distCos = new JRadioButton("Cosine");

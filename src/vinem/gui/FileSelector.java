@@ -24,9 +24,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import vinem.controller.CartiController;
-import vinem.model.CartiModel;
-import vinem.view.CartiView;
+import vinem.controller.VinemController;
+import vinem.model.VinemModel;
+import vinem.view.VinemView;
 
 import com.google.common.base.Joiner;
 
@@ -148,7 +148,7 @@ public class FileSelector {
 
 		dl.add(infoPane, BorderLayout.CENTER);
 
-		JPanel fixBts = CartiView.createHorizontalBoxPanel(600, 30);
+		JPanel fixBts = VinemView.createHorizontalBoxPanel(600, 30);
 		JButton repairBt = new JButton("Try to repair");
 		JButton showBt = new JButton("Just show the broken info");
 		JButton clearBt = new JButton("Clear the recent files");
@@ -276,11 +276,11 @@ public class FileSelector {
 			return;
 		}
 
-		CartiModel cartiModel = new CartiModel(inputFile);
-		CartiView cartiView = new CartiView();
-		CartiController cartiController = new CartiController(cartiModel, cartiView);
+		VinemModel vinemModel = new VinemModel(inputFile);
+		VinemView vinemView = new VinemView();
+		VinemController vinemController = new VinemController(vinemModel, vinemView);
 
-		cartiController.run();
+		vinemController.run();
 	}
 
 	private void upgradeRecents() {

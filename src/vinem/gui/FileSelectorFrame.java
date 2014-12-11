@@ -1,6 +1,6 @@
 package vinem.gui;
 
-import static vinem.view.CartiView.createHorizontalBoxPanel;
+import static vinem.view.VinemView.createHorizontalBoxPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import vinem.view.CartiView;
+import vinem.view.VinemView;
 
 public class FileSelectorFrame extends JFrame {
 	private static final long serialVersionUID = 3599962945189307089L;
@@ -35,7 +35,7 @@ public class FileSelectorFrame extends JFrame {
 		newFilePane.setBorder(BorderFactory.createEtchedBorder());
 		newFilePane.add(new JLabel("Select a new file"), BorderLayout.NORTH);
 
-		JPanel filePane = CartiView.createHorizontalBoxPanel(500, 40);
+		JPanel filePane = VinemView.createHorizontalBoxPanel(500, 40);
 		fileNameField = new JTextField(50);
 		filePane.add(fileNameField);
 
@@ -55,7 +55,7 @@ public class FileSelectorFrame extends JFrame {
 		detailsPane.add(separatorTF);
 		detailsPane.add(runBt);
 
-		JPanel fileInfoPane = CartiView.createVerticalBoxPanel(500, 90);
+		JPanel fileInfoPane = VinemView.createVerticalBoxPanel(500, 90);
 		fileInfoPane.add(filePane);
 		fileInfoPane.add(detailsPane);
 

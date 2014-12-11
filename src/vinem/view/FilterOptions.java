@@ -24,14 +24,14 @@ public class FilterOptions {
 
 	public FilterOptions() {
 		// the main panel
-		optionsPanel = CartiView.createVerticalBoxPanel(300, 130);
+		optionsPanel = VinemView.createVerticalBoxPanel(300, 130);
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("Filtering"));
 
 		// top two buttons
-		JPanel topPanel = CartiView.createHorizontalBoxPanel(300, 50);
+		JPanel topPanel = VinemView.createHorizontalBoxPanel(300, 50);
 
 		// bottom two buttons
-		JPanel bottomPanel = CartiView.createHorizontalBoxPanel(300, 50);
+		JPanel bottomPanel = VinemView.createHorizontalBoxPanel(300, 50);
 
 		// add filter/clear/undo buttons
 		filterSel = new JButton("Filter out selected");

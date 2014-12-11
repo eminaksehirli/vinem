@@ -41,7 +41,7 @@ import vinem.gui.Cluster;
 import vinem.model.Obj;
 import cart.cartifier.Dissimilarity;
 
-public class CartiView {
+public class VinemView {
 
 	public final static String SHOWDIST = "CartiView.ShowDist";
 	public static final String CARTIFIER_CHANGE = "CartiView.CartifierChange";
@@ -54,7 +54,7 @@ public class CartiView {
 	private JCheckBox syncOrderSlider;
 	private JSlider kSlider;
 	private JSlider epsSlider;
-	private CartiPanel cartiPanel;
+	private VinemPanel vinemPanel;
 	private SelOptions selectionOptions;
 	private FilterOptions filteringOptions;
 	private MineOptions miningOptions;
@@ -79,7 +79,7 @@ public class CartiView {
 	private JPanel visualPanel;
 	private JButton saveMatrixButton;
 
-	public CartiView() {
+	public VinemView() {
 		theFrame = new JFrame("Visual Interactive Neighborhood Miner");
 		theFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		theFrame.setLayout(new BorderLayout(10, 10));
@@ -94,8 +94,8 @@ public class CartiView {
 
 		// VISUAL GOES HERE
 		// add cartiPanel
-		cartiPanel = new CartiPanel(matrixToShow);
-		JScrollPane sPane = new JScrollPane(cartiPanel);
+		vinemPanel = new VinemPanel(matrixToShow);
+		JScrollPane sPane = new JScrollPane(vinemPanel);
 		sPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 		visualPanel.add(sPane);
 
@@ -282,7 +282,7 @@ public class CartiView {
 	}
 
 	public void addCartiPanelListener(MouseListener cartiPanelListener) {
-		cartiPanel.addMouseListener(cartiPanelListener);
+		vinemPanel.addMouseListener(cartiPanelListener);
 	}
 
 	public void addClusterTableModelListener(
@@ -321,7 +321,7 @@ public class CartiView {
 	}
 
 	public void updateFigure(int[][] matrixToShow) {
-		cartiPanel.updateMatrix(matrixToShow);
+		vinemPanel.updateMatrix(matrixToShow);
 		theFrame.validate();
 		theFrame.repaint();
 	}
@@ -330,17 +330,17 @@ public class CartiView {
 	// in the figure
 	// this is used to counter a bug when calling updateFigure after a filtering
 	public void clearFigureSavedLocs() {
-		cartiPanel.clearSavedLocs();
+		vinemPanel.clearSavedLocs();
 	}
 
 	public void updateFigureSelected(Set<Integer> selectedLocs) {
-		cartiPanel.updateSelected(selectedLocs);
+		vinemPanel.updateSelected(selectedLocs);
 		theFrame.validate();
 		theFrame.repaint();
 	}
 
 	public void updateFigureClustered(Set<Integer> clusteredLocs) {
-		cartiPanel.updateClustered(clusteredLocs);
+		vinemPanel.updateClustered(clusteredLocs);
 		theFrame.validate();
 		theFrame.repaint();
 	}
@@ -445,8 +445,8 @@ public class CartiView {
 		return selectionOptions;
 	}
 
-	public CartiPanel getCartiPanel() {
-		return cartiPanel;
+	public VinemPanel getCartiPanel() {
+		return vinemPanel;
 	}
 
 	public JPanel getControlsPanel() {
@@ -492,10 +492,10 @@ public class CartiView {
 	public void updateDistribution(int[] starts, boolean reset) {
 		showingDist = !reset && showingDist;
 		if (!showingDist && showDistButton.isSelected()) {
-			cartiPanel.showDistribution(starts);
+			vinemPanel.showDistribution(starts);
 			showingDist = true;
 		} else if (showingDist) {
-			cartiPanel.hideDistribution(starts);
+			vinemPanel.hideDistribution(starts);
 			showingDist = false;
 		}
 		theFrame.validate();

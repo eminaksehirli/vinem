@@ -3,7 +3,7 @@ package vinem.gui;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-public class CartiMain {
+public class Runner {
 
 	public static void main(String[] args) {
 		try {

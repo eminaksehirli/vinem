@@ -48,7 +48,7 @@ public class ClusterInfo {
 
 	public ClusterInfo() {
 		// the main panel
-		infoPanel = CartiView.createVerticalBoxPanel(600, 350);
+		infoPanel = VinemView.createVerticalBoxPanel(600, 350);
 
 		// the table containg cluster information
 		tableModel = new ClusterTable();
@@ -84,9 +84,9 @@ public class ClusterInfo {
 		infoPanel.add(new JScrollPane(table));
 
 		// add/remove/delete/select buttons
-		JPanel topButtonsPanel = CartiView.createHorizontalBoxPanel(600, 50);
-		JPanel bottomButtonsPanel = CartiView.createHorizontalBoxPanel(600, 50);
-		JPanel savePanel = CartiView.createHorizontalBoxPanel(600, 50);
+		JPanel topButtonsPanel = VinemView.createHorizontalBoxPanel(600, 50);
+		JPanel bottomButtonsPanel = VinemView.createHorizontalBoxPanel(600, 50);
+		JPanel savePanel = VinemView.createHorizontalBoxPanel(600, 50);
 		add = new JButton("Add selecteds to cluster(s)");
 		add.setActionCommand(ADD);
 

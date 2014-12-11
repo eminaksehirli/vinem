@@ -49,7 +49,7 @@ public class MineOptions {
 
 	public MineOptions() {
 		// the main panel
-		minePanel = CartiView.createVerticalBoxPanel(300, 200);
+		minePanel = VinemView.createVerticalBoxPanel(300, 200);
 		minePanel.setBorder(BorderFactory.createTitledBorder("Mining"));
 
 		// the combo box for selecting the miner
@@ -93,18 +93,18 @@ public class MineOptions {
 	}
 
 	private JPanel createFindRelevantDimsCard() {
-		JPanel cardRelDims = CartiView.createVerticalBoxPanel(300, 150);
+		JPanel cardRelDims = VinemView.createVerticalBoxPanel(300, 150);
 		cardRelDims.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// add minSup to card
-		JPanel minSupPane = CartiView.createPanelWithLabel(T_MinSup);
+		JPanel minSupPane = VinemView.createPanelWithLabel(T_MinSup);
 		minSupFieldRelDims = new JTextField();
 		minSupFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minSupPane.add(minSupFieldRelDims);
 		cardRelDims.add(minSupPane);
 
 		// add numOfItemSets to card
-		JPanel numOfItemSetsPanel2 = CartiView
+		JPanel numOfItemSetsPanel2 = VinemView
 				.createPanelWithLabel(T_NumOfItemsets);
 		numOfItemSetsFieldRelDims = new JTextField("2000");
 		numOfItemSetsFieldRelDims.setMaximumSize(new Dimension(Integer.MAX_VALUE,
@@ -123,18 +123,18 @@ public class MineOptions {
 	}
 
 	private JPanel createSamplingMinerCard() {
-		JPanel cardRMM = CartiView.createVerticalBoxPanel(300, 150);
+		JPanel cardRMM = VinemView.createVerticalBoxPanel(300, 150);
 		cardRMM.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// add minSup to card
-		JPanel minSupPanel = CartiView.createPanelWithLabel(T_MinSup);
+		JPanel minSupPanel = VinemView.createPanelWithLabel(T_MinSup);
 		minSupFieldRMM = new JTextField();
 		minSupFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minSupPanel.add(minSupFieldRMM);
 		cardRMM.add(minSupPanel);
 
 		// add numOfItemSets to card
-		JPanel numOfItemSetsPanel = CartiView.createPanelWithLabel(T_NumOfItemsets);
+		JPanel numOfItemSetsPanel = VinemView.createPanelWithLabel(T_NumOfItemsets);
 		numOfItemSetsFieldRMM = new JTextField("100");
 		numOfItemSetsFieldRMM.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		numOfItemSetsPanel.add(numOfItemSetsFieldRMM);
@@ -143,7 +143,7 @@ public class MineOptions {
 		cardRMM.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// add buttons for mining to card
-		JPanel btPane = CartiView.createHorizontalBoxPanel(300, 50);
+		JPanel btPane = VinemView.createHorizontalBoxPanel(300, 50);
 		mineRMMBt = new JButton("Mine");
 		mineRMMBt.setActionCommand(MINERMM);
 		mineRMMSelBt = new JButton("Mine Selected");
@@ -156,11 +156,11 @@ public class MineOptions {
 	}
 
 	private JPanel createFastMinerCard() {
-		JPanel cardIMM = CartiView.createVerticalBoxPanel(300, 150);
+		JPanel cardIMM = VinemView.createVerticalBoxPanel(300, 150);
 		cardIMM.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// add minLen to card
-		JPanel minLenPanel = CartiView.createPanelWithLabel(T_MinLen);
+		JPanel minLenPanel = VinemView.createPanelWithLabel(T_MinLen);
 		minLenField = new JTextField();
 		minLenField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minLenPanel.add(minLenField);
@@ -169,7 +169,7 @@ public class MineOptions {
 		cardIMM.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		// buttons for mining
-		JPanel btPane = CartiView.createHorizontalBoxPanel(300, 50);
+		JPanel btPane = VinemView.createHorizontalBoxPanel(300, 50);
 		mineIMMBt = new JButton("Mine");
 		mineIMMBt.setActionCommand(MINEIMM);
 		mineIMMSelBt = new JButton("Mine Selected");

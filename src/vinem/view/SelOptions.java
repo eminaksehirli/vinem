@@ -36,7 +36,7 @@ public class SelOptions {
 
 	public SelOptions(List<Obj> orderedObjs) {
 		// the main panel
-		optionsPanel = CartiView.createVerticalBoxPanel(300, 300);
+		optionsPanel = VinemView.createVerticalBoxPanel(300, 300);
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("Selection"));
 
 		// list of selected/unselected objects
@@ -67,7 +67,7 @@ public class SelOptions {
 		optionsPanel.add(buttonPane);
 
 		// add radio buttons
-		JPanel selModePanel = CartiView.createHorizontalBoxPanel(300, 50);
+		JPanel selModePanel = VinemView.createHorizontalBoxPanel(300, 50);
 		ButtonGroup selectButtons = new ButtonGroup();
 		modeSelect = new JRadioButton("Select", true);
 		modeAnd = new JRadioButton("And");

@@ -26,7 +26,7 @@ public class Stats {
 
 	public Stats(Set<Integer> dims) {
 		// the main panel
-		statsPanel = CartiView.createVerticalBoxPanel(520, 300);
+		statsPanel = VinemView.createVerticalBoxPanel(520, 300);
 
 		// show size
 		JPanel sizePanel = new JPanel(new FlowLayout());

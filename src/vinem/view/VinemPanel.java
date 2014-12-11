@@ -9,7 +9,7 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
-public class CartiPanel extends JPanel {
+public class VinemPanel extends JPanel {
 	public static final int TickSize = 15;
 	private static final long serialVersionUID = 6585392843171261529L;
 	private int cellHeight;
@@ -24,7 +24,7 @@ public class CartiPanel extends JPanel {
 	 *          A 2d matrix containing 0s and 1s, where a 1 means we need to
 	 *          colour that spot.
 	 */
-	public CartiPanel(int[][] matrix) {
+	public VinemPanel(int[][] matrix) {
 		this.matrix = matrix;
 		createImage();
 
