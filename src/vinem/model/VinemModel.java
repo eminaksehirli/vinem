@@ -190,7 +190,7 @@ public class VinemModel {
 
 			loc2ObjIdMaps[dimId] = new int[objId2Loc(dimId).length];
 			for (int i = 0; i < objId2Loc(dimId).length; i++) {
-				loc2ObjIdMaps[dimId][objId2Loc(dimId)[i]] = i;
+				loc2ObjIdMaps[dimId][objId2Loc(dimId, i)] = i;
 			}
 		}
 	}
@@ -214,8 +214,8 @@ public class VinemModel {
 				for (int objId = item.getTIDs().nextSetBit(0); objId >= 0; objId = item
 						.getTIDs().nextSetBit(objId + 1)) {
 					if (!filtereds.contains(objId)) {
-						matrixToShow[objId2Loc(orderDim)[objId]][objId2Loc(orderDim)[item
-								.getId()]] = 1;
+						matrixToShow[objId2Loc(orderDim, objId)][objId2Loc(orderDim,
+								item.getId())] = 1;
 					}
 				}
 			}
@@ -244,7 +244,7 @@ public class VinemModel {
 		List<Obj> orderedObjs = new ArrayList<>();
 
 		for (int i = 0; i < loc2ObjId().length; i++) {
-			orderedObjs.add(getObj(loc2ObjId()[i]));
+			orderedObjs.add(getObj(loc2ObjId(i)));
 		}
 
 		return orderedObjs;
@@ -470,7 +470,7 @@ public class VinemModel {
 			int[] locs = new int[objIds.size()];
 			int i = 0;
 			for (int id : objIds) {
-				locs[i] = objId2Loc(dimIx)[id];
+				locs[i] = objId2Loc(dimIx, id);
 				i++;
 			}
 			Arrays.sort(locs);
@@ -576,7 +576,7 @@ public class VinemModel {
 		Set<Integer> locs = new HashSet<Integer>();
 
 		for (int id : selecteds) {
-			locs.add(objId2Loc(orderDim)[id]);
+			locs.add(objId2Loc(orderDim, id));
 		}
 
 		return locs;
@@ -595,7 +595,7 @@ public class VinemModel {
 		Set<Integer> selectedIds = new HashSet<Integer>();
 
 		for (int loc : selectedLocs) {
-			selectedIds.add(loc2ObjId()[loc]);
+			selectedIds.add(loc2ObjId(loc));
 		}
 
 		// depending on selection mode, set/intersect/add to the selecteds
@@ -684,7 +684,7 @@ public class VinemModel {
 			for (Obj obj : clustersMap.get(clusterId).getObjects()) {
 				// cluster might contain filtered ids
 				if (!filtereds.contains(obj.id)) {
-					locs.add(objId2Loc(orderDim)[obj.id]);
+					locs.add(objId2Loc(orderDim, obj.id));
 				}
 			}
 		}
@@ -814,7 +814,7 @@ public class VinemModel {
 	}
 
 	public void setOrderByObj(int objIx) {
-		int objId = loc2ObjId()[objIx];
+		int objId = loc2ObjId(objIx);
 		System.out.println("Order by object " + objId);
 		Dissimilarity dm = getSelectedDistMeasure();
 		// MyCartifierInMemory cartifier = new MyCartifierInMemory(data);
@@ -868,7 +868,7 @@ public class VinemModel {
 
 		for (PlainItem item : pDb) {
 			if (!filtereds.contains(item.getId())) {
-				starts[objId2Loc(orderDim)[item.getId()]] = size
+				starts[objId2Loc(orderDim, item.getId())] = size
 						- item.getTIDs().cardinality();
 			}
 		}
@@ -948,11 +948,25 @@ public class VinemModel {
 		return objId2LocMaps[dimId];
 	}
 
+	private int objId2Loc(int dimId, int objId) {
+		if (dimId > dims.size()) {
+			return byObjId2LocMap[objId];
+		}
+		return objId2LocMaps[dimId][objId];
+	}
+
 	private int[] loc2ObjId() {
 		if (orderDim > dims.size()) {
 			return byObjLoc2IdMap;
 		}
 		return loc2ObjIdMaps[orderDim];
+	}
+
+	private int loc2ObjId(int loc) {
+		if (orderDim > dims.size()) {
+			return byObjLoc2IdMap[loc];
+		}
+		return loc2ObjIdMaps[orderDim][loc];
 	}
 
 	private static String[] rangeAsArr(int r) {
