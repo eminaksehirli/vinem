@@ -1003,7 +1003,7 @@ public class VinemModel {
 	}
 
 	public File saveClusters(Set<Integer> clusterIds, boolean saveDim,
-			boolean saveSize) throws IOException {
+			boolean saveSize, boolean useAttrNames) throws IOException {
 		String filePrefix = "Clusters";
 		if (saveSize) {
 			filePrefix += "-size";
@@ -1020,7 +1020,15 @@ public class VinemModel {
 				pw.print(cl.getObjects().size() + ";");
 			}
 			if (saveDim) {
-				pw.print(toSpaceSeparated(cl.getDims()) + ";");
+				if (useAttrNames) {
+					List<String> namesToPrint = new ArrayList<>(cl.getDims().size());
+					for (int dimIx : cl.getDims()) {
+						namesToPrint.add(columnNames[dimIx]);
+					}
+					pw.print(toSpaceSeparated(namesToPrint) + ";");
+				} else {
+					pw.print(toSpaceSeparated(cl.getDims()) + ";");
+				}
 			}
 			pw.println(toSpaceSeparated(cl.getObjects()));
 		}

@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -45,6 +47,7 @@ public class ClusterInfo {
 	private JButton saveBt;
 	public JCheckBox saveSizeCB;
 	public JCheckBox saveDimCB;
+	public JCheckBox useAttrNamesCB;
 
 	public ClusterInfo() {
 		// the main panel
@@ -104,8 +107,10 @@ public class ClusterInfo {
 
 		saveSizeCB = new JCheckBox("Save size(s)");
 		saveDimCB = new JCheckBox("Save dimension(s)");
+		useAttrNamesCB = new JCheckBox("Use attribute names");
 		saveBt = new JButton("Save cluster(s) to file");
 		saveBt.setActionCommand(SAVECLUSTERS);
+		useAttrNamesCB.setEnabled(false);
 
 		topButtonsPanel.add(add);
 		topButtonsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -119,7 +124,15 @@ public class ClusterInfo {
 
 		savePanel.add(saveSizeCB);
 		savePanel.add(saveDimCB);
+		savePanel.add(useAttrNamesCB);
 		savePanel.add(saveBt);
+
+		saveDimCB.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				useAttrNamesCB.setEnabled(saveDimCB.isSelected());
+			}
+		});
 
 		infoPanel.add(topButtonsPanel);
 		infoPanel.add(bottomButtonsPanel);

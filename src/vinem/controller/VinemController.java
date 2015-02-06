@@ -306,9 +306,12 @@ public class VinemController {
 		}
 		final boolean saveDim = view.getClusterInfo().saveDimCB.isSelected();
 		final boolean saveSize = view.getClusterInfo().saveSizeCB.isSelected();
+		final boolean useAttrNames = view.getClusterInfo().useAttrNamesCB
+				.isSelected();
 		File clusterFile;
 		try {
-			clusterFile = model.saveClusters(clusterIds, saveDim, saveSize);
+			clusterFile = model.saveClusters(clusterIds, saveDim, saveSize,
+					useAttrNames);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null,
 					"Could not save the clusters: " + e.toString(),
