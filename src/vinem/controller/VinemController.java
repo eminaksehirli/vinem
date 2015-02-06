@@ -30,14 +30,14 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import vinem.model.VinemModel;
-import vinem.view.VinemPanel;
-import vinem.view.VinemView;
 import vinem.view.ClusterInfo;
 import vinem.view.DistOptions;
 import vinem.view.FilterOptions;
 import vinem.view.MineOptions;
 import vinem.view.NoiseOptions;
 import vinem.view.SelOptions;
+import vinem.view.VinemPanel;
+import vinem.view.VinemView;
 import cart.cartifier.CosineDistance;
 import cart.cartifier.Dissimilarity;
 import cart.cartifier.EuclidianDistance;
@@ -98,7 +98,7 @@ public class VinemController {
 		view.updateFigureSelected(model.getSelectedLocs());
 		view.updateFigureClustered(model.getLocsOfClustersToShow());
 		view.updateSelOptions(model.getOrderedObjList(), model.getSelecteds());
-		updateDistribution(true);
+		updateDistribution();
 	}
 
 	private void kSliderChanged() {
@@ -118,7 +118,7 @@ public class VinemController {
 		view.updateSelStats(model.getSelectedObjs(), model.getSupportOfSel(),
 				model.getStDevOfSel(), model.getMedAbsDevOfSel());
 		setDefaultParameters();
-		updateDistribution(true);
+		updateDistribution();
 	}
 
 	private void setDefaultParameters() {
@@ -572,7 +572,7 @@ public class VinemController {
 				} else if (e.getActionCommand() == SelOptions.CLUSTER) {
 					clusterSelected();
 				} else if (e.getActionCommand() == VinemView.SHOWDIST) {
-					updateDistribution(false);
+					toogleDistribution();
 				} else if (e.getActionCommand() == ClusterInfo.ADD) {
 					addSelectedToClusters();
 				} else if (e.getActionCommand() == ClusterInfo.REMOVESEL) {
@@ -603,8 +603,18 @@ public class VinemController {
 		afterCartDbChange();
 	}
 
-	protected void updateDistribution(boolean reset) {
-		view.updateDistribution(model.getDistribution(), reset);
+	private void toogleDistribution() {
+		if (view.isShowDistribution()) {
+			updateDistribution();
+		} else {
+			view.hideDistribution();
+		}
+	}
+
+	protected void updateDistribution() {
+		if (view.isShowDistribution()) {
+			view.updateDistribution(model.getDistribution());
+		}
 	}
 
 	/**

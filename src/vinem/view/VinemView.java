@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -74,10 +75,10 @@ public class VinemView {
 	private boolean clusterInfoListenerShouldListen;
 	// prevents the distance options box listener from listening while updating
 	private boolean distOptionsListenerShouldListen;
-	private boolean showingDist;
 	private JPanel controlsPanel;
 	private JPanel visualPanel;
 	private JButton saveMatrixButton;
+	private int[] lastStarts;
 
 	public VinemView() {
 		theFrame = new JFrame("Visual Interactive Neighborhood Miner");
@@ -489,15 +490,15 @@ public class VinemView {
 		return distOptionsListenerShouldListen;
 	}
 
-	public void updateDistribution(int[] starts, boolean reset) {
-		showingDist = !reset && showingDist;
-		if (!showingDist && showDistButton.isSelected()) {
-			vinemPanel.showDistribution(starts);
-			showingDist = true;
-		} else if (showingDist) {
-			vinemPanel.hideDistribution(starts);
-			showingDist = false;
-		}
+	public void updateDistribution(int[] starts) {
+		vinemPanel.showDistribution(starts);
+		lastStarts = Arrays.copyOf(starts, starts.length);
+		theFrame.validate();
+		theFrame.repaint();
+	}
+
+	public void hideDistribution() {
+		vinemPanel.hideDistribution(lastStarts);
 		theFrame.validate();
 		theFrame.repaint();
 	}
@@ -518,6 +519,10 @@ public class VinemView {
 			final JSlider s = JSlider.class.cast(e.getSource());
 			s.setValue(s.getValue() + change);
 		}
+	}
+
+	public boolean isShowDistribution() {
+		return showDistButton.isSelected();
 	}
 
 	// creates a slider with given minimum/maximum values
@@ -550,4 +555,5 @@ public class VinemView {
 
 		return slider;
 	}
+
 }
