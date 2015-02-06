@@ -19,12 +19,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
-import vinem.controller.Neighborhood;
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
 import mime.plain.PlainItemSet;
+import vinem.controller.Neighborhood;
 import cart.cartifier.CartifyDb;
 import cart.cartifier.CartifyKNNDb;
 import cart.cartifier.CartifyRadiusDb;
@@ -51,7 +50,7 @@ public class VinemModel {
 	private int k;
 	private int orderDim;
 	private int clusterIdCount;
-	private Set<Integer> dims;
+	public List<Attribute> dims;
 	private Pair[][] origData;
 	private CartifyDb cartiDb;
 	private Set<Integer> filtereds;
@@ -68,7 +67,6 @@ public class VinemModel {
 	private int[] byObjLoc2IdMap;
 	private ItemsetMaximalMiner maximer;
 	private InputFile inputFile;
-	public String[] columnNames;
 	public String[] rowNames;
 	private Obj[] objects;
 	private Neighborhood neighborhood = Neighborhood.KNN;
@@ -105,14 +103,10 @@ public class VinemModel {
 		numObjects = data.size();
 		numDims = OneDCartifier.transpose(data).length;
 
-		if (inputFile.colsHasNames) {
-			columnNames = inputFile.columnNames;
-		} else {
-			columnNames = rangeAsArr(numDims);
-		}
-
+		int firstValueAt = 0;
 		if (inputFile.rowsHasNames) {
 			rowNames = inputFile.rowNames;
+			firstValueAt = 1;
 		} else {
 			rowNames = rangeAsArr(numObjects);
 		}
@@ -122,12 +116,18 @@ public class VinemModel {
 			objects[i] = new Obj(i, rowNames[i]);
 		}
 
-		dims = new TreeSet<Integer>();
+		dims = new ArrayList<Attribute>();
+
 		for (int i = 0; i < numDims; i++) {
-			dims.add(i);
+			if (inputFile.colsHasNames) {
+				dims.add(new Attribute(i, inputFile.columnNames[i + firstValueAt]));
+			} else {
+				dims.add(new Attribute(i));
+			}
 			dissimilarities.add(new OneDimDissimilarity(i));
 		}
-		dims = Collections.unmodifiableSet(dims);
+		Collections.sort(dims);
+		dims = Collections.unmodifiableList(dims);
 
 		initMaps();
 		updateCartiDb();
@@ -232,7 +232,7 @@ public class VinemModel {
 		return numDims;
 	}
 
-	public Set<Integer> getDims() {
+	public List<Attribute> getDims() {
 		return dims;
 	}
 
@@ -322,7 +322,7 @@ public class VinemModel {
 		}
 
 		if (!noiseObjects.isEmpty()) {
-			addCluster(new Cluster(noiseObjects, singleton(measureId)));
+			addCluster(new Cluster(noiseObjects, singleton(dims.get(measureId))));
 		}
 		return noiseObjects.size();
 	}
@@ -353,7 +353,7 @@ public class VinemModel {
 			}
 		}
 
-		addCluster(new Cluster(ids2Objs(noiseObjects), new HashSet<Integer>()));
+		addCluster(new Cluster(ids2Objs(noiseObjects), new HashSet<Attribute>()));
 
 		return noiseObjects.size();
 	}
@@ -887,12 +887,19 @@ public class VinemModel {
 
 		// turn result into clusters and add to model
 		for (Freq freq : result) {
-			Cluster cluster = new Cluster(arr2ObjSet(freq.freqSet), freq.freqDims);
-
+			Cluster cluster = new Cluster(arr2ObjSet(freq.freqSet), getAttrs(freq));
 			addCluster(cluster);
 		}
 
 		return result.size();
+	}
+
+	private List<Attribute> getAttrs(Freq freq) {
+		List<Attribute> freqDims = new ArrayList<>(freq.freqDims.size());
+		for (int dimIx : freq.freqDims) {
+			freqDims.add(dims.get(dimIx));
+		}
+		return freqDims;
 	}
 
 	public int mineRandomFreqs(boolean onlySelected, int minSup, int numOfItemSets) {
@@ -1022,8 +1029,8 @@ public class VinemModel {
 			if (saveDim) {
 				if (useAttrNames) {
 					List<String> namesToPrint = new ArrayList<>(cl.getDims().size());
-					for (int dimIx : cl.getDims()) {
-						namesToPrint.add(columnNames[dimIx]);
+					for (Attribute dim : cl.getDims()) {
+						namesToPrint.add(dim.name);
 					}
 					pw.print(toSpaceSeparated(namesToPrint) + ";");
 				} else {
@@ -1085,5 +1092,30 @@ public class VinemModel {
 
 	public InputFile getInputFile() {
 		return inputFile;
+	}
+
+	public File saveRelatedDimsMatrix(int[][] relatedDimsMatrix)
+			throws IOException {
+		String filePrefix = "RelatedDims-";
+		File file = File.createTempFile(filePrefix, ".csv");
+		PrintWriter pw = new PrintWriter(file);
+
+		StringBuilder sb = new StringBuilder(",");
+		for (Attribute dim : dims) {
+			sb.append("\"").append(dim).append("\",");
+		}
+		pw.println(sb.substring(0, sb.length() - 1));
+
+		for (int i = 0; i < relatedDimsMatrix.length; i++) {
+			int[] row = relatedDimsMatrix[i];
+			sb = new StringBuilder("\"").append(dims.get(i).toString()).append("\",");
+			for (int cell : row) {
+				sb.append(cell).append(",");
+			}
+			pw.println(sb.substring(0, sb.length() - 1));
+		}
+		pw.flush();
+		pw.close();
+		return file;
 	}
 }

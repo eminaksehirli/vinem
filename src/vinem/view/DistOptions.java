@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -18,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 
+import vinem.model.Attribute;
 import cart.cartifier.Dissimilarity;
 
 public class DistOptions {
@@ -28,11 +28,11 @@ public class DistOptions {
 	private JButton add;
 	private JRadioButton distEucl;
 	private JRadioButton distCos;
-	private JList<Integer> list;
+	private JList<Attribute> list;
 	private JComboBox<String> cBox;
 	private DefaultComboBoxModel<String> cBoxModel;
 
-	public DistOptions(Set<Integer> dimList, List<Dissimilarity> distMeasures) {
+	public DistOptions(List<Attribute> dims, List<Dissimilarity> distMeasures) {
 		// the main panel
 		distPanel = VinemView.createVerticalBoxPanel(300, 240);
 		distPanel.setBorder(BorderFactory.createTitledBorder("Distance measures"));
@@ -53,11 +53,11 @@ public class DistOptions {
 		topPanel.add(distModePanel);
 
 		// list of dimensions
-		DefaultListModel<Integer> listModel = new DefaultListModel<Integer>();
-		for (Integer dim : dimList) {
+		DefaultListModel<Attribute> listModel = new DefaultListModel<>();
+		for (Attribute dim : dims) {
 			listModel.addElement(dim);
 		}
-		list = new JList<Integer>(listModel);
+		list = new JList<Attribute>(listModel);
 		JScrollPane listPane = new JScrollPane(list);
 		listPane.setPreferredSize(new Dimension(125, 200));
 		listPane.setMaximumSize(new Dimension(125, 200));
@@ -105,7 +105,7 @@ public class DistOptions {
 	 * @return Set containing the dimensions which were selected by the user (by
 	 *         clicking on them in the list)
 	 */
-	public List<Integer> getSelectedDims() {
+	public List<Attribute> getSelectedDims() {
 		return list.getSelectedValuesList();
 	}
 

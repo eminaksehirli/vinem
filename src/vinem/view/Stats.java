@@ -4,7 +4,6 @@ import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,6 +13,7 @@ import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.table.AbstractTableModel;
 
+import vinem.model.Attribute;
 import vinem.model.Obj;
 
 public class Stats {
@@ -24,7 +24,7 @@ public class Stats {
 	private StatsTable tableModel;
 	private JTextArea objIdsArea;
 
-	public Stats(Set<Integer> dims) {
+	public Stats(List<Attribute> dims) {
 		// the main panel
 		statsPanel = VinemView.createVerticalBoxPanel(520, 300);
 
@@ -90,22 +90,16 @@ public class Stats {
 	 * Table containing stats.
 	 */
 	private class StatsTable extends AbstractTableModel {
-
+		private static final long serialVersionUID = -6492905279113375391L;
 		private List<String> columnNames;
 		private List<Object[]> data;
 		Object[] dims;
 
-		public StatsTable(Set<Integer> dimsSet) {
+		public StatsTable(List<Attribute> dims2) {
 			data = new ArrayList<Object[]>();
 			columnNames = new ArrayList<String>();
 
-			dims = new Object[dimsSet.size()];
-
-			int i = 0;
-			for (int dim : dimsSet) {
-				dims[i] = dim;
-				i++;
-			}
+			dims = dims2.toArray();
 
 			data.add(dims);
 			columnNames.add("Dimension");

@@ -3,7 +3,9 @@ package vinem.view;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,6 +25,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import vinem.model.Attribute;
 import vinem.model.Cluster;
 import vinem.model.Obj;
 
@@ -268,11 +271,15 @@ public class ClusterInfo {
 				data[row][2] = clustersMap.get(clusterId).getObjects().size();
 
 				// #Dims
-				Set<Integer> dims = new HashSet<>(clustersMap.get(clusterId).getDims());
+				List<Attribute> dims = clustersMap.get(clusterId).getDims();
 				data[row][3] = dims.size();
 
 				// Dims
-				data[row][4] = dims;
+				List<Integer> dimIxs = new ArrayList<>();
+				for (Attribute dim : dims) {
+					dimIxs.add(dim.ix);
+				}
+				data[row][4] = dimIxs;
 
 				// Objects
 				Set<Obj> objs = new HashSet<>(clustersMap.get(clusterId).getObjects());

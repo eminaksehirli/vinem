@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import vinem.model.Attribute;
 import vinem.model.VinemModel;
 import vinem.view.ClusterInfo;
 import vinem.view.DistOptions;
@@ -60,11 +61,10 @@ public class VinemController {
 		model.init();
 
 		int maxK = model.getNumObjects();
-		Set<Integer> dims = model.getDims();
 		int[][] matrixToShow = model.getMatrixToShow();
 		List<Dissimilarity> dissimilarities = model.getDistMeasures();
 
-		view.init(model.getOrderedObjList(), dims, maxK, matrixToShow,
+		view.init(model.getOrderedObjList(), model.getDims(), maxK, matrixToShow,
 				dissimilarities, model.getMaxEps());
 		view.addButtonsListener(createButtonsListener());
 		view.addSelOptionsListListener(createSelOptionsListListener());
@@ -424,13 +424,18 @@ public class VinemController {
 	private void addDistMeasure() {
 		boolean isEucl = view.getDistanceOptions().distModeIsEuclidian();
 		boolean isCos = view.getDistanceOptions().distModeIsCosine();
-		List<Integer> dims = view.getDistanceOptions().getSelectedDims();
+		List<Attribute> dims = view.getDistanceOptions().getSelectedDims();
 
+		int[] dimsArr = new int[dims.size()];
+		int i = 0;
+		for (Attribute dim : dims) {
+			dimsArr[i++] = dim.ix;
+		}
 		Dissimilarity dissimilarity;
 		if (isEucl) {
-			dissimilarity = new EuclidianDistance(dims);
+			dissimilarity = new EuclidianDistance(dimsArr);
 		} else if (isCos) {
-			dissimilarity = new CosineDistance(dims);
+			dissimilarity = new CosineDistance(dimsArr);
 		} else {
 			return;
 		}
@@ -509,10 +514,26 @@ public class VinemController {
 		int numOfItemSets = view.getMiningOptions().getNumOfItemSetsVal();
 
 		// get related dims matrix
-		int[][] relatedDimsMatrix = model.createRelatedDimsMatrix(minSup,
+		final int[][] relatedDimsMatrix = model.createRelatedDimsMatrix(minSup,
 				numOfItemSets);
 
-		view.showRelatedDims(relatedDimsMatrix);
+		ActionListener listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					File f = model.saveRelatedDimsMatrix(relatedDimsMatrix);
+					showConfirmSaveFile(f, "Related dimensions are saved.",
+							"Related dimensions are saved");
+				} catch (IOException ex) {
+					JOptionPane.showMessageDialog(null,
+							"Could not save the matrix: " + e.toString(),
+							"Problem while saving!", ERROR_MESSAGE);
+					ex.printStackTrace();
+					return;
+				}
+			}
+		};
+		view.showRelatedDims(model.dims, relatedDimsMatrix, listener);
 	}
 
 	private void addSliderListeners() {

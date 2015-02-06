@@ -9,9 +9,9 @@ import java.util.Set;
 public class Cluster {
 
 	private Set<Obj> objects;
-	private List<Integer> dims;
+	private List<Attribute> dims;
 
-	public Cluster(Collection<Obj> objects, Collection<Integer> dims) {
+	public Cluster(Collection<Obj> objects, Collection<Attribute> dims) {
 		this.objects = new HashSet<>(objects);
 		this.dims = new ArrayList<>(dims);
 	}
@@ -20,7 +20,7 @@ public class Cluster {
 		this.objects = new HashSet<>(objects);
 		dims = new ArrayList<>(dims2.length);
 		for (int i = 0; i < dims2.length; i++) {
-			dims.add(i);
+			dims.add(new Attribute(i));
 		}
 	}
 
@@ -41,7 +41,7 @@ public class Cluster {
 		return objects;
 	}
 
-	public List<Integer> getDims() {
+	public List<Attribute> getDims() {
 		return dims;
 	}
 }

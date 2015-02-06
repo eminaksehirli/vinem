@@ -38,6 +38,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 
 import vinem.controller.Neighborhood;
+import vinem.model.Attribute;
 import vinem.model.Cluster;
 import vinem.model.Obj;
 import cart.cartifier.Dissimilarity;
@@ -86,7 +87,7 @@ public class VinemView {
 		theFrame.setLayout(new BorderLayout(10, 10));
 	}
 
-	public void init(List<Obj> orderedObjs, Set<Integer> dims, int maxK,
+	public void init(List<Obj> orderedObjs, List<Attribute> dims, int maxK,
 			int[][] matrixToShow, List<Dissimilarity> distMeasures, int maxEps) {
 		visualPanel = createVerticalBoxPanel(700, 700);
 		controlsPanel = createHorizontalBoxPanel(600, 650);
@@ -409,9 +410,10 @@ public class VinemView {
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 
-	public void showRelatedDims(int[][] relatedDimsMatrix) {
-		RelatedDims relatedDims = new RelatedDims(relatedDimsMatrix);
-
+	public void showRelatedDims(List<Attribute> dims, int[][] relatedDimsMatrix,
+			ActionListener saveBtAction) {
+		RelatedDims relatedDims = new RelatedDims(dims, relatedDimsMatrix);
+		relatedDims.saveBt.addActionListener(saveBtAction);
 		JDialog relatedDimsDialog = new JDialog(theFrame, "Related dims");
 		relatedDimsDialog.add(relatedDims.getRelatedDimsPanel());
 		relatedDimsDialog.pack();
