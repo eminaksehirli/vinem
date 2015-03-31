@@ -361,7 +361,7 @@ public class VinemModel {
 	/**
 	 * @return The support in each 1d dimension of a given set of object Ids.
 	 */
-	public int[] getSupportOfSel() {
+	public int[] getSupportsOfSel() {
 		Set<Integer> objIds = getSelecteds();
 		for (int id : objIds) {
 			if (filtereds.contains(id)) {
@@ -718,7 +718,8 @@ public class VinemModel {
 	 * Create a new cluster from the selecteds.
 	 */
 	public void clusterSelecteds() {
-		clustersMap.put(clusterIdCount, new Cluster(getSelectedObjs(), dims));
+		clustersMap.put(clusterIdCount, new Cluster(getSelectedObjs(),
+				getSelectedDims()));
 		clusterIdCount++;
 	}
 
@@ -934,6 +935,17 @@ public class VinemModel {
 		return result.size();
 	}
 
+	private List<Attribute> getSelectedDims() {
+		List<Attribute> supDims = new ArrayList<>();
+		int[] supports = getSupportsOfSel();
+		for (int i = 0; i < supports.length; i++) {
+			if (supports[i] > 0) {
+				supDims.add(dims.get(i));
+			}
+		}
+		return supDims;
+	}
+
 	public Obj getObj(final int id) {
 		return objects[id];
 	}
@@ -1027,15 +1039,17 @@ public class VinemModel {
 				pw.print(cl.getObjects().size() + ";");
 			}
 			if (saveDim) {
+				List<Object> toPrint = new ArrayList<>(cl.getDims().size());
 				if (useAttrNames) {
-					List<String> namesToPrint = new ArrayList<>(cl.getDims().size());
 					for (Attribute dim : cl.getDims()) {
-						namesToPrint.add(dim.name);
+						toPrint.add(dim.name);
 					}
-					pw.print(toSpaceSeparated(namesToPrint) + ";");
 				} else {
-					pw.print(toSpaceSeparated(cl.getDims()) + ";");
+					for (Attribute dim : cl.getDims()) {
+						toPrint.add(dim.ix);
+					}
 				}
+				pw.print(toDelimited(toPrint, ", ") + ";");
 			}
 			pw.println(toSpaceSeparated(cl.getObjects()));
 		}
@@ -1045,6 +1059,10 @@ public class VinemModel {
 	}
 
 	private static <E> String toSpaceSeparated(Iterable<E> col) {
+		return toDelimited(col, " ");
+	}
+
+	private static <E> String toDelimited(Iterable<E> col, String del) {
 		Iterator<E> it = col.iterator();
 		if (!it.hasNext())
 			return "";
@@ -1054,7 +1072,7 @@ public class VinemModel {
 			sb.append(it.next());
 			if (!it.hasNext())
 				return sb.toString();
-			sb.append(' ');
+			sb.append(del);
 		}
 	}
 

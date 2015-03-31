@@ -115,7 +115,7 @@ public class VinemController {
 
 	private void afterCartDbChange() {
 		view.updateFigure(model.getMatrixToShow());
-		view.updateSelStats(model.getSelectedObjs(), model.getSupportOfSel(),
+		view.updateSelStats(model.getSelectedObjs(), model.getSupportsOfSel(),
 				model.getStDevOfSel(), model.getMedAbsDevOfSel());
 		setDefaultParameters();
 		updateDistribution();
@@ -136,7 +136,7 @@ public class VinemController {
 		model.setSelecteds(toSelect);
 
 		view.updateFigureSelected(model.getSelectedLocs());
-		view.updateSelStats(model.getSelectedObjs(), model.getSupportOfSel(),
+		view.updateSelStats(model.getSelectedObjs(), model.getSupportsOfSel(),
 				model.getStDevOfSel(), model.getMedAbsDevOfSel());
 	}
 
@@ -292,7 +292,7 @@ public class VinemController {
 	private void updateViewSelection() {
 		view.updateFigureSelected(model.getSelectedLocs());
 		view.updateSelOptions(model.getOrderedObjList(), model.getSelecteds());
-		view.updateSelStats(model.getSelectedObjs(), model.getSupportOfSel(),
+		view.updateSelStats(model.getSelectedObjs(), model.getSupportsOfSel(),
 				model.getStDevOfSel(), model.getMedAbsDevOfSel());
 	}
 
