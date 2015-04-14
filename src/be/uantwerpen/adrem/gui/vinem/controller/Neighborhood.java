@@ -1,4 +1,4 @@
-package vinem.controller;
+package be.uantwerpen.adrem.gui.vinem.controller;
 
 public enum Neighborhood {
 	KNN("k-NN"), Radius("eps-N");

@@ -1,4 +1,4 @@
-package vinem.controller;
+package be.uantwerpen.adrem.gui.vinem.controller;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static java.lang.Math.max;

@@ -38,7 +38,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 
 import be.uantwerpen.adrem.cart.model.Dissimilarity;
-import vinem.controller.Neighborhood;
+import be.uantwerpen.adrem.gui.vinem.controller.Neighborhood;
 import vinem.model.Attribute;
 import vinem.model.Cluster;
 import vinem.model.Obj;

@@ -24,8 +24,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import vinem.controller.VinemController;
 import vinem.model.VinemModel;
+import be.uantwerpen.adrem.gui.vinem.controller.VinemController;
 import be.uantwerpen.adrem.gui.vinem.view.VinemView;
 
 import com.google.common.base.Joiner;
