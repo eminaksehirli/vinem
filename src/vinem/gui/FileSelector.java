@@ -345,7 +345,7 @@ public class FileSelector {
 		return filesList;
 	}
 
-	static private class InputFile extends cart.io.InputFile {
+	static private class InputFile extends be.uantwerpen.adrem.cart.io.InputFile {
 		static final String Sep = "|";
 
 		static InputFile fromString(String str) {

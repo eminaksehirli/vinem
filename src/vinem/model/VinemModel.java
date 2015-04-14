@@ -1,6 +1,6 @@
 package vinem.model;
 
-import static cart.maximizer.MaximalMinerCombiner.getOrd2Id;
+import static be.uantwerpen.adrem.cart.maximizer.MaximalMinerCombiner.getOrd2Id;
 import static java.util.Collections.singleton;
 
 import java.io.File;
@@ -20,21 +20,21 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
 
+import be.uantwerpen.adrem.cart.io.InputFile;
+import be.uantwerpen.adrem.cart.maximizer.Freq;
+import be.uantwerpen.adrem.cart.maximizer.ItemsetMaximalMiner;
+import be.uantwerpen.adrem.cart.maximizer.MaximalMinerCombiner;
+import be.uantwerpen.adrem.cart.maximizer.OneDCartifier;
+import be.uantwerpen.adrem.cart.model.CartifyDb;
+import be.uantwerpen.adrem.cart.model.CartifyKNNDb;
+import be.uantwerpen.adrem.cart.model.CartifyRadiusDb;
+import be.uantwerpen.adrem.cart.model.Dissimilarity;
+import be.uantwerpen.adrem.cart.model.OneDimDissimilarity;
+import be.uantwerpen.adrem.cart.model.Pair;
 import mime.plain.PlainItem;
 import mime.plain.PlainItemDB;
 import mime.plain.PlainItemSet;
 import vinem.controller.Neighborhood;
-import cart.cartifier.CartifyDb;
-import cart.cartifier.CartifyKNNDb;
-import cart.cartifier.CartifyRadiusDb;
-import cart.cartifier.Dissimilarity;
-import cart.cartifier.OneDimDissimilarity;
-import cart.cartifier.Pair;
-import cart.io.InputFile;
-import cart.maximizer.Freq;
-import cart.maximizer.ItemsetMaximalMiner;
-import cart.maximizer.MaximalMinerCombiner;
-import cart.maximizer.OneDCartifier;
 
 /**
  * The main model class.

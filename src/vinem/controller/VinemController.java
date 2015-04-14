@@ -29,6 +29,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import be.uantwerpen.adrem.cart.model.CosineDistance;
+import be.uantwerpen.adrem.cart.model.Dissimilarity;
+import be.uantwerpen.adrem.cart.model.EuclidianDistance;
 import vinem.model.Attribute;
 import vinem.model.VinemModel;
 import vinem.view.ClusterInfo;
@@ -39,9 +42,6 @@ import vinem.view.NoiseOptions;
 import vinem.view.SelOptions;
 import vinem.view.VinemPanel;
 import vinem.view.VinemView;
-import cart.cartifier.CosineDistance;
-import cart.cartifier.Dissimilarity;
-import cart.cartifier.EuclidianDistance;
 
 /**
  * @author Detlev
