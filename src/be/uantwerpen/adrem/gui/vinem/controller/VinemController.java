@@ -32,6 +32,8 @@ import javax.swing.event.TableModelListener;
 import be.uantwerpen.adrem.cart.model.CosineDistance;
 import be.uantwerpen.adrem.cart.model.Dissimilarity;
 import be.uantwerpen.adrem.cart.model.EuclidianDistance;
+import be.uantwerpen.adrem.gui.vinem.model.Attribute;
+import be.uantwerpen.adrem.gui.vinem.model.VinemModel;
 import be.uantwerpen.adrem.gui.vinem.view.ClusterInfo;
 import be.uantwerpen.adrem.gui.vinem.view.DistOptions;
 import be.uantwerpen.adrem.gui.vinem.view.FilterOptions;
@@ -40,8 +42,6 @@ import be.uantwerpen.adrem.gui.vinem.view.NoiseOptions;
 import be.uantwerpen.adrem.gui.vinem.view.SelOptions;
 import be.uantwerpen.adrem.gui.vinem.view.VinemPanel;
 import be.uantwerpen.adrem.gui.vinem.view.VinemView;
-import vinem.model.Attribute;
-import vinem.model.VinemModel;
 
 /**
  * @author Detlev

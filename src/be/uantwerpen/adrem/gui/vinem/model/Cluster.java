@@ -1,4 +1,4 @@
-package vinem.model;
+package be.uantwerpen.adrem.gui.vinem.model;
 
 import java.util.ArrayList;
 import java.util.Collection;

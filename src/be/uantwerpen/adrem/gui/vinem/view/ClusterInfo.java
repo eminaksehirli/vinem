@@ -25,9 +25,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import vinem.model.Attribute;
-import vinem.model.Cluster;
-import vinem.model.Obj;
+import be.uantwerpen.adrem.gui.vinem.model.Attribute;
+import be.uantwerpen.adrem.gui.vinem.model.Cluster;
+import be.uantwerpen.adrem.gui.vinem.model.Obj;
 
 public class ClusterInfo {
 

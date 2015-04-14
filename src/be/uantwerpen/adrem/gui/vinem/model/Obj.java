@@ -1,4 +1,4 @@
-package vinem.model;
+package be.uantwerpen.adrem.gui.vinem.model;
 
 public class Obj {
 	public int id;

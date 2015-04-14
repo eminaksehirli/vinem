@@ -22,7 +22,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
-import vinem.model.Attribute;
+import be.uantwerpen.adrem.gui.vinem.model.Attribute;
 
 public class RelatedDims {
 

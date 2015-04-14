@@ -39,9 +39,9 @@ import javax.swing.event.TableModelListener;
 
 import be.uantwerpen.adrem.cart.model.Dissimilarity;
 import be.uantwerpen.adrem.gui.vinem.controller.Neighborhood;
-import vinem.model.Attribute;
-import vinem.model.Cluster;
-import vinem.model.Obj;
+import be.uantwerpen.adrem.gui.vinem.model.Attribute;
+import be.uantwerpen.adrem.gui.vinem.model.Cluster;
+import be.uantwerpen.adrem.gui.vinem.model.Obj;
 
 public class VinemView {
 

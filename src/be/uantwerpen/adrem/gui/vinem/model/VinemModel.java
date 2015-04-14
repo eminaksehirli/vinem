@@ -1,4 +1,4 @@
-package vinem.model;
+package be.uantwerpen.adrem.gui.vinem.model;
 
 import static be.uantwerpen.adrem.cart.maximizer.MaximalMinerCombiner.getOrd2Id;
 import static java.util.Collections.singleton;

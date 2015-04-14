@@ -18,7 +18,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 
 import be.uantwerpen.adrem.cart.model.Dissimilarity;
-import vinem.model.Attribute;
+import be.uantwerpen.adrem.gui.vinem.model.Attribute;
 
 public class DistOptions {
 

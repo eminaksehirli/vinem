@@ -13,8 +13,8 @@ import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.table.AbstractTableModel;
 
-import vinem.model.Attribute;
-import vinem.model.Obj;
+import be.uantwerpen.adrem.gui.vinem.model.Attribute;
+import be.uantwerpen.adrem.gui.vinem.model.Obj;
 
 public class Stats {
 

@@ -18,7 +18,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionListener;
 
-import vinem.model.Obj;
+import be.uantwerpen.adrem.gui.vinem.model.Obj;
 
 public class SelOptions {
 
