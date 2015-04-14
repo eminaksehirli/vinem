@@ -31,10 +31,10 @@ import be.uantwerpen.adrem.cart.model.CartifyRadiusDb;
 import be.uantwerpen.adrem.cart.model.Dissimilarity;
 import be.uantwerpen.adrem.cart.model.OneDimDissimilarity;
 import be.uantwerpen.adrem.cart.model.Pair;
+import be.uantwerpen.adrem.fim.model.PlainItem;
+import be.uantwerpen.adrem.fim.model.PlainItemDB;
+import be.uantwerpen.adrem.fim.model.PlainItemSet;
 import be.uantwerpen.adrem.gui.vinem.controller.Neighborhood;
-import mime.plain.PlainItem;
-import mime.plain.PlainItemDB;
-import mime.plain.PlainItemSet;
 
 /**
  * The main model class.

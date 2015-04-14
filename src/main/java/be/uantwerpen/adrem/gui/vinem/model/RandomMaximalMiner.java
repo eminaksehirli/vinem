@@ -40,12 +40,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import ua.antwerpen.adrem.fim.PlainItem;
-import ua.antwerpen.adrem.fim.PlainItemSet;
-import ua.antwerpen.adrem.fim.PlainTransactionDB;
-import ua.antwerpen.adrem.fim.measure.itemset.ItemSetMeasure;
-import ua.antwerpen.adrem.fim.measure.itemset.SupportMeasure;
+import mime.plain.measure.itemset.ItemSetMeasure;
+import mime.plain.measure.itemset.SupportMeasure;
 import mime.tool.Utils;
+import be.uantwerpen.adrem.fim.model.PlainItem;
+import be.uantwerpen.adrem.fim.model.PlainItemSet;
+import be.uantwerpen.adrem.fim.model.PlainTransactionDB;
 
 import com.google.common.collect.Lists;
 
