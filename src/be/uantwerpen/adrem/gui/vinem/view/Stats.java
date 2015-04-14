@@ -1,4 +1,4 @@
-package vinem.view;
+package be.uantwerpen.adrem.gui.vinem.view;
 
 import java.awt.FlowLayout;
 import java.util.ArrayList;

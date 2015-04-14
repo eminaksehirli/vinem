@@ -26,7 +26,7 @@ import javax.swing.JPanel;
 
 import vinem.controller.VinemController;
 import vinem.model.VinemModel;
-import vinem.view.VinemView;
+import be.uantwerpen.adrem.gui.vinem.view.VinemView;
 
 import com.google.common.base.Joiner;
 

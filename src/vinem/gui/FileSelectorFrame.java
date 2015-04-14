@@ -1,6 +1,6 @@
 package vinem.gui;
 
-import static vinem.view.VinemView.createHorizontalBoxPanel;
+import static be.uantwerpen.adrem.gui.vinem.view.VinemView.createHorizontalBoxPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import vinem.view.VinemView;
+import be.uantwerpen.adrem.gui.vinem.view.VinemView;
 
 public class FileSelectorFrame extends JFrame {
 	private static final long serialVersionUID = 3599962945189307089L;
