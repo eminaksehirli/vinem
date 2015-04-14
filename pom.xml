@@ -103,4 +103,32 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+		<organization>
+		<name>University of Antwerp - ADReM Research Group</name>
+		<url>http://adrem.uantwerpen.be</url>
+	</organization>
+	<developers>
+		<developer>
+			<name>Emin Aksehirli</name>
+			<email>emin.aksehirli@uantwerpen.be</email>
+			<organizationUrl>https://www.uantwerpen.be/nl/personeel/emin-aksehirli/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Detlev Van Looy</name>
+			<email>detlev.vanlooy@student.uantwerpen.be</email>
+		</developer>
+	</developers>
+		<licenses>
+		<license>
+			<name>GNU AFFERO GENERAL PUBLIC LICENSE, Version 3</name>
+			<url>https://www.gnu.org/licenses/agpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+		<scm>
+		<url>https://gitlab.com/cartification/carti-gui.git</url>
+		<developerConnection>scm:git:git@gitlab.com:cartification/carti-gui.git</developerConnection>
+		<connection>scm:git:git@gitlab.com:cartification/carti-gui.git</connection>
+	</scm>
+		<url>http://adrem.uantwerpen.be/vinem</url>
 </project>
