@@ -1,4 +1,4 @@
-package vinem.gui;
+package be.uantwerpen.adrem.gui.vinem;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;

@@ -1,4 +1,4 @@
-package vinem.gui;
+package be.uantwerpen.adrem.gui.vinem;
 
 import static java.lang.Integer.parseInt;
 

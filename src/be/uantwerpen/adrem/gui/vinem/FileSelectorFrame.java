@@ -1,4 +1,4 @@
-package vinem.gui;
+package be.uantwerpen.adrem.gui.vinem;
 
 import static be.uantwerpen.adrem.gui.vinem.view.VinemView.createHorizontalBoxPanel;
 
