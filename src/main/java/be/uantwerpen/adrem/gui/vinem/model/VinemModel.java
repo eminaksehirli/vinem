@@ -31,9 +31,9 @@ import be.uantwerpen.adrem.cart.model.CartifyRadiusDb;
 import be.uantwerpen.adrem.cart.model.Dissimilarity;
 import be.uantwerpen.adrem.cart.model.OneDimDissimilarity;
 import be.uantwerpen.adrem.cart.model.Pair;
-import be.uantwerpen.adrem.fim.model.PlainItem;
-import be.uantwerpen.adrem.fim.model.PlainItemDB;
-import be.uantwerpen.adrem.fim.model.PlainItemSet;
+import be.uantwerpen.adrem.fim.model.Item;
+import be.uantwerpen.adrem.fim.model.ItemDB;
+import be.uantwerpen.adrem.fim.model.Itemset;
 import be.uantwerpen.adrem.gui.vinem.controller.Neighborhood;
 
 /**
@@ -203,11 +203,11 @@ public class VinemModel {
 		int[][] matrixToShow = new int[numObjects - filtereds.size()][numObjects
 				- filtereds.size()];
 
-		PlainItemDB[] pDbs = cartiDb.getProjDbs();
-		PlainItemDB pDb = pDbs[selectedDistMeasureId];
+		ItemDB[] pDbs = cartiDb.getProjDbs();
+		ItemDB pDb = pDbs[selectedDistMeasureId];
 
 		// loop over each item
-		for (PlainItem item : pDb) {
+		for (Item item : pDb) {
 			if (!filtereds.contains(item.getId())) {
 
 				// loop over each cart in which this object occurs
@@ -261,7 +261,7 @@ public class VinemModel {
 	/**
 	 * @return The projection db for the selected dist measure.
 	 */
-	public PlainItemDB getSelectedProjDb() {
+	public ItemDB getSelectedProjDb() {
 		return cartiDb.getProjDbs()[selectedDistMeasureId];
 	}
 
@@ -269,12 +269,12 @@ public class VinemModel {
 	 * @return The projection db, containing only the carts of selected objects,
 	 *         for the selected dist measure.
 	 */
-	public PlainItemDB getSelectedProjDbOnlySelected() {
-		PlainItemDB db = getSelectedProjDb();
+	public ItemDB getSelectedProjDbOnlySelected() {
+		ItemDB db = getSelectedProjDb();
 
-		PlainItemDB onlySelected = new PlainItemDB();
+		ItemDB onlySelected = new ItemDB();
 
-		for (PlainItem item : db) {
+		for (Item item : db) {
 			if (selecteds.contains(item.getId())) {
 				onlySelected.get(item.getId(), item.getTIDs());
 			}
@@ -311,10 +311,10 @@ public class VinemModel {
 	private int findNoiseIn(final int measureId, int minSup) {
 		List<Obj> noiseObjects = new ArrayList<>();
 
-		PlainItemDB pDb = getSelectedProjDb();
+		ItemDB pDb = getSelectedProjDb();
 
 		// loop over each item
-		for (PlainItem item : pDb) {
+		for (Item item : pDb) {
 			if ((!filtereds.contains(item.getId()))
 					&& (item.getTIDs().cardinality() < minSup)) {
 				noiseObjects.add(getObj(item.getId()));
@@ -337,16 +337,16 @@ public class VinemModel {
 		Set<Integer> noiseObjects = new HashSet<>();
 
 		// add each object to noiseObjects to remove them later
-		PlainItemDB[] pDbs = cartiDb.getProjDbs();
-		for (PlainItem item : pDbs[0]) {
+		ItemDB[] pDbs = cartiDb.getProjDbs();
+		for (Item item : pDbs[0]) {
 			if (!filtereds.contains(item.getId())) {
 				noiseObjects.add(item.getId());
 			}
 		}
 
 		// remove objects where support >= minSup
-		for (PlainItemDB pDb : pDbs) {
-			for (PlainItem item : pDb) {
+		for (ItemDB pDb : pDbs) {
+			for (Item item : pDb) {
 				if (item.getTIDs().cardinality() >= minSup) {
 					noiseObjects.remove(item.getId());
 				}
@@ -375,7 +375,7 @@ public class VinemModel {
 			return new int[0];
 		}
 
-		PlainItemDB[] dbs = cartiDb.getProjDbs();
+		ItemDB[] dbs = cartiDb.getProjDbs();
 		int[] dimSupports = new int[dbs.length];
 
 		for (int dimIx = 0; dimIx < dbs.length; dimIx++) {
@@ -517,13 +517,13 @@ public class VinemModel {
 		int[][] relatedDimsMatrix = new int[numDims][numDims];
 
 		for (int i = 0; i < numDims; i++) {
-			PlainItemDB pDb = cartiDb.getProjDbs()[i];
-			List<PlainItemSet> result = RandomMiner.runParallel(pDb, minSup,
-					numItemSets, itemSetSize);
+			ItemDB pDb = cartiDb.getProjDbs()[i];
+			List<Itemset> result = RandomMiner.runParallel(pDb, minSup, numItemSets,
+					itemSetSize);
 
 			for (int j = 0; j < numDims; j++) {
 				int freqCount = 0;
-				for (PlainItemSet set : result) {
+				for (Itemset set : result) {
 					if (getSupportInDim(set, j) >= minSup) {
 						freqCount++;
 					}
@@ -550,11 +550,11 @@ public class VinemModel {
 	 * @param dim
 	 * @return The support of a given PlainItemSet in a given dimension.
 	 */
-	private int getSupportInDim(PlainItemSet set, int dim) {
-		PlainItemDB pDb = cartiDb.getProjDbs()[dim];
+	private int getSupportInDim(Itemset set, int dim) {
+		ItemDB pDb = cartiDb.getProjDbs()[dim];
 
-		Iterator<PlainItem> it = set.iterator();
-		PlainItem item = it.next();
+		Iterator<Item> it = set.iterator();
+		Item item = it.next();
 		BitSet tids = (BitSet) pDb.get(item.getId()).getTIDs().clone();
 		while (it.hasNext()) {
 			item = it.next();
@@ -863,11 +863,11 @@ public class VinemModel {
 	}
 
 	public int[] getDistribution() {
-		PlainItemDB pDb = getSelectedProjDb();
+		ItemDB pDb = getSelectedProjDb();
 		int size = pDb.size() - filtereds.size();
 		int[] starts = new int[size];
 
-		for (PlainItem item : pDb) {
+		for (Item item : pDb) {
 			if (!filtereds.contains(item.getId())) {
 				starts[objId2Loc(orderDim, item.getId())] = size
 						- item.getTIDs().cardinality();
@@ -905,7 +905,7 @@ public class VinemModel {
 
 	public int mineRandomFreqs(boolean onlySelected, int minSup, int numOfItemSets) {
 		// get the items
-		PlainItemDB items;
+		ItemDB items;
 		if (onlySelected) {
 			items = getSelectedProjDbOnlySelected();
 		} else {
@@ -913,19 +913,19 @@ public class VinemModel {
 		}
 
 		// do mining
-		List<PlainItemSet> rawResult = RandomMaximalMiner.runParallel(items,
-				minSup, numOfItemSets);
+		List<Itemset> rawResult = RandomMaximalMiner.runParallel(items, minSup,
+				numOfItemSets);
 		// Remove the duplicates
-		Set<PlainItemSet> result = new HashSet<>(rawResult);
+		Set<Itemset> result = new HashSet<>(rawResult);
 
 		// dims for which the cluster was made
 		Dissimilarity measure = getSelectedDistMeasure();
 		int[] measureDims = measure.getDims();
 
 		// turn result into clusters and add to model
-		for (PlainItemSet itemSet : result) {
+		for (Itemset itemSet : result) {
 			List<Obj> objs = new ArrayList<>();
-			for (PlainItem item : itemSet) {
+			for (Item item : itemSet) {
 				objs.add(getObj(item.getId()));
 			}
 

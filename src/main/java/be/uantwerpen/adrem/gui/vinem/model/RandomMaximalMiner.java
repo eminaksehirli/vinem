@@ -43,9 +43,9 @@ import java.util.concurrent.Future;
 import mime.plain.measure.itemset.ItemSetMeasure;
 import mime.plain.measure.itemset.SupportMeasure;
 import mime.tool.Utils;
-import be.uantwerpen.adrem.fim.model.PlainItem;
-import be.uantwerpen.adrem.fim.model.PlainItemSet;
-import be.uantwerpen.adrem.fim.model.PlainTransactionDB;
+import be.uantwerpen.adrem.fim.model.Item;
+import be.uantwerpen.adrem.fim.model.Itemset;
+import be.uantwerpen.adrem.fim.model.TransactionDB;
 
 import com.google.common.collect.Lists;
 
@@ -70,36 +70,35 @@ public class RandomMaximalMiner {
 		}
 
 		@Override
-		public double evaluate(PlainItemSet itemSet) {
+		public double evaluate(Itemset itemSet) {
 			return 1.0;
 		}
 
 		@Override
-		public double evaluate(PlainItemSet itemSet, PlainItem extension) {
+		public double evaluate(Itemset itemSet, Item extension) {
 			return 1.0;
 		}
 	}
 
-	private final List<PlainItem> allItems;
+	private final List<Item> allItems;
 	private int minSize;
 	private ItemSetMeasure approximationMeasure;
 	private ItemSetMeasure pruningMeasure;
 
 	public static Random random = new Random();
-	private PlainItemSet theItemset;
+	private Itemset theItemset;
 	private int minSup;
-	private List<PlainItem> items;
-	private LinkedList<PlainItem> seedSet;
-	private static List<PlainItem> AllItems;
+	private List<Item> items;
+	private LinkedList<Item> seedSet;
+	private static List<Item> AllItems;
 
-	public static List<PlainItemSet> runParallel(
-			Iterable<? extends PlainItem> items, final int minSup, int numOfItemSets) {
+	public static List<Itemset> runParallel(Iterable<? extends Item> items,
+			final int minSup, int numOfItemSets) {
 		return runParallel(items, minSup, numOfItemSets, DefaultSeedSize);
 	}
 
-	public static List<PlainItemSet> runParallel(
-			Iterable<? extends PlainItem> items, final int minSup, int numOfItemSets,
-			final int seedSize) {
+	public static List<Itemset> runParallel(Iterable<? extends Item> items,
+			final int minSup, int numOfItemSets, final int seedSize) {
 
 		AllItems = Lists.newArrayList(items);
 
@@ -110,12 +109,12 @@ public class RandomMaximalMiner {
 
 		final int[] shareSizes = partition(numOfItemSets, numOfProcessors);
 
-		List<Callable<List<PlainItemSet>>> tasks = newArrayList();
+		List<Callable<List<Itemset>>> tasks = newArrayList();
 		for (int i = 0; i < numOfProcessors; i++) {
 			final int numberOfItemSets = shareSizes[i];
-			tasks.add(new Callable<List<PlainItemSet>>() {
+			tasks.add(new Callable<List<Itemset>>() {
 				@Override
-				public List<PlainItemSet> call() throws Exception {
+				public List<Itemset> call() throws Exception {
 					RandomMaximalMiner miner = new RandomMaximalMiner();
 					SupportMeasure measure = new SupportMeasure();
 					miner.setApproximationMeasure(measure);
@@ -127,8 +126,8 @@ public class RandomMaximalMiner {
 		}
 
 		try {
-			List<PlainItemSet> fises = newArrayListWithCapacity(numOfItemSets);
-			for (Future<List<PlainItemSet>> future : pool.invokeAll(tasks)) {
+			List<Itemset> fises = newArrayListWithCapacity(numOfItemSets);
+			for (Future<List<Itemset>> future : pool.invokeAll(tasks)) {
 				fises.addAll(future.get());
 			}
 
@@ -150,11 +149,11 @@ public class RandomMaximalMiner {
 		allItems = AllItems;
 	}
 
-	public RandomMaximalMiner(PlainTransactionDB db) {
+	public RandomMaximalMiner(TransactionDB db) {
 		this(db.getItemDB());
 	}
 
-	public RandomMaximalMiner(Iterable<? extends PlainItem> items) {
+	public RandomMaximalMiner(Iterable<? extends Item> items) {
 		minSize = 0;
 		allItems = Lists.newArrayList(items);
 	}
@@ -200,14 +199,14 @@ public class RandomMaximalMiner {
 	 *          the minimal support threshold that must be met
 	 * @return a new list of items that is pruned based on minimal support
 	 */
-	private List<PlainItem> pruneItemsOnMinsup() {
+	private List<Item> pruneItemsOnMinsup() {
 
-		List<PlainItem> items = newLinkedList(allItems);
+		List<Item> items = newLinkedList(allItems);
 
-		Iterator<PlainItem> it = items.iterator();
+		Iterator<Item> it = items.iterator();
 		while (it.hasNext()) {
-			PlainItem item = it.next();
-			if (pruningMeasure.evaluate(new PlainItemSet(item)) < minSup) {
+			Item item = it.next();
+			if (pruningMeasure.evaluate(new Itemset(item)) < minSup) {
 				it.remove();
 			}
 		}
@@ -227,9 +226,9 @@ public class RandomMaximalMiner {
 	 * @return a new list of items that is pruned based on minimal support
 	 */
 	private void pruneItemsForTheItemset() {
-		Iterator<PlainItem> it = items.iterator();
+		Iterator<Item> it = items.iterator();
 		while (it.hasNext()) {
-			PlainItem item = it.next();
+			Item item = it.next();
 			if (pruningMeasure.evaluate(theItemset, item) < minSup) {
 				it.remove();
 			}
@@ -246,19 +245,19 @@ public class RandomMaximalMiner {
 	 *          number of itemsets that need to be mined
 	 * @return a list of maximal frequent itemsets
 	 */
-	public List<PlainItemSet> run(int minSup, int numberOfItemsets) {
+	public List<Itemset> run(int minSup, int numberOfItemsets) {
 		this.minSup = minSup;
 
-		List<PlainItem> prunedItems = pruneItemsOnMinsup();
+		List<Item> prunedItems = pruneItemsOnMinsup();
 
 		if (prunedItems.isEmpty() || prunedItems.size() < minSize) {
-			return new LinkedList<PlainItemSet>();
+			return new LinkedList<Itemset>();
 		}
 
 		seedSet = newLinkedList();
 
 		int numberOfTries = 0;
-		List<PlainItemSet> itemsets = newLinkedList();
+		List<Itemset> itemsets = newLinkedList();
 		do {
 			items = newArrayList(prunedItems);
 			theItemset = getSeed();
@@ -277,16 +276,16 @@ public class RandomMaximalMiner {
 		return itemsets;
 	}
 
-	private PlainItemSet getSeed() {
+	private Itemset getSeed() {
 		if (seedSet.isEmpty()) {
 			seedSet = newLinkedList(items);
 		}
 		// return new PlainItemSet(items.get(random.nextInt(5)));
-		return new PlainItemSet(seedSet.get(random.nextInt(seedSet.size())));
+		return new Itemset(seedSet.get(random.nextInt(seedSet.size())));
 	}
 
-	public PlainItemSet buildMaximalFor(PlainItemSet itemset, int minSup) {
-		theItemset = new PlainItemSet(itemset);
+	public Itemset buildMaximalFor(Itemset itemset, int minSup) {
+		theItemset = new Itemset(itemset);
 		this.minSup = minSup;
 		items = newArrayList(allItems);
 
@@ -298,7 +297,7 @@ public class RandomMaximalMiner {
 	private void extendItemset() {
 		pruneItemsForTheItemset();
 		while (items.size() > 0) {
-			PlainItem nextItem = getNextItem();
+			Item nextItem = getNextItem();
 			theItemset.add(nextItem);
 			items.remove(nextItem);
 			pruneItemsForTheItemset();
@@ -314,11 +313,11 @@ public class RandomMaximalMiner {
 	 * 
 	 * @return map containing the different measure values for the items
 	 */
-	private Map<PlainItem, Double> generateDistributionMap() {
-		Map<PlainItem, Double> values = new HashMap<PlainItem, Double>();
+	private Map<Item, Double> generateDistributionMap() {
+		Map<Item, Double> values = new HashMap<Item, Double>();
 
 		double normalizationFactor = 0;
-		for (PlainItem item : items) {
+		for (Item item : items) {
 			double value = approximationMeasure.evaluate(theItemset, item);
 			normalizationFactor += value;
 			values.put(item, value);
@@ -328,7 +327,7 @@ public class RandomMaximalMiner {
 			return values;
 		}
 
-		for (Entry<PlainItem, Double> entry : values.entrySet()) {
+		for (Entry<Item, Double> entry : values.entrySet()) {
 			entry.setValue(entry.getValue() / normalizationFactor);
 		}
 
@@ -347,12 +346,12 @@ public class RandomMaximalMiner {
 	 * @return array of double values containing the values of the indivual items
 	 *         sorted according to the list of items
 	 */
-	private double[] getCumulatedValuesAsArray(Map<PlainItem, Double> values) {
+	private double[] getCumulatedValuesAsArray(Map<Item, Double> values) {
 		double[] arrayValues = new double[items.size()];
 
 		int ix = 0;
 		double cum = 0;
-		for (PlainItem item : items) {
+		for (Item item : items) {
 			arrayValues[ix++] = (cum += values.get(item));
 		}
 		return arrayValues;
@@ -368,16 +367,16 @@ public class RandomMaximalMiner {
 	 * 
 	 * @return a new item from the list of items
 	 */
-	private PlainItem getNextItem() {
+	private Item getNextItem() {
 		if (items.size() == 1) {
 			return items.get(0);
 		}
 
-		final Map<PlainItem, Double> values = generateDistributionMap();
+		final Map<Item, Double> values = generateDistributionMap();
 
-		Collections.sort(items, new Comparator<PlainItem>() {
+		Collections.sort(items, new Comparator<Item>() {
 			@Override
-			public int compare(PlainItem i1, PlainItem i2) {
+			public int compare(Item i1, Item i2) {
 				return values.get(i2).compareTo(values.get(i1));
 			}
 		});
