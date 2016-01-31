@@ -44,10 +44,12 @@ import be.uantwerpen.adrem.gui.vinem.view.VinemPanel;
 import be.uantwerpen.adrem.gui.vinem.view.VinemView;
 
 /**
- * @author Detlev
- * @author Aksehirli
+ * Main controller of VINeM.
  * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
  */
+
 public class VinemController {
 	private VinemModel model;
 	private VinemView view;

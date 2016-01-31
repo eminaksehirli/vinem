@@ -24,6 +24,12 @@ import javax.swing.table.JTableHeader;
 
 import be.uantwerpen.adrem.gui.vinem.model.Attribute;
 
+/**
+ * Shows the relevancy scores of dimensions as a matrix.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
 public class RelatedDims {
 
 	public static final String SAVE_RELATED = "Related.Save";

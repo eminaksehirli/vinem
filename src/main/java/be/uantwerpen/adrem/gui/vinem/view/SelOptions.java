@@ -20,6 +20,13 @@ import javax.swing.event.ListSelectionListener;
 
 import be.uantwerpen.adrem.gui.vinem.model.Obj;
 
+/**
+ * Data object selection panel.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
+
 public class SelOptions {
 
 	public final static String CLEAR = "SelOptions.Clear";

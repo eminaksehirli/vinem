@@ -17,6 +17,13 @@ import javax.swing.JTextField;
 
 import be.uantwerpen.adrem.gui.vinem.view.VinemView;
 
+/**
+ * File selection.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
+
 public class FileSelectorFrame extends JFrame {
 	private static final long serialVersionUID = 3599962945189307089L;
 

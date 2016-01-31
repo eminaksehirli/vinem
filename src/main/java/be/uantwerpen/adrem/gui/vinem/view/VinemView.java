@@ -43,6 +43,12 @@ import be.uantwerpen.adrem.gui.vinem.model.Attribute;
 import be.uantwerpen.adrem.gui.vinem.model.Cluster;
 import be.uantwerpen.adrem.gui.vinem.model.Obj;
 
+/**
+ * Main window and panels of VINeM.
+ * 
+ * @author Detlev Van Looy
+ * @author Emin Aksehirli
+ */
 public class VinemView {
 
 	public final static String SHOWDIST = "CartiView.ShowDist";

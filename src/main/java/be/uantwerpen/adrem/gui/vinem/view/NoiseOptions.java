@@ -9,6 +9,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ * Panel for noise/outlier detector options.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
 public class NoiseOptions {
 
 	public final static String ALLMEAS = "NoiseOptions.allMeas";
@@ -16,16 +22,16 @@ public class NoiseOptions {
 	public final static String EACHMEAS = "NoiseOptions.eachMeas";
 
 	private JPanel noisePanel;
-	private JButton allMeas;
-	private JButton selMeas;
-	private JButton eachMeas;
+	private JButton allMeas; // all measures combined
+	private JButton selMeas; // selected measures
+	private JButton eachMeas; // each measure
 	private JTextField minSupField;
 
 	public NoiseOptions() {
 		// the main panel
 		noisePanel = VinemView.createVerticalBoxPanel(350, 150);
 		// add minSup textfield
-		JPanel minSupPanel =VinemView.createPanelWithLabel(MineOptions.T_MinSup);
+		JPanel minSupPanel = VinemView.createPanelWithLabel(MineOptions.T_MinSup);
 		minSupField = new JTextField();
 		minSupField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 		minSupPanel.add(minSupField);

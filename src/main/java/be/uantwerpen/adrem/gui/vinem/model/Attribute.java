@@ -1,5 +1,11 @@
 package be.uantwerpen.adrem.gui.vinem.model;
 
+/**
+ * Data attribute.
+ * 
+ * @author M. Emin Aksehirli
+ */
+
 public class Attribute implements Comparable<Attribute> {
 	public int ix;
 	public String name;

@@ -16,6 +16,12 @@ import javax.swing.table.AbstractTableModel;
 import be.uantwerpen.adrem.gui.vinem.model.Attribute;
 import be.uantwerpen.adrem.gui.vinem.model.Obj;
 
+/**
+ * Shows basic statistics about the selected data.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
 public class Stats {
 
 	private JPanel statsPanel;
@@ -162,6 +168,5 @@ public class Stats {
 			table.getColumnModel().getColumn(2).setPreferredWidth(130);
 			table.getColumnModel().getColumn(3).setPreferredWidth(130);
 		}
-
 	}
 }

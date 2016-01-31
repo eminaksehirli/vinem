@@ -9,6 +9,12 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+/**
+ * Panel for data filtering options.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
 public class FilterOptions {
 
 	public final static String UNDO = "FilterOptions.Undo";

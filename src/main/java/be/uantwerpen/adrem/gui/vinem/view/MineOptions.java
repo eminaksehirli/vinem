@@ -16,6 +16,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ * Panel for miners and their options.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
 public class MineOptions {
 
 	private static final String T_MinLen = "Min-Length";

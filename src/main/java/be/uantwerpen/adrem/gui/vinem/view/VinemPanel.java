@@ -9,6 +9,12 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
+/**
+ * Panel to show neighborhood matrix.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
 public class VinemPanel extends JPanel {
 	public static final int TickSize = 15;
 	private static final long serialVersionUID = 6585392843171261529L;

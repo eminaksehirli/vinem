@@ -20,6 +20,12 @@ import javax.swing.JScrollPane;
 import be.uantwerpen.adrem.cart.model.Dissimilarity;
 import be.uantwerpen.adrem.gui.vinem.model.Attribute;
 
+/**
+ * Panel for distance measure seelction options.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
 public class DistOptions {
 
 	public final static String ADD = "DistOptions.Add";

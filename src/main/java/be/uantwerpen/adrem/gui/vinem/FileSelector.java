@@ -30,6 +30,13 @@ import be.uantwerpen.adrem.gui.vinem.view.VinemView;
 
 import com.google.common.base.Joiner;
 
+/**
+ * Ask user for the working file. Manages a list of recent files.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
+
 public class FileSelector {
 	private static final String Input_File_Sep = "||";
 	private static final String Recent_Key = "recent-files";

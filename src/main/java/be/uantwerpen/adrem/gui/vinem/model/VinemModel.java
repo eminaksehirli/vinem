@@ -37,11 +37,10 @@ import be.uantwerpen.adrem.fim.model.Itemset;
 import be.uantwerpen.adrem.gui.vinem.controller.Neighborhood;
 
 /**
- * The main model class.
+ * The main data model for the GUI.
  * 
- * @author Detlev
- * @author Aksehirli
- * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
  */
 
 public class VinemModel {

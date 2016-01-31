@@ -29,6 +29,13 @@ import be.uantwerpen.adrem.gui.vinem.model.Attribute;
 import be.uantwerpen.adrem.gui.vinem.model.Cluster;
 import be.uantwerpen.adrem.gui.vinem.model.Obj;
 
+/**
+ * Panel for cluster management. Shows detected clusters and the available
+ * operations on them.
+ * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ */
 public class ClusterInfo {
 
 	public final static String ADD = "ClusterInfo.Add";

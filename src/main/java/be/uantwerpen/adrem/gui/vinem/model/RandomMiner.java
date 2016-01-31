@@ -33,6 +33,9 @@ import com.google.common.collect.Lists;
  * Simplified copy of RandomMaximalMiner which mines itemsets of a certain size,
  * rather than maximal itemsets.
  * 
+ * @author Detlev Van Looy
+ * @author M. Emin Aksehirli
+ * @author Sandy Moens
  */
 public class RandomMiner {
 
