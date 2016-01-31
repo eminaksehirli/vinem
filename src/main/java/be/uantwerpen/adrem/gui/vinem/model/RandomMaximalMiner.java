@@ -19,11 +19,11 @@
  */
 package be.uantwerpen.adrem.gui.vinem.model;
 
+import static be.uantwerpen.adrem.tool.Utils.partition;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static com.google.common.collect.Lists.newLinkedList;
 import static java.lang.Math.ceil;
-import static mime.tool.Utils.partition;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,12 +40,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import mime.plain.measure.itemset.ItemSetMeasure;
-import mime.plain.measure.itemset.SupportMeasure;
-import mime.tool.Utils;
+import be.uantwerpen.adrem.fim.measure.itemset.ItemSetMeasure;
+import be.uantwerpen.adrem.fim.measure.itemset.SupportMeasure;
 import be.uantwerpen.adrem.fim.model.Item;
 import be.uantwerpen.adrem.fim.model.Itemset;
 import be.uantwerpen.adrem.fim.model.TransactionDB;
+import be.uantwerpen.adrem.tool.Utils;
 
 import com.google.common.collect.Lists;
 
