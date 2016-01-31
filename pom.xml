@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>be.uantwerpen.adrem</groupId>
 	<artifactId>vinem</artifactId>
-	<version>0.1</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>VINEM</name>
 	<description>Visual Interactive Neighborhood Miner</description>
 	<build>
